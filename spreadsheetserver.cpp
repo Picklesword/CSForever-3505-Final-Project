@@ -1,9 +1,3 @@
-/*
- *Team CS Forever
- *Scott Young, Dharani Adhikari, Matthew Greaves, Jonathan Warner
- *Spread Sheet Server
- */
-
 #include <fcntl.h>
 #include <string.h>
 #include <stdlib.h>
@@ -15,6 +9,9 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <iostream>
+
+using namespace std;
 
 void* SocketHandler(void*);
 
@@ -24,32 +21,22 @@ int main(){
 
   struct sockaddr_in my_addr;
 
-  int hsock;
+  int hostsocket;
   int * p_int ;
   int err;
 
   socklen_t addr_size = 0;
-  int* csock;
+  int* clientsocket;
   sockaddr_in sadr;
   pthread_t thread_id=0;
 
 
-  hsock = socket(AF_INET, SOCK_STREAM, 0);
-  if(hsock == -1){
+  hostsocket = socket(AF_INET, SOCK_STREAM, 0);
+  if(hostsocket == -1)
+  {
     printf("Error initializing socket %d\n", errno);
-    goto FINISH;
+    exit(1);
   }
-    
-  p_int = (int*)malloc(sizeof(int));
-  *p_int = 1;
-        
-  if( (setsockopt(hsock, SOL_SOCKET, SO_REUSEADDR, (char*)p_int, sizeof(int)) == -1 )||
-      (setsockopt(hsock, SOL_SOCKET, SO_KEEPALIVE, (char*)p_int, sizeof(int)) == -1 ) ){
-    printf("Error setting options %d\n", errno);
-    free(p_int);
-    goto FINISH;
-  }
-  free(p_int);
 
   my_addr.sin_family = AF_INET ;
   my_addr.sin_port = htons(host_port);
@@ -57,25 +44,28 @@ int main(){
   memset(&(my_addr.sin_zero), 0, 8);
   my_addr.sin_addr.s_addr = INADDR_ANY ;
     
-  if( bind( hsock, (sockaddr*)&my_addr, sizeof(my_addr)) == -1 ){
-    fprintf(stderr,"Error binding to socket, make sure nothing else is listening on this port %d\n",errno);
-    goto FINISH;
+  if(bind( hostsocket, (sockaddr*)&my_addr, sizeof(my_addr)) < 0 )
+  {
+    cout << "ERROR binding" << endl;
+   exit(1);
   }
-  if(listen( hsock, 10) == -1 ){
+
+  if(listen( hostsocket, 10) == -1 )
+  {
     fprintf(stderr, "Error listening %d\n",errno);
-    goto FINISH;
+    exit(1);
   }
 
   //Now lets do the server stuff
 
   addr_size = sizeof(sockaddr_in);
     
-  while(true){
+  while(true)
+  {
     printf("waiting for a connection\n");
-    csock = (int*)malloc(sizeof(int));
-    if((*csock = accept( hsock, (sockaddr*)&sadr, &addr_size))!= -1){
+    if((*clientsocket = accept( hostsocket, (sockaddr*)&sadr, &addr_size))!= -1){
       printf("---------------------\nReceived connection from %s\n",inet_ntoa(sadr.sin_addr));
-      pthread_create(&thread_id,0,&SocketHandler, (void*)csock );
+      pthread_create(&thread_id,0,&SocketHandler, (void*)clientsocket);
       pthread_detach(thread_id);
     }
     else{
@@ -83,34 +73,30 @@ int main(){
     }
   }
     
- FINISH:
-  ;
-}
+ return 0;
+}//end main
 
-void* SocketHandler(void* lp){
-  int *csock = (int*)lp;
+void* SocketHandler(void* lp)
+{
+  int *clientsocket = (int*)lp;
 
   char buffer[1024];
   int buffer_len = 1024;
   int bytecount;
 
   memset(buffer, 0, buffer_len);
-  if((bytecount = recv(*csock, buffer, buffer_len, 0))== -1){
+  if((bytecount = recv(*clientsocket, buffer, buffer_len, 0))== -1){
     fprintf(stderr, "Error receiving data %d\n", errno);
-    goto FINISH;
+    exit(1);
   }
   printf("Received bytes %d\nReceived string \"%s\"\n", bytecount, buffer);
   strcat(buffer, " SERVER ECHO");
 
-  if((bytecount = send(*csock, buffer, strlen(buffer), 0))== -1){
+  if((bytecount = send(*clientsocket, buffer, strlen(buffer), 0))== -1){
     fprintf(stderr, "Error sending data %d\n", errno);
-    goto FINISH;
+    exit(1);
   }
     
   printf("Sent bytes %d\n", bytecount);
 
-
- FINISH:
-  free(csock);
-  return 0;
 }
