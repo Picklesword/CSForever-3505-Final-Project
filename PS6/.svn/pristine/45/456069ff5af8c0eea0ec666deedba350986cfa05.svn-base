@@ -1,0 +1,676 @@
+﻿// Jonathan Warner cs 3500
+// 10/3/14
+// Spreadsheet PS5
+using System; 
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+using SpreadsheetUtilities;
+using System.Xml;
+
+namespace SS
+{
+
+    /// <summary> 
+    /// A Spreadsheet object represents the state of a simple spreadsheet.  A 
+    /// spreadsheet consists of an infinite number of named cells.
+    /// 
+    /// A string is a valid cell name if and only if:
+    ///   (1) its first character is an underscore or a letter
+    ///   (2) its remaining characters (if any) are underscores and/or letters and/or digits
+    /// A spreadsheet contains a cell corresponding to every possible cell name.  (This
+    /// means that a spreadsheet contains an infinite number of cells.)  In addition to 
+    /// a name, each cell has a contents and a value.  The distinction is important.
+    /// 
+    /// The contents of a cell can be (1) a string, (2) a double, or (3) a Formula.  If the
+    /// contents is an empty string, we say that the cell is empty.
+    /// 
+    /// In a new spreadsheet, the contents of every cell is the empty string.
+    ///  
+    /// The value of a cell can be (1) a string, (2) a double, or (3) a FormulaError.  
+    /// Spreadsheets are never allowed to contain a combination of Formulas that establish
+    /// a circular dependency. 
+    /// </summary>
+    public class Spreadsheet : AbstractSpreadsheet
+    {
+        // used to store the names of the cells that are not empty 
+        private HashSet<string> Cell_Names = new HashSet<string>();
+        
+        //used to make sure names match variable paterns 
+        const String varPattern = @"^[a-zA-Z]+[\d]+$";
+
+        const String doublePattern = @"^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$"; 
+
+        //used to store the cells of the spreadsheet 
+        private Dictionary<string, Cell> sheet;
+
+        //used to keep track of dependencies between the cells of the spreadsheet 
+        private DependencyGraph sheet_deps;
+ 
+
+        /// <summary>
+        /// True if this spreadsheet has been modified since it was created or saved                  
+        /// (whichever happened most recently); false otherwise.
+        /// </summary>
+        public override bool Changed { get; protected set; }
+
+
+        /// <summary>
+        ///  Returns an Ienumerable of all the nonempty cell names 
+        /// </summary>
+        /// <returns> IEnumberable string</returns>
+        public override IEnumerable<String> GetNamesOfAllNonemptyCells()
+        {
+            //return Cell_Names; // returns the set containing all active cell names 
+            return sheet.Keys; 
+            
+        }
+
+        /// <summary>
+        /// Creates a new empty spreadsheet. Using default version validator and normalizer.
+        /// </summary>
+        public Spreadsheet() : base(s => true, s => s, "default") {
+            sheet = new Dictionary<string, Cell>();
+            sheet_deps = new DependencyGraph();
+            
+        }
+
+        /// <summary>
+        /// Creates a new empty spreadsheet. 
+        /// Takes in a validator normalizer and version as paramaters.
+        /// </summary>
+        /// <param name="isValid"> function that takes in a string and returns boolean</param>
+        /// <param name="normalize"> function that takes in a string and return a string</param>
+        /// <param name="version"> a string </param>
+        public Spreadsheet(Func<string, bool> isValid, Func<string, string> normalize, string version) : base(isValid, normalize, version) {
+            sheet = new Dictionary<string, Cell>();
+            sheet_deps = new DependencyGraph();
+        }
+
+        /// <summary>
+        /// Reads in a file to generate a spreapsheet. Make sure version paramater matches version info from file. 
+        /// </summary>
+        /// <param name="FilePath">string for path to file to construct spreadsheet</param>
+        /// <param name="isValid"> function that takes in a string and returns a boolean</param>
+        /// <param name="normalize">function that takes in a string and returns a string </param>
+        /// <param name="version"> a string </param>
+        public Spreadsheet(string FilePath,Func<string, bool> isValid, Func<string, string> normalize, string version) : base(isValid, normalize, version)
+        {
+            sheet = new Dictionary<string, Cell>();
+            sheet_deps = new DependencyGraph();
+
+            try
+            {
+                this.file_reader(FilePath, false);                                                                      //tries to read file
+                Changed = false;                                                                                        // notes that the spreadsheet is being created so can't have been changed 
+
+            }catch(Exception e)
+            {
+                if(e is SpreadsheetReadWriteException) throw e;                                                        // will propagate a readwrite exception related to opening file 
+                if (e is CircularException) throw new SpreadsheetReadWriteException("Circular dependency detected");   // propagates circular dependency 
+                if (e is InvalidNameException) throw new SpreadsheetReadWriteException("Invalid name detected");        // propagates a invalid name error 
+                if (e is FormulaFormatException) throw new SpreadsheetReadWriteException("Invalid formula detected");   // propagates an invalid formula error 
+                throw new SpreadsheetReadWriteException(e.Message); 
+
+            }
+        }
+
+        // ADDED FOR PS5
+        /// <summary>
+        /// Writes the contents of this spreadsheet to the named file using an XML format.
+        /// </summary>
+        public override void Save(String filename)
+        {
+            XmlWriter file_writer;
+
+            try                                                                                       //tries to see if it can write to file 
+            {
+                file_writer = XmlWriter.Create(filename); 
+            }catch
+            {
+                throw new SpreadsheetReadWriteException("Could not write to file");
+            }
+
+            using (file_writer)
+            {
+                file_writer.WriteStartDocument();                                                   //starts writing the xml 
+
+                file_writer.WriteStartElement("spreadsheet");                                      // creates the tag for spreadsheet
+                file_writer.WriteAttributeString("version", Version);                              // creates the attribute for version
+
+                IEnumerable<string> temp_iem = this.GetNamesOfAllNonemptyCells();                  // gets all nonempty cells so they can be recoreded in the xml 
+
+                foreach (string s in temp_iem)
+                {
+                    file_writer.WriteStartElement("cell");                                        //creates tag for cell
+                    file_writer.WriteElementString("name", s);                                    // creates tag for name stores name in element and ends tag
+
+                    object temp_con = sheet[s].Get_Contents();
+
+                    if (temp_con.GetType() == typeof(string))                                   // tests what the content of cell is 
+                    {
+                        file_writer.WriteElementString("contents", (string)temp_con);           //saves the contents as a string insides content elment 
+                    }
+                    else if (temp_con.GetType() == typeof(double))
+                    {
+                        string temp_s = temp_con.ToString();
+                        file_writer.WriteElementString("contents", temp_s);                     // converts the contents from double to string then save inside content elment
+                    }
+                    else
+                    {
+                        string temp_s = "=" + temp_con.ToString();
+                        file_writer.WriteElementString("contents", temp_s);                    // converts the contents from formula to string concatenates a '=' and saves inside content elment 
+                    }
+                    file_writer.WriteEndElement();                                            // ends the element of cell with closing tag 
+                }
+                
+                file_writer.WriteEndElement();                                               // ends the element of spreadsheet with closing tag
+                file_writer.WriteEndDocument();                                              // stops writing the document 
+            }
+
+            Changed = false;                                                                // notes that since it is now saved no changes have been made 
+
+
+
+        }
+
+        /// <summary>
+        /// Returns the version information of the spreadsheet saved in the named file.
+        /// If there are any problems opening, reading, or closing the file, the method
+        /// should throw a SpreadsheetReadWriteException with an explanatory message.
+        /// </summary>
+        public override string GetSavedVersion(String filename)
+        {
+            try                                                 //tries to use file reader 
+            {
+                return file_reader(filename, true);
+            }catch(Exception e)
+            {
+                throw e; 
+            }
+        }
+        
+        /// <summary>
+        /// Reads either just the version information or the entire file depending of boolean
+        /// </summary>
+        /// <param name="filepath"> string </param>
+        /// <param name="get_version"> bool </param>
+        /// <returns></returns>
+        private string file_reader(string filepath, bool get_version)
+        {
+            XmlReader reader;
+            string temp_name = null;
+            bool contains_name = true;
+            bool contains_content = true;
+            bool contains_cell = false; 
+            
+
+            try                                                                 //tries to read the file based on path given to it 
+            {
+                 reader = XmlReader.Create(filepath);
+            }catch
+            {
+                throw new SpreadsheetReadWriteException("file could not be read"); 
+            }
+            using (reader)
+            {
+                while (reader.Read())
+                {
+                    if (reader.IsStartElement())
+                    {
+                        switch (reader.Name)
+                        {
+                            case "spreadsheet":
+                                if (get_version)
+                                {
+                                    
+                                    return reader["version"];                                     //returns the version and stops 
+                                }
+                                else
+                                {
+                                    
+                                    if ((reader["version"]) != Version) throw new SpreadsheetReadWriteException("Version of file did not match version given as paramater");   //checks if the  versions  are equal 
+                                    break;
+                                }
+
+                            case "cell":
+                                if (!contains_name) throw new SpreadsheetReadWriteException("cell Name not found while reading file");   // indicates that there was no previous name tags resulting in error 
+                                contains_name = false;                                                                                   // sets so can detect if name tags are not reached 
+                                contains_cell = true;                                                                                    // sets to show cell tags have been reached 
+                                break;
+
+                            case "name":
+                                reader.Read();
+                                temp_name = reader.Value;                                                                                            //stores the name so contents can be set with it 
+                                contains_name = true;                                                                                                // set to true to indicate the name tags have been reached 
+                                if (!contains_content) throw new SpreadsheetReadWriteException("no content found for cell name while reading file"); // indcates that the previous contents tags were not reached 
+                                if (!contains_cell) throw new SpreadsheetReadWriteException(" cell start tag not found while reading file");         // indicates that the previous cell tags were not reached 
+                                contains_cell = false;                                                                                               // sets to false so a cell tag must set true 
+                                contains_content = false;                                                                                            // sets to false so a contents tag must set true 
+                                break;
+
+                            case "contents":
+                                reader.Read();
+                                if (temp_name == null) throw new SpreadsheetReadWriteException("Cell name not found while reading file");           // if there is no name throws an exception saying so 
+                                try
+                                {
+                                    this.SetContentsOfCell(temp_name, reader.Value);                                                                // attempts to set contents of spreadsheet based off contents and name from xml 
+                                    temp_name = null;                                                                                               // sets temp_name to null so has to be reset by name elment in tags
+                                }
+                                catch (Exception e)
+                                {
+                                    throw e;
+                                }
+                                contains_content = true;                                                                                           // sets contents to true to show content tags have been reached 
+                                break;
+
+                        }
+                    }
+                   
+                }
+                
+            }
+            if (!contains_name) throw new SpreadsheetReadWriteException("Element name missing from xml document");                               // checks for empty cell at end of xml doc 
+            if (!contains_content ) throw new SpreadsheetReadWriteException("Element content missing from xml document");                        // checks for missing contents element at end of xml doc 
+           
+            return "";                                                                                                                           // returns empty string not used for anything but needed since function can return version 
+
+        }
+
+        /// <summary>
+        /// Gets the contents of the cell specified by the name 
+        /// </summary>
+        /// <param name="name"> string </param>
+        /// <returns> object </returns>
+        public override object GetCellContents(String name)
+        {
+            name = Normalize(name); 
+
+            if(name == null || !Regex.IsMatch(name,varPattern) || !IsValid(name))             // checks if the name of the cell is not null and valid 
+            {
+                throw new InvalidNameException(); 
+            }
+
+            Cell temp_cell;                                                // will be used as holder for the output from get value 
+
+            if(!sheet.TryGetValue(name, out temp_cell)) return "";        //  if the cell is not intialized return an empty string to show it is empty 
+            return temp_cell.Get_Contents();                              //  returns the contents of the cell 
+                                                  
+        }
+
+        
+        /// <summary>
+        /// If name is null or invalid, throws an InvalidNameException.
+        /// 
+        /// Otherwise, returns the value (as opposed to the contents) of the named cell.  The return
+        /// value should be either a string, a double, or a SpreadsheetUtilities.FormulaError.
+        /// </summary>
+        public override object GetCellValue(String name)
+        {
+            name = Normalize(name);
+            if (name == null || !Regex.IsMatch(name, varPattern) || !IsValid(name))             // checks if the name of the cell is not null and valid 
+            {
+                throw new InvalidNameException();
+            }
+
+            Cell temp_cell;                                                // will be used as holder for the output from get value 
+
+            if (!sheet.TryGetValue(name, out temp_cell)) return "";        //  if the cell is not intialized return an empty string to show it is empty 
+            return temp_cell.Get_Value();                                  // returns the value of the cell 
+
+        }
+
+        /// <summary>
+        ///Takes in a string for name and string for contents and places 
+        ///contents in cell named with name. Formulas require an '=' at the 
+        ///beginning of the string. 
+        /// </summary>
+        public override ISet<String> SetContentsOfCell(String name, String content)
+        {
+            double temp_doub;
+            ISet<string> return_set; 
+
+            if (content == null) throw new ArgumentNullException();                                // checks to make sure conent is provided 
+            name = Normalize(name);
+            if (name == null || !Regex.IsMatch(name, varPattern) || !IsValid(name))               // checks that the cell's name is valid and not null after being normallized  
+            {
+                throw new InvalidNameException();
+            }
+
+            if (double.TryParse(content, out temp_doub))                                         
+            { 
+                return_set = SetCellContents(name, temp_doub);                                   // calls SetCellContents that takes a double as a paramater 
+
+            }else if(content.StartsWith("="))
+            {
+                
+                content = content.Remove(0, 1);                                                 // removes the equal sign from the begining of the formula string 
+                try
+                {
+                    return_set = SetCellContents(name, new Formula(content, Normalize, IsValid));  // calls on the SetCellContents that take a formula as a paramater 
+
+                }catch(Exception e)
+                {
+                    throw e;                                                                      // will throw up any circular dependecy or formulaformat errors 
+                }
+            }else
+            {
+                return_set = SetCellContents(name, content);                                    // calls on SetCellContents that takes a string as its paramater 
+            }
+
+            Changed = true; 
+            return return_set; 
+
+
+        }
+        /// <summary>
+        /// Sets the contents of the named cell to the number given.
+        /// Returns a set containing all cells that need recalculated because of the change. 
+        /// </summary>
+        /// <param name="name">string</param>
+        /// <param name="number" double></param>
+        /// <returns> ISet string</returns>
+        protected override ISet<String> SetCellContents(String name, double number)
+        {
+            
+
+            
+           
+            Cell temp_cell;                                                   // temperary holder for the value returned form the hashtable 
+            if(!sheet.TryGetValue(name, out temp_cell))                       
+            {
+                sheet.Add(name, new Cell(number,cell_lookup));                            // if the cell did not exist in the hashtable add it  
+                //Cell_Names.Add(name);                                         // and add it's name to the set of nonempty cells
+            }else
+            {
+                sheet[name] = new Cell(number,cell_lookup);                              // if the cell already existed replace it with a cell with the new specified contents 
+
+                List<string> temp_del = sheet_deps.GetDependees(name).ToList(); 
+                foreach(string s in temp_del)
+                {
+                    sheet_deps.RemoveDependency(s, name); 
+                }
+            }
+            //recalculate(name);                                               // recalculate the dependents 
+            IEnumerable<string> temp_ien = GetCellsToRecalculate(name);     // an ieunumerable containing all direct and indirect dependents 
+            HashSet<string> temp_set = new HashSet<string>();               // a hash set to hold these depents 
+            
+            foreach(string s in temp_ien)                                  // places dependents in hashset 
+            {
+                recalculate(s); 
+                temp_set.Add(s);
+            }
+            return temp_set;                                              // returns hashset of all direct and indirect dependts 
+
+
+            
+           
+     
+        }
+
+        /// <summary>
+        /// Sets the contents of the named cell to that of the given string.
+        /// Returns a set of all the names of cells that need recalculated do to the change. 
+        /// </summary>
+        /// <param name="name"> string </param>
+        /// <param name="text"> string </param>
+        /// <returns> ISet string </returns>
+        protected override ISet<String> SetCellContents(String name, String text)
+        {
+            
+
+            
+            Cell temp_cell;                                                                              // temperary holder for the value returned form the hashtable 
+            if (!sheet.TryGetValue(name, out temp_cell))    
+            {
+                sheet.Add(name, new Cell(text,cell_lookup));                                                         // if the cell did not exist in the hashtable add it  
+               // if(text != "") Cell_Names.Add(name);                                                     // if the contents being added to the cell is not the empty string add it to list of nonempty cells 
+            }
+            else
+            {
+                sheet[name] = new Cell(text,cell_lookup);                                                           // if the cell already existed replace it with a cell with the new specified contents 
+               // if (text == "") Cell_Names.Remove(name);                                                // if the content being replaced is now an empty string remove the cell name from the set of unempty cells
+
+                if (text == "") sheet.Remove(name); 
+
+                List<string> temp_del = sheet_deps.GetDependees(name).ToList(); 
+                foreach(string s in temp_del)
+                {
+                    sheet_deps.RemoveDependency(s, name); 
+                }
+            }
+            //recalculate(name);                                                                          // will recalculate the dependents value 
+            IEnumerable<string> temp_ien = GetCellsToRecalculate(name).Skip(1);                                 // an ieunumerable containing all direct and indirect dependents 
+            HashSet<string> temp_set = new HashSet<string>();                                          //  // a hash set to hold these depents 
+       
+            
+            foreach (string s in temp_ien)                                                             // places dependents in hashset 
+            {
+                recalculate(s); 
+                temp_set.Add(s);
+            }
+            return temp_set;                                                                          // returns hashset of all direct and indirect dependts
+           
+
+        }
+
+        /// <summary>
+        /// Sets the contents of the named cell to the formula given. 
+        /// Return a set of names of cells that need recalculated as a result of the change. 
+        /// </summary>
+        /// <param name="name"> string </param>
+        /// <param name="formula"> Formula </param>
+        /// <returns> Iset string </returns>
+        protected override ISet<String> SetCellContents(String name, Formula formula)
+        {
+            Cell hold_cell = null;
+            IEnumerable<string> temp_ien;
+
+            
+
+            foreach (string s in formula.GetVariables())                                                        // checks all the variables in a formula fot avoid circular dependency 
+            {
+
+
+                if (s == name) throw new CircularException();
+
+            }
+            
+            Cell temp_cell;                                                                                   // temperary holder for the value returned form the hashtable
+            IEnumerable<string> temp_dependees = sheet_deps.GetDependees(name);
+            
+            if (!sheet.TryGetValue(name, out temp_cell))
+            {
+                sheet.Add(name, new Cell(formula,cell_lookup));                                                             // if the cell did not exist in the hashtable add it  
+               // Cell_Names.Add(name);                                                                           // and add it's name to the set of nonempty cells
+
+
+                sheet_deps.ReplaceDependees(name, formula.GetVariables());
+               
+            }
+            else
+            {
+
+                 hold_cell = sheet[name]; 
+
+                sheet[name] = new Cell(formula,cell_lookup);                                                                // if the cell already existed replace it with a cell with the new specified contents 
+
+                sheet_deps.ReplaceDependees(name, formula.GetVariables());
+
+                
+            }
+
+            try
+            {
+                 temp_ien = GetCellsToRecalculate(name);
+            }
+            catch (Exception e)
+            {
+                sheet[name] = hold_cell;
+                sheet_deps.ReplaceDependees(name, temp_dependees); 
+                throw e;
+            }
+           // recalculate(name);                                                                                  // will recalculate dependents value 
+            HashSet<string> temp_set = new HashSet<string>();                                                   // a hash set to hold these depents
+            
+            foreach (string s in temp_ien)                                                                      // places dependents in hashset
+            {
+                temp_set.Add(s);
+                recalculate(s); 
+            }
+            return temp_set;                                                                                    // returns hashset of all direct and indirect dependts
+
+        }
+
+        /// <summary>
+        /// Returns a IEnumerable of the dependents of the cell named. 
+        /// </summary>
+        /// <param name="name">string</param>
+        /// <returns> IEnumerable string </returns>
+        protected override IEnumerable<String> GetDirectDependents(String name)
+        {
+            if(name == null) throw new ArgumentNullException();                                 // checks to make sure the cell name is not null
+            if (!Regex.IsMatch(name, varPattern)) throw new InvalidNameException();             // checks to make sure the cell's name is valid 
+            return sheet_deps.GetDependents(name);                                              // returns and ienumberable containing all the dependents of name 
+        }
+
+
+        /// <summary>
+        /// Look up function for the spreadsheet.
+        /// Given the name looks up the value in that cell. 
+        /// Will either return a double or throw an exception. (based on specs from PS3)
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private double cell_lookup(string name)
+        {
+
+            Cell temp_cell;
+            object temp_obj; 
+
+            if(!sheet.TryGetValue(name,out temp_cell))                      //throws an argument if cell does not exist 
+            {
+                throw new ArgumentException(); 
+            }else
+            {
+                temp_obj = temp_cell.Get_Value();                         // gets the value in the cell           
+            }
+
+            if ( temp_obj.GetType() == typeof(string))
+            {
+                throw new ArgumentException();                          // if the value is a string throws an exception 
+            }else if (temp_obj.GetType() == typeof(FormulaError))            // if its a formula it will try to look up that formula's value
+            {
+                Formula temp_form = (Formula)temp_obj;
+                //Formula temp_form = (Formula)temp_cell.Get_Contents(); 
+                try
+                {
+                    return (double)temp_form.Evaluate(cell_lookup);
+
+                }catch
+                {
+                    throw new ArgumentException();                     // if the formula returns an exception when it tries to evaluate the exception is propagated
+                }
+                
+            }else
+            {
+                return (double)temp_obj;                            // returns a double which must be contents 
+            }
+        }
+
+        /// <summary>
+        /// Takes in a cell name an recalculates all of its direct and indirect dependents 
+        /// </summary>
+        /// <param name="name"></param>
+        private void recalculate(string name)
+        {
+            //IEnumerable<string> temp_iem = GetDirectDependents(name); // creates an enumerable for the dependents 
+            //foreach(string s in temp_iem)
+            //{
+            //    sheet[s].Re_Eval();                                  //calls revaluate for each cell 
+            //    recalculate(s);                                     // also recalulates each direct dependents dependents 
+            //}
+            sheet[name].Re_Eval(); 
+                
+        }
+
+        /// <summary>
+        /// A Cell class that may be altered as spread sheet developes 
+        /// contains contents which is what one types into cell editor 
+        /// and value which is what the contents evaluates to 
+        /// </summary>
+        private class Cell
+        {
+            // stores the evaluation of the contents 
+            private object value;
+
+            //the contents the user placed in the cell 
+            private object contents;
+
+            private Func<string,double> hold_lookup; 
+            /// <summary>
+            /// creates a new cell 
+            /// </summary>
+            public Cell(object content, Func<string,double> lookup)
+            {
+                contents = content;
+                hold_lookup = lookup;
+                cell_eval(content,lookup);
+                //value = content;  
+            }
+            /// <summary>
+            /// gets the value of contents
+            /// </summary>
+            public object Get_Contents()
+            {
+                return contents;
+            }
+
+            /// <summary>
+            ///  gets the value of value 
+            /// </summary>
+            public object Get_Value()
+            {
+                return value;
+            }
+
+            /// <summary>
+            /// Wrapper function used to revaluate a cell. 
+            /// </summary>
+            public void Re_Eval()
+            {
+                cell_eval(contents,hold_lookup); 
+            }
+
+            /// <summary>
+            /// Creates the value of the cell based off the contents 
+            /// </summary>
+            /// <param name="ob"> the contents of the cell object</param>
+            /// <param name="lookup">lookup function which takes string and returns a double </param>
+            private void cell_eval(object ob, Func<string, double> lookup)
+            {
+            if (ob.GetType() == typeof(double))
+            {
+                this.value = ob;                                    //sets cell value to double if contents is double 
+                 
+            }else if (ob.GetType() == typeof(string))
+            {
+                this.value = ob;                                  //sets cell value to string if contents is a string 
+
+            }else
+            {
+                Formula temp_form = (Formula)ob;
+                this.value = temp_form.Evaluate(lookup);        //sets teh cell value to either a double for FormulaError if contents is a formula
+            }
+
+            }
+
+        }
+    }
+
+    
+
+    
+}

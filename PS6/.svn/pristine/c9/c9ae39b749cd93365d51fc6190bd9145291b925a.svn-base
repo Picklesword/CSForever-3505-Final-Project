@@ -1,0 +1,55 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace SpreadsheetGUI
+{
+    class SpreadsheetGUIApplicationContext : ApplicationContext
+    {
+        private int instance_count = 0;
+
+        private static SpreadsheetGUIApplicationContext spreadappcontext; 
+
+        private SpreadsheetGUIApplicationContext()
+        {
+
+        }
+
+        public static SpreadsheetGUIApplicationContext getSpreadAppContext()
+        {
+            if (spreadappcontext == null)
+            {
+                spreadappcontext = new SpreadsheetGUIApplicationContext(); 
+            }
+            return spreadappcontext; 
+        }
+
+        public void RunInstance(Form form)
+        {
+            instance_count++;
+
+            form.FormClosed += (o, e) => { if (--instance_count <= 0) ExitThread(); };
+
+            form.Show(); 
+        }
+        
+    }
+    static class Program
+    {
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            SpreadsheetGUIApplicationContext spreadsheet_context = SpreadsheetGUIApplicationContext.getSpreadAppContext();
+            spreadsheet_context.RunInstance(new Form1());
+            Application.Run(spreadsheet_context);
+        }
+    }
+}
