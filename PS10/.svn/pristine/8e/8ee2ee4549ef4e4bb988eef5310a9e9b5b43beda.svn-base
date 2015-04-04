@@ -1,0 +1,133 @@
+﻿
+using CustomNetworking;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace BB
+{
+    class BoggleWebPageManager
+    {
+        private BoggleDatabaseManager dbManager;
+
+        public BoggleWebPageManager(BoggleDatabaseManager dbManager)
+        {
+            this.dbManager = dbManager;
+            /*  Failed Regex matching :/
+            string get = "GET /";
+            string htmlPageName = "([^?]*)";
+            string aParam = "([^?&=]+=[^?&=]+)";
+            string multipleParams = "(?:"+aParam+"(?:&"+aParam+")*)";
+            string finalParameters = @"(?:(?:\?"+multipleParams+")|)"; //?a=b&c=d
+            string closing = @" HTTP/1\.1\r";
+            WebRequestRegex = new Regex("^"+get+htmlPageName+finalParameters+closing+"$");
+            //WebRequestRegex = new Regex(@"GET /(.*)(?:\?(.+=.+)*)|(?:) HTTP/1\.1");
+            //WebRequestRegex = new Regex(@"GET /(.*)\??(.+=.+)* HTTP/1\.1"); //matches something like "GET /games?player=Joe HTTP/1.1" or "GET /players HTTP/1.1"
+             */
+        }
+
+        /// <summary>
+        /// Stopping method that listenes on the given port for html requests.
+        /// </summary>
+        /// <param name="port">The port to listen on.</param>
+        internal void startListener(int port)
+        {
+            TcpListener server = null;
+            try
+            {
+                //Accept connections on the specified port from any IP address
+                server = new TcpListener(IPAddress.Any, port);
+                //Start the server
+                server.Start();
+                Socket theSocket = null;
+                StringSocket ss = null;
+                //Continuously accepts connections and passes them on to the connection manager
+                while (true)
+                {
+                    theSocket = server.AcceptSocket(); //Stopping method that waits until a connection is recieved.
+                    //Start a new thread that handles the receive request
+                    ss = new StringSocket(theSocket, new UTF8Encoding());
+                    //Begins listening on a new thread for the request.
+                    ss.BeginReceive(receivedSomething, ss);
+                }
+            }
+            catch (Exception e) //If something goes wrong, show the error and close the server
+            {
+                Console.WriteLine("WEBSERVER CRASH:" + e.Message);
+            }
+            finally
+            {
+                //Close the server
+                server.Stop();
+            }
+        }
+
+        
+        /// <summary>
+        /// Called when the connection sends something.
+        /// </summary>
+        /// <param name="message">The string sent to us. Null if there was an error receiving or they disconnected.</param>
+        /// <param name="theException">The exception, if any, that occured while waiting for a message. Null if we received a message or they disconnected.</param>
+        /// <param name="theStringSocket">The connection that the message or error was recieved from.</param>
+        private void receivedSomething(string message, Exception theException, object theStringSocket)
+        {
+            //Only care if we received a message.
+            if (message != null)
+            {
+                //Parse the message.
+            }
+        }
+
+
+        /* Failed attempt with regex :(
+         * Regex always captured exactly 4 elements.
+         * Would not remember more than 2 sets of (parameter=value)
+         * 
+        
+        /// <summary>
+        /// Called when the connection sends something.
+        /// </summary>
+        /// <param name="message">The string sent to us. Null if there was an error receiving or they disconnected.</param>
+        /// <param name="theException">The exception, if any, that occured while waiting for a message. Null if we received a message or they disconnected.</param>
+        /// <param name="theStringSocket">The connection that the message or error was recieved from.</param>
+        private void receivedSomething(string message, Exception theException, object theStringSocket)
+        {
+            //Only care if we received a message.
+            if (message != null)
+            {
+                //Parse the received message.
+                Match match = WebRequestRegex.Match(message);
+                if (match.Success)
+                {
+                    Console.WriteLine("Matched!");
+                    Console.WriteLine(" Page Name:\""+match.Groups[1].Value+"\"");
+                    //for (int i = 2; i < match.Groups.Count; i++)
+                        //Console.WriteLine(" Param:\""+match.Groups[i].Value+"\"");
+                    
+                    foreach(Group g in match.Groups)
+                        Console.WriteLine(" Param:\"" + g.Value.ToString() + "\"");
+                }
+                else
+                    Console.WriteLine("Didn't match: \"" + message + "\"");
+
+            }
+            else
+            {
+                if (theException == null)
+                    Console.WriteLine("Didn't receive anything!");
+                else
+                    Console.WriteLine("Received an error:"+theException.Message);
+            }
+
+            //((StringSocket)theStringSocket).BeginSend("", (e,o) => { }, null);
+        }
+         */
+
+    }
+}

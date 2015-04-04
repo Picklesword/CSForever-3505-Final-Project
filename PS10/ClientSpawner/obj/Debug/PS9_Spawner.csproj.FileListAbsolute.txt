@@ -1,0 +1,42 @@
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\bin\Debug\ClientSpawner.exe.config
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\bin\Debug\ClientSpawner.exe
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\bin\Debug\ClientSpawner.pdb
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\bin\Debug\BoggleClient.exe
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\bin\Debug\PS8.exe
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\bin\Debug\StringSocket.dll
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\bin\Debug\BoggleClient.pdb
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\bin\Debug\PS8.pdb
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\bin\Debug\PS8.xml
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\obj\Debug\PS9_Spawner.csprojResolveAssemblyReference.cache
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\obj\Debug\PS9_Spawner.SpawnerForm.resources
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\obj\Debug\PS9_Spawner.Properties.Resources.resources
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\obj\Debug\PS9_Spawner.csproj.GenerateResource.Cache
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\obj\Debug\ClientSpawner.exe
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\obj\Debug\ClientSpawner.pdb
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\bin\Debug\RootWebDirectory\DataDisplay.js
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\bin\Debug\RootWebDirectory\Error.html
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\bin\Debug\RootWebDirectory\game.html
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\bin\Debug\RootWebDirectory\games.html
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\bin\Debug\RootWebDirectory\players.html
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\ClientSpawner\bin\Debug\MySql.Data.dll
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\bin\Debug\ClientSpawner.exe.config
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\obj\Debug\ClientSpawner.exe
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\obj\Debug\ClientSpawner.pdb
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\bin\Debug\RootWebDirectory\DataDisplay.js
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\bin\Debug\RootWebDirectory\Error.html
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\bin\Debug\RootWebDirectory\game.html
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\bin\Debug\RootWebDirectory\games.html
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\bin\Debug\RootWebDirectory\players.html
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\bin\Debug\ClientSpawner.exe
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\bin\Debug\ClientSpawner.pdb
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\bin\Debug\BoggleClient.exe
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\bin\Debug\PS8.exe
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\bin\Debug\StringSocket.dll
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\bin\Debug\MySql.Data.dll
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\bin\Debug\BoggleClient.pdb
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\bin\Debug\PS8.pdb
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\bin\Debug\PS8.xml
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\obj\Debug\PS9_Spawner.csprojResolveAssemblyReference.cache
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\obj\Debug\PS9_Spawner.SpawnerForm.resources
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\obj\Debug\PS9_Spawner.Properties.Resources.resources
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\ClientSpawner\obj\Debug\PS9_Spawner.csproj.GenerateResource.Cache

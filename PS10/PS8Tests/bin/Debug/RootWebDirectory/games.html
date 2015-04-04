@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>List of all game records</title>
+    <script>
+        function CreateTableCode(result, headers) {
+            var str = '<table border=1>';
+            str += '<tr>';
+            for (var i = 0; i < headers.length; i++) {
+                str += '<th>' + headers[i] + '</th>';
+            }
+            str += '</tr>';
+            for (var i = 0; i < result.length; i++) {
+                str += '<tr>';
+                for (var j = 0; j < result[i].length; j++) {
+                    str += '<td class="ui-helper-center">' + result[i][j] + '</td>';
+                }
+                str += '</tr>';
+            }
+            str += '</table>';
+            return str;
+        }
+
+    </script>
+
+    <style type="text/css">
+        .ui-helper-center
+        {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    Games played by Player:
+    <br />
+    <p id="table"></p>
+    <script>
+        var data = ["?GamesStatTable?"];
+        //data = [["a", "date", 0, 0], ["b", 1, 1, 1], ["c", 0, 2, 1]];
+
+        if (data.length > 0) {
+
+            document.getElementById("table").innerHTML = CreateTableCode(data, ["GameID", "Date/Time", "Opponent's Name", "Player Score", "Opponent's Score"]);
+        }
+        else
+            document.write("Sorry, No Data Available.");
+
+    </script>
+</body>
+</html>

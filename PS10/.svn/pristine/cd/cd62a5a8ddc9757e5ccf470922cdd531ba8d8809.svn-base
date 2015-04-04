@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BB
+{
+    class BoggleDatabaseManager
+    {
+        private string p;
+
+        public BoggleDatabaseManager(string p)
+        {
+            // TODO: Complete member initialization
+            this.p = p;
+        }
+
+
+        internal object recordGameResults(string p1, string p2, string p3, int gameTime, int p4, int p5, HashSet<string> hashSet1, HashSet<string> hashSet2, HashSet<string> InCommonList, HashSet<string> hashSet3, HashSet<string> hashSet4)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

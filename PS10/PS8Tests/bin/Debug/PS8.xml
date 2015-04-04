@@ -1,0 +1,826 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PS8</name>
+    </assembly>
+    <members>
+        <member name="T:BB.BoggleBoard">
+            <summary>
+            Represents a Boggle board.
+            </summary>
+        </member>
+        <member name="M:BB.BoggleBoard.#ctor">
+            <summary>
+            Creates a randomly-generated BoggleBoard 
+            </summary>
+        </member>
+        <member name="M:BB.BoggleBoard.#ctor(System.String)">
+            <summary>
+            Creates a BoggleBoard from the provided 16-letter string.  The
+            method is case-insensitive.  If there aren't exactly 16 letters
+            in the string, throws an ArgumentException.  The string consists
+            of the first row, then the second row, then the third, then the fourth.
+            </summary>
+        </member>
+        <member name="M:BB.BoggleBoard.MakeBoard(System.String)">
+            <summary>
+            Makes a board from the 16-letter string
+            </summary>
+        </member>
+        <member name="M:BB.BoggleBoard.ToString">
+            <summary>
+            Returns the 16 letters that make up this board.  It is formed
+            by appending the first row to the second row to the third row
+            to the fourth row.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BB.BoggleBoard.CanBeFormed(System.String)">
+            <summary>
+            Reports whether the provided word can be formed by tracking through
+            this Boggle board as described in the rules of Boggle.  The method
+            is case-insensitive.
+            </summary>
+        </member>
+        <member name="M:BB.BoggleBoard.CanBeFormed(System.String,System.Int32,System.Int32,System.Boolean[0:,0:])">
+            <summary>
+            Reports whether the provided word can be formed by tracking through
+            this Boggle board by beginning at location [i,j] and avoiding any
+            squares marked as visited.
+            </summary>
+        </member>
+        <member name="T:BB.BoggleGame">
+            <summary>
+            Given two player connections, a new Boggle game created and manages rules and communications between the players.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleGame.gameTime">
+            <summary>
+            The starting game time in seconds.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleGame.customConfig">
+            <summary>
+            The custom configuration of the boggle board (if any)
+            </summary>
+        </member>
+        <member name="F:BB.BoggleGame.dictionary">
+            <summary>
+            A reference to the dictionary of loaded legal words.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleGame.playerConnection1">
+            <summary>
+            Player 1's connection
+            </summary>
+        </member>
+        <member name="F:BB.BoggleGame.playerConnection2">
+            <summary>
+            Player 2's connection
+            </summary>
+        </member>
+        <member name="F:BB.BoggleGame.board">
+            <summary>
+            The boggle board used for this game.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleGame.timeLeft">
+            <summary>
+            The amount of time left in seconds.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleGame.time_Lock">
+            <summary>
+            Used to make sure the time doesn't get messed up by 
+            parallel threads.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleGame.gameOverNotification">
+            <summary>
+            when set the main run method continues as if the game is over.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleGame.timer">
+            <summary>
+            The timer.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleGame.InCommonList">
+            <summary>
+            The list of legal common words that both players have played in this boggle game.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleGame.dbManager">
+            <summary>
+            A reference to the database manager for this server which adds database functionality.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleGame.scoreWordLock">
+            <summary>
+            Makes sure that only one word is scored at a time.
+            </summary>
+        </member>
+        <member name="M:BB.BoggleGame.#ctor(System.Int32,System.String,System.Collections.Generic.HashSet{System.String},BB.PlayerConnection,BB.PlayerConnection,BB.BoggleDatabaseManager)">
+            <summary>
+            Sets up a boggle game (use .run() to start the game)
+            </summary>
+            <param name="gameTime">The starting game time in seconds</param>
+            <param name="customConfig">The custom configuration of the boggle board (if any, otherwise it's set to null)</param>
+            <param name="dictionary">A reference to the dictionary of loaded legal words.</param>
+            <param name="playerConnection1">Player 1's connection</param>
+            <param name="playerConnection2">Player 2's connection</param>
+            <param name="dbManager">A reference to the database manager for this server which adds database functionality.</param>
+        </member>
+        <member name="M:BB.BoggleGame.run(System.Object)">
+            <summary>
+            This runs the boggle game between 2 clients
+            using the thread that called it.
+            </summary>
+        </member>
+        <member name="M:BB.BoggleGame.endGameAndSendSummary">
+            <summary>
+            Tells the clients that the game is over and sends them the summary of the game.
+            </summary>
+        </member>
+        <member name="M:BB.BoggleGame.spaceCountWords(System.Collections.Generic.HashSet{System.String})">
+            <summary>
+            Helper method.
+            Returns " a #1" where 'a' is the count of the words and '#1' is the list 
+            of words separated by spaces (no trailing spaces).
+            </summary>
+            <param name="list">The list of words to format</param>
+            <returns></returns>
+        </member>
+        <member name="M:BB.BoggleGame.FormatWord(System.String)">
+            <summary>
+            Encodes any spaces that the player put in a word guess.
+            Turns all '%' into '%%' then any spaces into '%s'
+            </summary>
+            <param name="word"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BB.BoggleGame.StopAcceptingInput">
+            <summary>
+            Sets the player connections to refuse any further messages from the players and
+            sets the gameOverNotification which declares that the time is up (game is over).
+            </summary>
+        </member>
+        <member name="M:BB.BoggleGame.PlayerHasDisconnected(BB.PlayerConnection)">
+            <summary>
+            Method that is called when a player disconnects.
+            </summary>
+            <param name="player">The player that disconnected</param>
+        </member>
+        <member name="M:BB.BoggleGame.receivedFromPlayer(BB.MessageReceivedFrom)">
+            <summary>
+            Function called when the client sends a message while in game.
+            </summary>
+            <param name="messageInfo">Information associated with the message received.</param>
+        </member>
+        <member name="M:BB.BoggleGame.BroadCastToBoth(System.String)">
+            <summary>
+            Sends a message to the two players in the game
+            </summary>
+            <param name="s">The message to be sent</param>
+        </member>
+        <member name="M:BB.BoggleGame.ScoreBroadcast">
+            <summary>
+            Sends the score to each player 
+            </summary>
+        </member>
+        <member name="F:BB.PlayConnectionManager.gameTime">
+            <summary>
+            The amount of time in seconds that each game runs for.
+            </summary>
+        </member>
+        <member name="F:BB.PlayConnectionManager.customConfig">
+            <summary>
+            The 16 character string describing a custom board to be used in all games or null for random boards each game.
+            </summary>
+        </member>
+        <member name="F:BB.PlayConnectionManager.dictionary">
+            <summary>
+            The loaded dictionary of valid words.
+            </summary>
+        </member>
+        <member name="F:BB.PlayConnectionManager.dbManager">
+            <summary>
+            Holds a reference to the database manager used by the server.
+            </summary>
+        </member>
+        <member name="F:BB.PlayConnectionManager.onDeck">
+            <summary>
+            holds the player that's waiting for a partner
+            </summary>
+        </member>
+        <member name="F:BB.PlayConnectionManager.queueLock">
+            <summary>
+            Locks the "Queue" of people who are ready to play.
+            </summary>
+        </member>
+        <member name="M:BB.PlayConnectionManager.#ctor(System.Int32,System.Collections.Generic.HashSet{System.String},System.String,BB.BoggleDatabaseManager)">
+            <summary>
+            Initializes the ConnectionManager.
+            </summary>
+            <param name="gameTime">Game time in seconds that each game runs for.</param>
+            <param name="_dictionary">The loaded dictionary.</param>
+            <param name="customConfig">The 16 character string describing a custom board to be used in all games or null for random boards each game.</param>
+            <param name="dbManager">The database manager used to record and read from a database.</param>
+        </member>
+        <member name="M:BB.PlayConnectionManager.AddConnection(System.Net.Sockets.Socket)">
+            <summary>
+            Begins the process of adding the connection to a boggle game.
+            </summary>
+            <param name="sock">The connected client that wants to play boggle.</param>
+        </member>
+        <member name="M:BB.PlayConnectionManager.gettingNameFromClient(BB.MessageReceivedFrom)">
+            <summary>
+            When we receive a message from the client, see if it gave us their name, otherwise ignore their cries for help
+            </summary>
+            <param name="messageReceivedFrom">Contains all the neccessary information about the message received (who, what, or why not) </param>
+        </member>
+        <member name="M:BB.PlayConnectionManager.dcWaitingForPartner(BB.PlayerConnection)">
+            <summary>
+            Still has the PlayerConnection's GagLock on. 
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:BB.PlayConnectionManager.AddPlayerToQueue(System.Object)">
+            <summary>
+            Puts player in a queue to pair them up and put them in a game.
+            </summary>
+            <param name="playerConnection">Is GagLocked until this method finishes.</param>
+        </member>
+        <member name="M:BB.PlayConnectionManager.startAGame(System.Object)">
+            <summary>
+            Runs a boggle game within the thread that calls this method
+            </summary>
+            <param name="theTwoPlayers"></param>
+        </member>
+        <member name="T:BB.PlayConnectionManager.twoPlayers">
+            <summary>
+            Simply holds a reference to player1 and player2
+            to be passed as a single parameter.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleDatabaseManager.connection">
+            <summary>
+            The string that contains the server, database name, uid, and 
+            password necessary to connect to the database we are to use.
+            </summary>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.#ctor(System.String)">
+            <summary>
+            Sets up the Boggle Database Manager.
+            </summary>
+            <param name="dbConnectionString">The string that contains the server, database name, uid, and password necessary to connect to the database we are to use.</param>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.recordGameResults(System.String,System.String,System.String,System.Int32,System.Int32,System.Int32,System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Records the results of a boggle game into the database.
+            </summary>
+            <param name="nameP1">The name of Player 1</param>
+            <param name="nameP2">the name of Player 2</param>
+            <param name="theBoggleBoardUsed">The 16-character string of the boggle board that was used.</param>
+            <param name="gameTime">The length of the game in seconds.</param>
+            <param name="p1Score">Player 1's Score at the end of the game</param>
+            <param name="p2Score">Player 2's Score at the end of the game</param>
+            <param name="p1LegalWords">Legal words played by Player 1</param>
+            <param name="p2LegalWords">Legal words played by Player 2</param>
+            <param name="validWordsPlayedByBothPlayers">Legal Words played by both players</param>
+            <param name="p1IllegalWords">Illegal words played by Player 1</param>
+            <param name="p2IllegalWords">Illegal words played by Player 2</param>
+            <returns></returns>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.WordInsert(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            
+            </summary>
+            <param name="Player1Name"></param>
+            <param name="Player2Name"></param>
+            <param name="p1LegalWords"></param>
+            <param name="p2LegalWords"></param>
+            <param name="validWordsPlayedByBothPlayers"></param>
+            <param name="p1IllegalWords"></param>
+            <param name="p2IllegalWords"></param>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.GetGameID(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="PlayerID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.PlayerInfoInsert(System.String,System.String)">
+            <summary>
+            Method that creates the string to be inserted for player names.
+            </summary>
+            <param name="nameP1"></param>
+            <param name="nameP2"></param>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.GetPlayerID(System.String)">
+            <summary>
+            Method to get the Player ID for each player
+            </summary>
+            <param name="playerName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.GameOutcomeInsert(System.String,System.String,System.String,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="player1Name"></param>
+            <param name="player2Name"></param>
+            <param name="boardConfig"></param>
+            <param name="gameTime"></param>
+            <param name="p1Score"></param>
+            <param name="p2Score"></param>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.Insert(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="input"></param>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.getPlayersStatTable(System.Collections.Generic.List{System.String}@,System.Collections.Generic.List{System.Int32}@,System.Collections.Generic.List{System.Int32}@,System.Collections.Generic.List{System.Int32}@)">
+            <summary>
+            Populates the required lists from the database.
+            </summary>
+            <param name="playerName"></param>
+            <param name="numGames_Won"></param>
+            <param name="numGames_Lost"></param>
+            <param name="numGames_Tied"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.GamesLost(System.Int32)">
+            <summary>
+            Gets the number of games lost per ID
+            </summary>
+            <param name="ID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.GamesTied(System.Int32)">
+            <summary>
+            Gets the number of games tied per ID
+            </summary>
+            <param name="ID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.GamesWon(System.Int32)">
+            <summary>
+            Gets the number of games won per ID
+            </summary>
+            <param name="ID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.getGamesStatTable(System.String,System.Collections.Generic.List{System.Int32}@,System.Collections.Generic.List{System.String}@,System.Collections.Generic.List{System.String}@,System.Collections.Generic.List{System.Int32}@,System.Collections.Generic.List{System.Int32}@)">
+            <summary>
+            Populates the required lists from the database.
+            </summary>
+            <param name="playerName">Name of the player who we want to get statistics on.</param>
+            <param name="GameID"></param>
+            <param name="DateTime"></param>
+            <param name="OpponentsName"></param>
+            <param name="PlayersScore"></param>
+            <param name="OpponentsScore"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.getGameInfo(System.String,System.String@,System.String@,System.Int32@,System.Int32@,System.String@,System.String@,System.Int32@,System.Collections.Generic.List{System.String}@,System.Collections.Generic.List{System.String}@,System.Collections.Generic.List{System.String}@,System.Collections.Generic.List{System.String}@,System.Collections.Generic.List{System.String}@)">
+            <summary>
+            Populates the required lists from the database.
+            </summary>
+            <param name="GameID">The ID of the game we wish to view data for.</param>
+            <param name="p1Name"></param>
+            <param name="p2Name"></param>
+            <param name="p1Score"></param>
+            <param name="p2Score"></param>
+            <param name="dateTime"></param>
+            <param name="boggleBoard"></param>
+            <param name="timeLimit"></param>
+            <param name="p1Legal"></param>
+            <param name="p2Legal"></param>
+            <param name="inCommon"></param>
+            <param name="p1Ilegal"></param>
+            <param name="p2Ilegal"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.GetDateTime(System.String)">
+            <summary>
+            gets the date from the gameresults table
+            </summary>
+            <param name="GameID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.GetPlayer2Score(System.String)">
+            <summary>
+            Gets player 2 score
+            
+            </summary>
+            <param name="GameID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.GetPlayer1Score(System.String)">
+            <summary>
+            get player 1 score
+            </summary>
+            <param name="GameID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.getPlayer1ID(System.String)">
+            <summary>
+            get player 1 ID then name
+            
+            </summary>
+            <param name="GameID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.GetPlayerName(System.Int32)">
+            <summary>
+            gets the player name using the player ID
+            </summary>
+            <param name="PID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BB.BoggleDatabaseManager.getPlayer2ID(System.String)">
+            <summary>
+            Gets the player Name using the ID
+            </summary>
+            <param name="GameID"></param>
+            <returns></returns>
+        </member>
+        <member name="T:BB.PlayerConnection">
+            <summary>
+            A PlayerConnection is created for each client that attempts to connect to the server. It will handle communications between server and client
+            </summary>
+        </member>
+        <member name="F:BB.PlayerConnection.nameOfPlayer">
+            <summary>
+            Holds the name of the player on this connection.
+            </summary>
+        </member>
+        <member name="F:BB.PlayerConnection._playerIsConnected">
+            <summary>
+            Only to be used by playerIsConnected
+            </summary>
+        </member>
+        <member name="F:BB.PlayerConnection.GagLock">
+            <summary>
+            As long as this object is locked, PlayerConnection will not process any more received messages.
+            </summary>
+        </member>
+        <member name="F:BB.PlayerConnection.sock">
+            <summary>
+            The underlying socket, a connection specific to each client
+            </summary>
+        </member>
+        <member name="F:BB.PlayerConnection.ss">
+            <summary>
+            Socket that sends and receives strings from the client
+            </summary>
+        </member>
+        <member name="F:BB.PlayerConnection.directOutputTo">
+            <summary>
+            This delegate directs the incoming message to the appropriate place for processing
+            The PlayerConnection cannot process any more incoming messages (but can received them) until this function has finished
+            </summary>
+        </member>
+        <member name="F:BB.PlayerConnection.WhenPlayerDisconnects">
+            <summary>
+            The function that is called when this player disconnects.
+            </summary>
+        </member>
+        <member name="F:BB.PlayerConnection.LegalList">
+            <summary>
+            A list of the valid words that the player has played.
+            </summary>
+        </member>
+        <member name="F:BB.PlayerConnection.IllegalList">
+            <summary>
+            List of illegal words that the player has played.
+            </summary>
+        </member>
+        <member name="F:BB.PlayerConnection.score">
+            <summary>
+            The score of this player in the current boggle game.
+            </summary>
+        </member>
+        <member name="M:BB.PlayerConnection.#ctor(System.Net.Sockets.Socket,System.Action{BB.PlayerConnection},System.Action{BB.MessageReceivedFrom})">
+            <summary>
+            Initializes and begins recieving messages on the underlying socket.
+            </summary>
+            <param name="sock">Socket that sends and receives strings from the client</param>
+            <param name="callback">Function that is called when a message is received</param>
+            <param name="whenPlayerDisconnects">Event called when a player disconnects</param>
+        </member>
+        <member name="M:BB.PlayerConnection.setDirectOutputTo(System.Action{BB.PlayerConnection},System.Action{BB.MessageReceivedFrom})">
+            <summary>
+            Changes what the PlayerConnection does with the stuff it receives from the player/client.
+            </summary>
+            <param name="callback">Directs the incoming message to the appropriate place for processing</param>
+            <param name="_whenThePlayerDisconnects">Event called when a player disconnects</param>
+        </member>
+        <member name="M:BB.PlayerConnection.receivedSomething(System.String,System.Exception,System.Object)">
+            <summary>
+            Function called when we receive a message
+            </summary>
+            <param name="s">The message received.</param>
+            <param name="e">Arbitrary exception object that may be sent by the string socket</param>
+            <param name="payload">Identifying object sent by the string socket</param>
+        </member>
+        <member name="M:BB.PlayerConnection.SendIgnoreMessage(System.String)">
+            <summary>
+            Sends message informing the client that its message has been ignored
+            </summary>
+            <param name="s">The command being ignored</param>
+        </member>
+        <member name="M:BB.PlayerConnection.SendMessage(System.String)">
+            <summary>
+            Sends a message back to the client
+            </summary>
+            <param name="p">Sends whatever message back to the client</param>
+        </member>
+        <member name="F:BB.PlayerConnection.consoleLock">
+            <summary>
+            Used to make any Console.Write* calls threadsafe
+            </summary>
+        </member>
+        <member name="M:BB.PlayerConnection.sent(System.Exception,System.Object)">
+            <summary>
+            This function is called when a message has been sent.
+            </summary>
+            <param name="e">The exception if the message failed to send.</param>
+            <param name="payload">The identifying object to the message sent.</param>
+        </member>
+        <member name="M:BB.PlayerConnection.CloseSocketConnection">
+            <summary>
+            Makes sure the connection to the player is closed.
+            </summary>
+        </member>
+        <member name="P:BB.PlayerConnection.playerLeftWhileInQueue">
+            <summary>
+            This is pretty much only used by the ConnectionManager when adding a second player to the queue
+            to see if this player (who was the one on deck) disconnected while waiting.
+            Thread safe. Set this to false if you've received word that the player has disconnected while in the queue.
+            </summary>
+        </member>
+        <member name="T:BB.MessageReceivedFrom">
+            <summary>
+            Only used when an actual message has been received. Contains the PlayerConnection and Message
+            </summary>
+        </member>
+        <member name="F:BB.MessageReceivedFrom.playerconnection">
+            <summary>
+            The PlayerConnection that received the message.
+            </summary>
+        </member>
+        <member name="F:BB.MessageReceivedFrom.message">
+            <summary>
+            The message received.
+            </summary>
+        </member>
+        <member name="M:BB.MessageReceivedFrom.#ctor(BB.PlayerConnection,System.String)">
+            <summary>
+            Stores the following parameters
+            </summary>
+            <param name="playerConnection">The PlayerConnection that received the message.</param>
+            <param name="s">The message received.</param>
+        </member>
+        <member name="T:BB.Program">
+            <summary>
+            Console view of the Boggle server
+            </summary>
+        </member>
+        <member name="M:BB.Program.Main(System.String[])">
+            <summary>
+            Parameters
+            arg[0] = time
+            arg[1] = dictionary file path
+            arg[2] = custom board configuration (optional)
+            </summary>
+            <param name="args">See Method description.</param>
+        </member>
+        <member name="T:BB.BoggleServer">
+            <summary>
+            Manages a Boggle server where players can connect and play against each other.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleServer.gameTime">
+            <summary>
+            The amount of time each game runs for.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleServer.customConfig">
+            <summary>
+            The (optional) board configuration used in all games.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleServer.cManager">
+            <summary>
+            Manages all the clients that connect to the server to play boggle.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleServer.wpManager">
+            <summary>
+            Manages the Web-Page side of the server.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleServer.dbManager">
+            <summary>
+            Manages all the database functionality.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleServer.dictionary">
+            <summary>
+            Set that contains the loaded words in the dictionary file, cAse sensitIve
+            </summary>
+        </member>
+        <member name="F:BB.BoggleServer.playPort">
+            <summary>
+            The port that boggle games run on.
+            </summary>
+        </member>
+        <member name="M:BB.BoggleServer.#ctor(System.Int32,System.String,System.String,System.Int32)">
+            <summary>
+            Starts a Boggle server with the given options.
+            </summary>
+            <param name="gameTime">The amount of time each game runs for.</param>
+            <param name="dictPath">The path to the dictionary used in all boggle games</param>
+            <param name="customConfig">The (optional) board configuration used in all games.</param>
+            <param name="port">The port on which this server accepts connections</param>
+        </member>
+        <member name="M:BB.BoggleServer.LoadDictionary(System.String)">
+            <summary>
+            Loads the dictionary into memory for use in the games.
+            </summary>
+            <param name="dictPath">File path to the dictionary</param>
+        </member>
+        <member name="M:BB.BoggleServer.RunServer">
+            <summary>
+            Starts the server listening for game and webpage requests.
+            This method is Non-blocking.
+            </summary>
+        </member>
+        <member name="M:BB.BoggleServer.listenForPlayRequests">
+            <summary>
+            Listens for requests for playing boggle.
+            </summary>
+        </member>
+        <member name="M:BB.BoggleServer.CallConnectionManager(System.Object)">
+            <summary>
+            Adds the given socket to the connection manager.
+            </summary>
+            <param name="socket">The socket connected to a client that wants to play.</param>
+        </member>
+        <member name="F:BB.BoggleWebPageManager.ROOT_WEB_FOLDER_NAME">
+            <summary>
+            The name of the root web directory
+            </summary>
+        </member>
+        <member name="F:BB.BoggleWebPageManager.ERROR_WEBPAGE">
+            <summary>
+            The default webpage to load if server can't find requested one.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleWebPageManager.defaultWriteError">
+            <summary>
+            The default substitution for special tags that failed to load
+            </summary>
+        </member>
+        <member name="F:BB.BoggleWebPageManager.SpecialWebPageReplacementFunctions">
+            <summary>
+            Key: A special string that when found in an html page, gets replaced by whatever
+            the delegate in the corresponding Value returns. The Value delegate is expected to return a 
+            string containing a multidimentional javascript array with all the "requested" information.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleWebPageManager.rootWebDirectoryPath">
+            <summary>
+            The relative path and name (and '\') of the root web directory.
+            </summary>
+        </member>
+        <member name="F:BB.BoggleWebPageManager.dbManager">
+            <summary>
+            The Database to read data from.
+            </summary>
+        </member>
+        <member name="M:BB.BoggleWebPageManager.#ctor(BB.BoggleDatabaseManager)">
+            <summary>
+            This constructor does NOT start the server listening for requests.
+            </summary>
+            <param name="dbManager">The Database Manager to use when constructing web pages</param>
+        </member>
+        <member name="M:BB.BoggleWebPageManager.findRootDirectory">
+            <summary>
+            Gets the path of the root web directory if it exists.
+            </summary>
+            <returns>The relative path of the root web directory (including the "RootWebFolderName\" at the end) or null if it couldn't find it.</returns>
+        </member>
+        <member name="M:BB.BoggleWebPageManager.startListener(System.Int32)">
+            <summary>
+            Stopping method that listenes on the given port for html requests.
+            </summary>
+            <param name="port">The port to listen on.</param>
+        </member>
+        <member name="M:BB.BoggleWebPageManager.receivedSomething(System.String,System.Exception,System.Object)">
+            <summary>
+            Called when the connection sends something.
+            </summary>
+            <param name="message">The string sent to us. Null if there was an error receiving or they disconnected.</param>
+            <param name="theException">The exception, if any, that occured while waiting for a message. Null if we received a message or they disconnected.</param>
+            <param name="theStringSocket">The connection that the message or error was recieved from.</param>
+        </member>
+        <member name="M:BB.BoggleWebPageManager.handleURL_Request(System.String,BB.BoggleWebPageManager.SocketFacilitator)">
+            <summary>
+            Attempts to process and respond to the given URL request with a webpage.
+            </summary>
+            <param name="urlRequest">The "GET" url request.Comes in the form of "GET /games?player=Joe HTTP/1.1"</param>
+            <param name="client">The client that sent the request and is (supposedly) waiting for a response.</param>
+        </member>
+        <member name="M:BB.BoggleWebPageManager.replyWithWebPage(BB.BoggleWebPageManager.SocketFacilitator,System.String@)">
+            <summary>
+            Sends the given webpage back to the client.
+            </summary>
+            <param name="theWebPage">The complete webpage to send back to the client.</param>
+            <param name="client">The "client" that is (supposedly) waiting for a webpage response.</param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:BB.BoggleWebPageManager.parseURL_Request(System.String,System.String@,System.Collections.Generic.Dictionary{System.String,System.String}@)" -->
+        <member name="M:BB.BoggleWebPageManager.generateHTML(System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.String@)">
+            <summary>
+            Returns a string representing the html page with the given parameters.
+            If the page is null, empty, or doesn't exist then this sends back the default web page code.
+            </summary>
+            <param name="pageName">The HTML page to load</param>
+            <param name="parameters">The parameters for loading the HTML page</param>
+            <param name="theWebPageSourceCode">A reference to the string holding the web page source code.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BB.BoggleWebPageManager.loadFromFile(System.String,System.String@)">
+            <summary>
+            Loads the given file into the given string.
+            </summary>
+            <param name="pageName">The file to load. Name must be exact.</param>
+            <param name="theWebPageSourceCode">The string to load the file into.</param>
+        </member>
+        <member name="M:BB.BoggleWebPageManager.editSpecialTags(System.String@,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Finds and replaces the "special tags" in the html code with their corresponding
+            content according to the parameters given.
+            </summary>
+            <param name="webPageSourceCode"></param>
+            <param name="parameters"></param>
+        </member>
+        <member name="M:BB.BoggleWebPageManager.PlayersStatTable(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Used to define what a special tag represents.
+            </summary>
+            <param name="parameters">The parameters of the page request.</param>
+            <returns>A multidimentional javascript array with all the "requested" information.</returns>
+        </member>
+        <member name="M:BB.BoggleWebPageManager._addPlayerStatRow(System.Text.StringBuilder,System.String,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Helper method for PlayersStatTable. Adds each parameter to the output in proper format.
+            </summary>
+            <param name="output"></param>
+            <param name="playerName"></param>
+            <param name="gamesWon"></param>
+            <param name="gamesLost"></param>
+            <param name="gamesTied"></param>
+        </member>
+        <member name="M:BB.BoggleWebPageManager.GamesStatTable(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Used to define what a special tag represents.
+            </summary>
+            <param name="parameters">The parameters of the page request.</param>
+            <returns>A multidimentional javascript array with all the "requested" information.</returns>
+        </member>
+        <member name="M:BB.BoggleWebPageManager._addGameStatTableRow(System.Text.StringBuilder,System.Int32,System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Helper method to simply add a formatted row to the output
+            </summary>
+            <param name="output"></param>
+            <param name="GameID"></param>
+            <param name="DateTime"></param>
+            <param name="OpponentsName"></param>
+            <param name="PlayersScore"></param>
+            <param name="OpponentsScore"></param>
+        </member>
+        <member name="M:BB.BoggleWebPageManager.GameInfo(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Used to define what a special tag represents.
+            </summary>
+            <param name="parameters">The parameters of the page request.</param>
+            <returns>A multidimentional javascript array with all the "requested" information.</returns>
+        </member>
+        <member name="T:BB.BoggleWebPageManager.SocketFacilitator">
+            <summary>
+            Holds the underlying socket and the String Socket that wraps it.
+            This class is necessary to maintain the ability to close the underlying socket.
+            </summary>
+        </member>
+        <member name="M:BB.BoggleWebPageManager.SocketFacilitator.close">
+            <summary>
+            Closes the underlying connection
+            </summary>
+        </member>
+    </members>
+</doc>

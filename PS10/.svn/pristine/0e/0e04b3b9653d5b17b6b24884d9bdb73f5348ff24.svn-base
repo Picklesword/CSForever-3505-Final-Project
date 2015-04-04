@@ -1,0 +1,67 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CustomNetworking;
+using System.Threading;
+
+namespace BB
+{
+    [ExcludeFromCodeCoverage()] //We will test the console by hand
+    public class Program
+    {
+       public static void Main(string[] args)
+       {
+
+            //arg[0] = time
+            //arg[1] = dictionary file path
+            //arg[2] = custom board configuration
+
+            //The starting time limit for each game
+            int gameTime;
+            //path to the dictionary that is used for each game to verify words
+            string dictPath;
+            //Optional custom board layout used in every game
+            string customConfig = null;
+
+            //If there are a valid number of arguments
+            if (args.Length.Equals(2) || args.Length.Equals(3))
+            {
+                //Try to extract the game time
+                if (Int32.TryParse(args[0], out gameTime) && gameTime>0)
+                {
+                    //grab the path the the dictionary
+                    dictPath = args[1];
+                    //Check if they gave us a custom board to use
+                    if (args.Length.Equals(3))
+                    {
+                        customConfig = args[2];
+                    }
+                    //Start a boggle server
+                    BoggleServer server = new BoggleServer(gameTime, dictPath, customConfig, 2000);
+                    server.RunServer();
+
+                    Console.WriteLine("Enter \"Stop\" to stop server");
+
+                    //Allow the console to shutdown 
+                    string input = "";
+                    while (input!=null && input.ToUpper() != "STOP")
+                    {
+                        input = Console.ReadLine();
+                    }
+                }
+                else //if we could not parse the first argument into a number
+                {
+                    Console.WriteLine("Invalid Time Argument");
+                }
+            }
+            else //if they did not supply 2 or 3 arguments
+                Console.WriteLine("Invaild arguments");
+           
+            Console.WriteLine("Server Closed.");
+            Console.ReadKey();
+        }
+    }
+}

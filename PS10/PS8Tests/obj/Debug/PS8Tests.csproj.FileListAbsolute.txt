@@ -1,0 +1,16 @@
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8Tests\bin\Debug\RootWebDirectory\DataDisplay.js
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8Tests\bin\Debug\RootWebDirectory\Error.html
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8Tests\bin\Debug\RootWebDirectory\game.html
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8Tests\bin\Debug\RootWebDirectory\games.html
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8Tests\bin\Debug\RootWebDirectory\players.html
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8Tests\bin\Debug\PS8Tests.dll
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8Tests\bin\Debug\PS8Tests.pdb
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8Tests\bin\Debug\PS8.exe
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8Tests\bin\Debug\StringSocket.dll
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8Tests\bin\Debug\PS8.pdb
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8Tests\bin\Debug\PS8.xml
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8Tests\bin\Debug\StringSocket.xml
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8Tests\obj\Debug\PS8Tests.csprojResolveAssemblyReference.cache
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8Tests\obj\Debug\PS8Tests.dll
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8Tests\obj\Debug\PS8Tests.pdb
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8Tests\bin\Debug\MySql.Data.dll

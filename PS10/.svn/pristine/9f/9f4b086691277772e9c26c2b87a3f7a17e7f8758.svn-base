@@ -1,0 +1,259 @@
+﻿using MySql.Data.MySqlClient;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BB
+{
+    class BoggleDatabaseManager
+    {
+        /// <summary>
+        /// The string that contains the server, database name, uid, and 
+        /// password necessary to connect to the database we are to use.
+        /// </summary>
+        //private string connectionString;
+
+        //need to change to jasteck instead of syoung for final revision
+        private MySqlConnection connection;
+        //private const string connectionString = "SERVER=atr.eng.utah.edu;DATABASE=cs3500_syoung;UID=library;PASSWORD=071985431";
+        private string connectionString;
+        /// <summary>
+        /// Sets up the Boggle Database Manager.
+        /// </summary>
+        /// <param name="dbConnectionString">The string that contains the server, database name, uid, and password necessary to connect to the database we are to use.</param>
+        public BoggleDatabaseManager(string dbConnectionString)
+        {
+            this.connectionString = dbConnectionString;
+            Initialize();
+
+            
+        }
+
+
+        private void Initialize()
+        {
+            //server = "localhost";
+            //database = "connectcsharptomysql";
+            //uid = "username";
+            //password = "password";
+
+
+            connection = new MySqlConnection(connectionString);
+        }
+
+        /// <summary>
+        /// Records the results of a boggle game into the database.
+        /// </summary>
+        /// <param name="nameP1">The name of Player 1</param>
+        /// <param name="nameP2">the name of Player 2</param>
+        /// <param name="theBoggleBoardUsed">The 16-character string of the boggle board that was used.</param>
+        /// <param name="gameTime">The length of the game in seconds.</param>
+        /// <param name="p1Score">Player 1's Score at the end of the game</param>
+        /// <param name="p2Score">Player 2's Score at the end of the game</param>
+        /// <param name="p1LegalWords">Legal words played by Player 1</param>
+        /// <param name="p2LegalWords">Legal words played by Player 2</param>
+        /// <param name="validWordsPlayedByBothPlayers">Legal Words played by both players</param>
+        /// <param name="p1IllegalWords">Illegal words played by Player 1</param>
+        /// <param name="p2IllegalWords">Illegal words played by Player 2</param>
+        /// <returns></returns>
+        internal object recordGameResults(string nameP1, string nameP2, string theBoggleBoardUsed, int gameTime, int p1Score, int p2Score, IEnumerable<string> p1LegalWords, IEnumerable<string> p2LegalWords, IEnumerable<string> validWordsPlayedByBothPlayers, IEnumerable<string> p1IllegalWords, IEnumerable<string> p2IllegalWords)
+        {
+            // TODO:
+            return null;
+
+
+        }
+
+        /// <summary>
+        /// Method that creates the string to be inserted for player names.
+        /// </summary>
+        /// <param name="nameP1"></param>
+        /// <param name="nameP2"></param>
+        public void PlayerInfoInsert(string nameP1, String nameP2)
+        {
+            string input = "";
+            for(int i = 0; i < 2; i++)
+            {
+                switch(i)
+                {
+                    case 0:
+                        input = "PlayerInfo (player_name) VALUES('" + nameP1 + "')"; 
+                        Insert(input);
+                        break;
+                    case 1:
+                        input = "PlayerInfo (player_name) VALUES('" +  nameP2 + "')"; 
+                        Insert(input);
+                        break;
+                         
+                }
+            }
+        }
+
+
+        public int GetPlayerID(string playerName)
+        {
+            string PlayerID = "SELECT ID from PlayerInfo WHERE PlayerID='@pname';";
+            int ID = 0;
+            if (this.OpenConnection() == true)
+            {
+                using (MySqlCommand cmd = new MySqlCommand(PlayerID, connection))
+                {
+                    cmd.Parameters.AddWithValue("@pname", playerName);
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while(reader.Read())
+                        {
+                            ID = (int)reader["ID"];
+                        }
+
+
+                    }
+                }
+
+            }
+            CloseConnection();
+            return ID;
+            
+            
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="boardConfig"></param>
+        /// <param name="gameTime"></param>
+        /// <param name="p1Score"></param>
+        /// <param name="p2Score"></param>
+        public void GameOutcomeInsert(string player1Name, string player2Name, string boardConfig, string gameTime, int p1Score, int p2Score)
+        {
+            string input;
+            int player1ID, player2ID;
+            player1ID = GetPlayerID(player1Name);
+            player2ID = GetPlayerID(player2Name);
+            string dateTime = System.DateTime.Now.ToString();
+
+            input = "GameOutcome (player1ID, player2ID, date_time, board_config, player1Score, player2Score) VALUEs('" + player1ID + "', '" + player2ID + "', '" + dateTime + "', '" +
+                boardConfig + "', '" + p1Score + "', '" + p2Score + "')";
+        }
+
+        public void Insert(string input)
+        {
+            string query = "INSERT INTO " + input;
+            //string query = "INSERT INTO tableinfo (name, age) VALUES('John Smith', '33')";
+
+            //open connection
+            if (this.OpenConnection() == true)
+            {
+                //create command and assign the query and connection from the constructor
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                //cmd.Parameters.AddWithValue(@"player_name", input);
+
+                //Execute command for insertion
+                cmd.ExecuteNonQuery();
+
+                //close connection
+                this.CloseConnection();
+            }
+        }
+
+        //open connection to database
+        private bool OpenConnection()
+        {
+            try
+            {
+                connection.Open();
+                return true;
+            }
+            catch (MySqlException ex)
+            {
+                //When handling errors, you can your application's response based 
+                //on the error number.
+                //The two most common error numbers when connecting are as follows:
+                //0: Cannot connect to server.
+                //1045: Invalid user name and/or password.
+                switch (ex.Number)
+                {
+                    case 0:
+                        //MessageBox.Show("Cannot connect to server.  Contact administrator");
+                        break;
+
+                    case 1045:
+                        //MessageBox.Show("Invalid username/password, please try again");
+                        break;
+                }
+                return false;
+            }
+        }
+
+        //Close connection
+        private bool CloseConnection()
+        {
+            try
+            {
+                connection.Close();
+                return true;
+            }
+            catch (MySqlException ex)
+            {
+                //MessageBox.Show(ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Populates the required lists from the database.
+        /// </summary>
+        /// <param name="playerName"></param>
+        /// <param name="numGames_Won"></param>
+        /// <param name="numGames_Lost"></param>
+        /// <param name="numGames_Tied"></param>
+        /// <returns></returns>
+        internal bool getPlayersStatTable(out List<string> playerName, out List<int> numGames_Won, out List<int> numGames_Lost, out List<int> numGames_Tied)
+        {
+            // TODO:
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Populates the required lists from the database.
+        /// </summary>
+        /// <param name="playerName">Name of the player who we want to get statistics on.</param>
+        /// <param name="GameID"></param>
+        /// <param name="DateTime"></param>
+        /// <param name="OpponentsName"></param>
+        /// <param name="PlayersScore"></param>
+        /// <param name="OpponentsScore"></param>
+        /// <returns></returns>
+        internal bool getGamesStatTable(string playerName, out List<int> GameID, out List<string> DateTime, out List<string> OpponentsName, out List<int> PlayersScore, out List<int> OpponentsScore)
+        {
+            // TODO:
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Populates the required lists from the database.
+        /// </summary>
+        /// <param name="GameID">The ID of the game we wish to view data for.</param>
+        /// <param name="p1Name"></param>
+        /// <param name="p2Name"></param>
+        /// <param name="p1Score"></param>
+        /// <param name="p2Score"></param>
+        /// <param name="dateTime"></param>
+        /// <param name="boggleBoard"></param>
+        /// <param name="timeLimit"></param>
+        /// <param name="p1Legal"></param>
+        /// <param name="p2Legal"></param>
+        /// <param name="inCommon"></param>
+        /// <param name="p1Ilegal"></param>
+        /// <param name="p2Ilegal"></param>
+        /// <returns></returns>
+        internal bool getGameInfo(string GameID, out List<string> p1Name, out List<string> p2Name, out List<int> p1Score, out List<int> p2Score, out List<string> dateTime, out List<string> boggleBoard, out List<int> timeLimit, out List<string> p1Legal, out List<string> p2Legal, out List<string> inCommon, out List<string> p1Ilegal, out List<string> p2Ilegal)
+        {
+            // TODO:
+            throw new NotImplementedException();
+        }
+    }
+}

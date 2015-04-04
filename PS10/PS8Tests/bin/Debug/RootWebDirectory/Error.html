@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Error Processing Request</title>
+</head>
+<body style="height: 368px">
+    <br />
+    <center><h1> 404 - Page Not Found </h1></center>
+
+    
+    <p style="width: 356px; margin-top: 35px; height: 0px;"> Could not find page. Please use one of the options below. </p>
+    
+    <p style="width: 173px; margin-top: 35px; height: 0px;"> All Player Records:</p>
+    
+
+    <form name="input" action="players" method="get" style="width: 291px; height: 0px; margin-left: 1px; margin-top: 5px">
+    <input type="submit" value="Submit"/>
+    </form>
+
+    <p style="width: 173px; margin-top: 35px; height: 0px;"> Get Player Game Stats:</p>
+    
+
+    <form name="input" action="games" method="get" style="width: 291px; height: 0px; margin-left: 1px; margin-top: 5px">
+    Player Name:&nbsp; <input type="text" name="player" style="height: 17px; width: 96px;"/>
+    <input type="submit" value="Submit"/>
+    </form>
+
+    
+    
+    <p style="width: 173px; height: 0px; margin-top: 45px;"> Get Game Stats:</p>
+
+    <form name="input" action="game" method="get" style="width: 291px; height: 0px; margin-left: 1px; margin-top: 5px">
+    Game ID:&nbsp; <input type="text" name="id" style="height: 17px; width: 45px;"/>
+    <input type="submit" value="Submit"/>
+    </form>
+        
+</body>
+</html>

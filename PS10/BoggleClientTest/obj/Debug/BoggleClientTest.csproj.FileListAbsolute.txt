@@ -1,0 +1,5 @@
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\BoggleClientTest\bin\Debug\BoggleClientTest.dll
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\BoggleClientTest\bin\Debug\BoggleClientTest.pdb
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\BoggleClientTest\obj\Debug\BoggleClientTest.csprojResolveAssemblyReference.cache
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\BoggleClientTest\obj\Debug\BoggleClientTest.dll
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\BoggleClientTest\obj\Debug\BoggleClientTest.pdb

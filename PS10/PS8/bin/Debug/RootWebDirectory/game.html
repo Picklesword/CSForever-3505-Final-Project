@@ -1,0 +1,281 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>List of all game records</title>
+    <script>
+        function CreateTableCode(result, headers) {
+            var str = '<table border=1>';
+            if (headers != null && headers.length==result[0].length) {
+                str += '<tr>';
+                for (var i = 0; i < headers.length; i++) {
+                    str += '<th>' + headers[i] + '</th>';
+                }
+                str += '</tr>';
+            }
+            for (var i = 0; i < result.length; i++) {
+                str += '<tr>';
+                for (var j = 0; j < result[i].length; j++) {
+                    str += '<td class="ui-helper-center">' + result[i][j] + '</td>';
+                }
+                str += '</tr>';
+            }
+            str += '</table>';
+            return str;
+        }
+
+    </script>
+
+    <style type="text/css">
+        .ui-helper-center
+        {
+            text-align: center;
+        }
+        #p1Name
+        {
+            width: 61px;
+            right: 1093px;
+            top: 138px;
+        }
+        #p2Name
+        {
+            width: 160px;
+            margin-left: 202px;
+            right: 811px;
+            top: 165px;
+        }
+        #p1Score
+        {
+            width: 40px;
+            margin-left: 202px;
+            right: 1048px;
+            top: 138px;
+        }
+        #p2Score
+        {
+            width: 29px;
+            margin-left: 202px;
+            right: 872px;
+            top: 138px;
+            height: 19px;
+        }
+        #dateTime
+        {
+            width: 120px;
+            margin-left: 202px;
+            right: 842px;
+            top: 26px;
+            height: 19px;
+        }
+        #boggleBoard
+        {
+            width: 160px;
+            margin-left: 202px;
+            right: 565px;
+            top: 79px;
+            height: 126px;
+        }
+        #time
+        {
+            width: 98px;
+            margin-left: 202px;
+            right: 982px;
+            top: 64px;
+        }
+        #p1Legal
+        {
+            width: 160px;
+            margin-left: 202px;
+            right: 996px;
+            top: 279px;
+            height: 104px;
+        }
+        #p2Legal
+        {
+            width: 160px;
+            margin-left: 202px;
+            right: 804px;
+            top: 281px;
+            height: 102px;
+        }
+        #inCommon
+        {
+            width: 160px;
+            margin-left: 202px;
+            right: 610px;
+            top: 280px;
+            height: 105px;
+        }
+        #p1Illegal
+        {
+            width: 160px;
+            margin-left: 202px;
+            right: 413px;
+            top: 282px;
+            height: 101px;
+        }
+        #p2Illegal
+        {
+            width: 160px;
+            margin-left: 202px;
+            right: 223px;
+            top: 294px;
+            height: 89px;
+        }
+
+        
+        #p1NameL
+        {
+            width: 161px;
+            right: 990px;
+            top: 166px;
+        }
+        #p2NameL
+        {
+            width: 59px;
+            margin-left: 202px;
+            right: 912px;
+            top: 138px;
+        }
+        #p1ScoreL
+        {
+            width: 49px;
+            margin-left: 202px;
+            top: 136px;
+            left: -68px;
+        }
+        #p2ScoreL
+        {
+            width: 51px;
+            margin-left: 202px;
+            right: 813px;
+            top: 137px;
+            height: 19px;
+        }
+        #dateTimeL
+        {
+            width: 111px;
+            margin-left: 202px;
+            right: 966px;
+            top: 26px;
+            height: 19px;
+        }
+        #boggleBoardL
+        {
+            width: 160px;
+            margin-left: 202px;
+            right: 569px;
+            top: 48px;
+        }
+        #timeL
+        {
+            width: 78px;
+            margin-left: 202px;
+            right: 1086px;
+            top: 63px;
+            height: 23px;
+        }
+        #p1LegalL
+        {
+            width: 141px;
+            margin-left: 202px;
+            right: 1012px;
+            top: 236px;
+            height: 23px;
+        }
+        #p2LegalL
+        {
+            width: 160px;
+            margin-left: 202px;
+            right: 803px;
+            top: 237px;
+        }
+        #inCommonL
+        {
+            width: 160px;
+            margin-left: 202px;
+            right: 616px;
+            top: 238px;
+        }
+        #p1IllegalL
+        {
+            width: 160px;
+            margin-left: 202px;
+            right: 414px;
+            top: 243px;
+        }
+        #p2IllegalL
+        {
+            width: 160px;
+            margin-left: 202px;
+            right: 224px;
+            top: 246px;
+        }
+        div
+        {
+            width: 160px;
+            margin-left: 202px;
+            z-index: 10;
+            position: absolute;
+            right: 991px;
+            top: 170px;
+        }
+    </style>
+</head>
+<body>
+    Game Info:
+    <br />
+    <div id="p1Name">Player 1:</div>
+    <div id="p2Name"></div>
+    <div id="p1Score"></div>
+    <div id="p2Score"></div>
+    <div id="dateTime"></div>
+    <div id="boggleBoard"></div>
+    <div id="time"></div>
+    <div id="p1Legal"></div>
+    <div id="p2Legal"></div>
+    <div id="inCommon"></div>
+    <div id="p1Illegal"></div>
+    <div id="p2Illegal"></div>
+
+    <div id="p1NameL"></div>
+    <div id="p2NameL">Player 2:</div>
+    <div id="p1ScoreL">Points</div>
+    <div id="p2ScoreL">Points</div>
+    <div id="dateTimeL">Date And Time:</div>
+    <div id="boggleBoardL">The Boggle Board Used</div>
+    <div id="timeL">Time Limit:</div>
+    <div id="p1LegalL">Player 1 Legal Words</div>
+    <div id="p2LegalL">Player 2 Legal Words</div>
+    <div id="inCommonL">Legal Played By Both</div>
+    <div id="p1IllegalL">Player 1 Illegal Words</div>
+    <div id="p2IllegalL">Player 2 Illegal words</div>
+    <script>
+        var data = ["?GameInfo?"];
+
+        if (data.length > 0) {
+
+            document.getElementById("p1Name").innerHTML = data[0];
+            document.getElementById("p2Name").innerHTML = data[1];
+            document.getElementById("p1Score").innerHTML = data[2];
+            document.getElementById("p2Score").innerHTML = data[3];
+            document.getElementById("dateTime").innerHTML = data[4];
+
+            document.getElementById("boggleBoard").innerHTML = CreateTableCode(data[5]);
+
+            document.getElementById("time").innerHTML = data[6];
+
+            document.getElementById("p1Legal").innerHTML = CreateTableCode(data[7]);
+            document.getElementById("p2Legal").innerHTML = CreateTableCode(data[8]);
+            document.getElementById("inCommon").innerHTML = CreateTableCode(data[9]);
+            document.getElementById("p1Illegal").innerHTML = CreateTableCode(data[10]);
+            document.getElementById("p2Illegal").innerHTML = CreateTableCode(data[11]);
+
+        }
+        else
+            document.write("Sorry, No Data Available.");
+
+    </script>
+</body>
+</html>

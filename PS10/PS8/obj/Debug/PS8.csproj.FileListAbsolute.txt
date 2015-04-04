@@ -1,0 +1,30 @@
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8\bin\Debug\PS8.exe.config
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8\bin\Debug\PS8.XML
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8\bin\Debug\PS8.exe
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8\bin\Debug\PS8.pdb
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8\bin\Debug\StringSocket.dll
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8\bin\Debug\StringSocket.xml
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8\obj\Debug\PS8.csprojResolveAssemblyReference.cache
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8\obj\Debug\PS8.exe
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8\obj\Debug\PS8.pdb
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8\bin\Debug\RootWebDirectory\DataDisplay.js
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8\bin\Debug\RootWebDirectory\Error.html
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8\bin\Debug\RootWebDirectory\game.html
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8\bin\Debug\RootWebDirectory\games.html
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8\bin\Debug\RootWebDirectory\players.html
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS10\PS8\bin\Debug\MySql.Data.dll
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\PS8\bin\Debug\RootWebDirectory\DataDisplay.js
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\PS8\bin\Debug\RootWebDirectory\Error.html
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\PS8\bin\Debug\RootWebDirectory\game.html
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\PS8\bin\Debug\RootWebDirectory\games.html
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\PS8\bin\Debug\RootWebDirectory\players.html
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\PS8\bin\Debug\PS8.exe.config
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\PS8\bin\Debug\PS8.XML
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\PS8\bin\Debug\PS8.exe
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\PS8\bin\Debug\PS8.pdb
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\PS8\bin\Debug\MySql.Data.dll
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\PS8\bin\Debug\StringSocket.dll
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\PS8\bin\Debug\StringSocket.xml
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\PS8\obj\Debug\PS8.csprojResolveAssemblyReference.cache
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\PS8\obj\Debug\PS8.exe
+C:\Users\Scott\Documents\Course Code\Visual Studio 2012 projects\Projects\PS10\PS8\obj\Debug\PS8.pdb

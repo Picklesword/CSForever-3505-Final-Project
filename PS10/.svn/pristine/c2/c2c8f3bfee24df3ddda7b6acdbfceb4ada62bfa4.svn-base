@@ -1,0 +1,174 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using CustomNetworking;
+
+namespace BB
+{
+    class PlayConnectionManager
+    {
+        /// <summary>
+        /// The amount of time in seconds that each game runs for.
+        /// </summary>
+        private int gameTime;
+        /// <summary>
+        /// The 16 character string describing a custom board to be used in all games or null for random boards each game.
+        /// </summary>
+        private string customConfig;
+        /// <summary>
+        /// The loaded dictionary of valid words.
+        /// </summary>
+        private HashSet<String> dictionary;
+        /// <summary>
+        /// Holds a reference to the database manager used by the server.
+        /// </summary>
+        private BoggleDatabaseManager dbManager;
+
+        /// <summary>
+        /// holds the player that's waiting for a partner
+        /// </summary>
+        private PlayerConnection onDeck = null;
+        /// <summary>
+        /// Locks the "Queue" of people who are ready to play.
+        /// </summary>
+        public Object queueLock = new Object();
+
+        /// <summary>
+        /// Initializes the ConnectionManager.
+        /// </summary>
+        /// <param name="gameTime">Game time in seconds that each game runs for.</param>
+        /// <param name="_dictionary">The loaded dictionary.</param>
+        /// <param name="customConfig">The 16 character string describing a custom board to be used in all games or null for random boards each game.</param>
+        public PlayConnectionManager(int gameTime, HashSet<String> _dictionary, string customConfig,BoggleDatabaseManager dbManager)
+        {
+            //Save the info to be used in each game.
+            this.dictionary = _dictionary;
+            this.gameTime = gameTime;
+            this.customConfig = customConfig;
+            this.dbManager = dbManager;
+        }
+        
+
+        /// <summary>
+        /// Begins the process of adding the connection to a boggle game.
+        /// </summary>
+        /// <param name="sock">The connected client that wants to play boggle.</param>
+        public void AddConnection(Socket sock)
+        {
+            //Wraps the socket in a PlayerConnection and directs the incoming messages to verify if they sent a name
+            //No need to store the connection since the reference lives on in the receive callbacks
+            new PlayerConnection(sock,null, gettingNameFromClient);
+        }
+
+        /// <summary>
+        /// When we receive a message from the client, see if it gave us their name, otherwise ignore their cries for help
+        /// </summary>
+        /// <param name="messageReceivedFrom">Contains all the neccessary information about the message received (who, what, or why not) </param>
+        public void gettingNameFromClient(MessageReceivedFrom messageReceivedFrom)
+        {
+            //Verify that the message received is a valid command that has the name of the player
+            if (messageReceivedFrom.message.Length > 5
+                && messageReceivedFrom.message.Substring(0, 5).ToUpper().Equals("PLAY "))
+            {
+                //direct any more received commands to nowhere
+                messageReceivedFrom.playerconnection.setDirectOutputTo(dcWaitingForPartner, null);
+
+                //Store the name in the player connection.
+                messageReceivedFrom.playerconnection.nameOfPlayer = messageReceivedFrom.message.Substring(5);
+
+                //Put them in the queue to be paired up
+                AddPlayerToQueue(messageReceivedFrom.playerconnection);
+            } //Otherwise ignore the command (and tell them we're ignoring it)
+            else
+                messageReceivedFrom.playerconnection.SendIgnoreMessage(messageReceivedFrom.message);
+        }
+
+        /// <summary>
+        /// Still has the PlayerConnection's GagLock on. 
+        /// </summary>
+        /// <param name="obj"></param>
+        private void dcWaitingForPartner(PlayerConnection obj)
+        {
+            //Mark the player as no longer waiting in queue.
+            obj.playerLeftWhileInQueue = true;
+        }
+
+        /// <summary>
+        /// Puts player in a queue to pair them up and put them in a game.
+        /// </summary>
+        /// <param name="playerConnection">Is GagLocked until this method finishes.</param>
+        private void AddPlayerToQueue(object playerConnection)
+        {
+           //make sure no one else is messin around with the "queue"
+            lock (queueLock)
+            {
+                //If there is no one on deck, simply put the new player there
+                if (onDeck == null)
+                    onDeck = (PlayerConnection)playerConnection;
+                else
+                {
+                    //Make sure the onDeck player has either disconnected or not yet
+                    lock (onDeck.GagLock)
+                    {
+                        //If the person onDeck is still connected
+                        if (!onDeck.playerLeftWhileInQueue)
+                        {
+                            //Start a new game with the happy couple
+                            startAGame(new twoPlayers(onDeck, (PlayerConnection)playerConnection));
+                            //clear the 'queue'
+                            onDeck = null;
+                        }
+                        else //the first player has disconnected while they were waiting
+                        {
+                            //simply put the new person onDeck
+                            onDeck = (PlayerConnection)playerConnection;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Simply holds a reference to player1 and player2
+        /// to be passed as a single parameter.
+        /// </summary>
+        private class twoPlayers
+        {
+            public PlayerConnection p1;
+            public PlayerConnection p2;
+
+            public twoPlayers(PlayerConnection p1, PlayerConnection p2)
+            {
+                this.p1 = p1;
+                this.p2 = p2;
+            }
+        }
+
+        /// <summary>
+        /// Runs a boggle game within the thread that calls this method
+        /// </summary>
+        /// <param name="theTwoPlayers"></param>
+        private void startAGame(object theTwoPlayers)
+        {
+
+            //Create the new boggle game and catalog it.
+            //Starts a boggle game in this thread
+            BoggleGame game = new BoggleGame(gameTime,
+                                             customConfig,
+                                             dictionary,
+                                             ((twoPlayers)theTwoPlayers).p1,
+                                             ((twoPlayers)theTwoPlayers).p2,
+                                             dbManager);
+
+            //Start the game on a new thread so that the locks on each player can be released
+            ThreadPool.QueueUserWorkItem(game.run);
+        }
+
+
+    }
+}

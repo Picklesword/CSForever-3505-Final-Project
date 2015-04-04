@@ -1,0 +1,705 @@
+﻿
+using CustomNetworking;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace BB
+{
+    class BoggleWebPageManager
+    {
+        /// <summary>
+        /// The name of the root web directory
+        /// </summary>
+        private const string ROOT_WEB_FOLDER_NAME = "RootWebDirectory";
+        /// <summary>
+        /// The default webpage to load if server can't find requested one.
+        /// </summary>
+        private const string ERROR_WEBPAGE = "Error.html";
+        /// <summary>
+        /// The default substitution for special tags that failed to load
+        /// </summary>
+        public const string defaultWriteError = "[]";
+
+        /// <summary>
+        /// Key: A special string that when found in an html page, gets replaced by whatever
+        /// the delegate in the corresponding Value returns. The Value delegate is expected to return a 
+        /// string containing a multidimentional javascript array with all the "requested" information.
+        /// </summary>
+        Dictionary<string, Func<Dictionary<string, string>, string>> SpecialWebPageReplacementFunctions;
+
+        /// <summary>
+        /// The relative path and name (and '\') of the root web directory.
+        /// </summary>
+        private string rootWebDirectoryPath;
+
+        /// <summary>
+        /// The Database to read data from.
+        /// </summary>
+        private BoggleDatabaseManager dbManager;
+
+        /// <summary>
+        /// This constructor does NOT start the server listening for requests.
+        /// </summary>
+        /// <param name="dbManager">The Database Manager to use when constructing web pages</param>
+        public BoggleWebPageManager(BoggleDatabaseManager dbManager)
+        {
+            //Set up the special tag definitions
+            SpecialWebPageReplacementFunctions = new Dictionary<string, Func<Dictionary<string, string>, string>>()
+            {
+                {"[?PlayersStatTable?]",PlayersStatTable},
+                {"[?GamesStatTable?]",GamesStatTable},
+                {"[?GameInfo?]",GameInfo}
+            };
+
+            //Remember the Database Manager
+            this.dbManager = dbManager;
+
+            //Look for the web root directory
+            rootWebDirectoryPath = findRootDirectory();
+
+            //If we can't find it then warn the server but don't throw an error.
+            if (rootWebDirectoryPath == null)
+                Console.WriteLine("ERROR: Could not find " + ROOT_WEB_FOLDER_NAME + "! No webpages will be able to load!");
+
+        }
+
+        /// <summary>
+        /// Gets the path of the root web directory if it exists.
+        /// </summary>
+        /// <returns>The relative path of the root web directory (including the "RootWebFolderName\" at the end) or null if it couldn't find it.</returns>
+        private string findRootDirectory()
+        {
+            if (Directory.Exists(ROOT_WEB_FOLDER_NAME))
+                return ROOT_WEB_FOLDER_NAME + '\\';
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Stopping method that listenes on the given port for html requests.
+        /// </summary>
+        /// <param name="port">The port to listen on.</param>
+        internal void startListener(int port)
+        {
+            TcpListener server = null;
+            try
+            {
+                //Accept connections on the specified port from any IP address
+                server = new TcpListener(IPAddress.Any, port);
+                //Start the server
+                server.Start();
+                Socket theSocket = null;
+                //Continuously accepts connections and passes them on to the connection manager
+                while (true)
+                {
+                    theSocket = server.AcceptSocket(); //Stopping method that waits until a connection is recieved.
+                    SocketFacilitator sf = new SocketFacilitator(theSocket);
+                    //Begins listening on a new thread for the request.
+                    sf.StringSocket.BeginReceive(receivedSomething, sf);
+                }
+            }
+            catch (Exception e) //If something goes wrong, show the error and close the server
+            {
+                Console.WriteLine("WEBSERVER CRASH:" + e.Message);
+            }
+            finally
+            {
+                //Close the server
+                server.Stop();
+            }
+        }
+
+        object rLock = new object();
+
+        /// <summary>
+        /// Called when the connection sends something.
+        /// </summary>
+        /// <param name="message">The string sent to us. Null if there was an error receiving or they disconnected.</param>
+        /// <param name="theException">The exception, if any, that occured while waiting for a message. Null if we received a message or they disconnected.</param>
+        /// <param name="theStringSocket">The connection that the message or error was recieved from.</param>
+        private void receivedSomething(string message, Exception theException, object theStringSocket)
+        {
+            lock (rLock)
+            {
+                //If there's an exception, 
+                if (theException == null)
+                {
+                    //make sure we have a message
+                    if (message != null)
+                    {
+                        //Attempt to process the request
+                        handleURL_Request(message, (SocketFacilitator)theStringSocket);
+                    }
+                    else
+                        Console.WriteLine("Client sends Disconnect");
+                }
+                else
+                    Console.WriteLine("WebServer: receiving request error:" + theException.Message);
+            }
+        }
+
+        /// <summary>
+        /// Attempts to process and respond to the given URL request with a webpage.
+        /// </summary>
+        /// <param name="urlRequest">The "GET" url request.Comes in the form of "GET /games?player=Joe HTTP/1.1"</param>
+        /// <param name="client">The client that sent the request and is (supposedly) waiting for a response.</param>
+        private void handleURL_Request(string urlRequest, SocketFacilitator client)
+        {
+            //make sure we even have a request
+            if (urlRequest == null)
+                return;
+
+            //Prepare the OUT parameters
+            string pageName;
+            Dictionary<string, string> requestParameters;
+            string theWebPageSourceCode = "ERROR: Nothing to see here."; //Default message if web page never gets altered
+
+            //Attempt to parse the request
+            parseURL_Request(urlRequest, out pageName, out requestParameters);
+
+            //if (pageName == "favicon.ico")
+            //    return;
+
+            //It doesn't matter if it parsed correctly or not, we still pass the (possibly String.Empty) page and parameters.
+            //Generate the HTML and send it to the requesting client!
+            generateHTML(pageName, requestParameters, ref theWebPageSourceCode);
+            replyWithWebPage(client, ref theWebPageSourceCode);
+        }
+
+        /// <summary>
+        /// Sends the given webpage back to the client.
+        /// </summary>
+        /// <param name="theWebPage">The complete webpage to send back to the client.</param>
+        /// <param name="client">The "client" that is (supposedly) waiting for a webpage response.</param>
+        private void replyWithWebPage(SocketFacilitator client, ref string theWebPage)
+        {
+            bool connectionStillGood = true;
+
+            //Contains the 4 things to send back to a web client before sending the web page
+            string[] header = new string[4]{ "HTTP/1.1 200 OK","Connection: close","Content-Type: text/html; charset=UTF-8",""};
+            //Loop through and send each element
+            foreach (string s in header)
+            {
+                if(connectionStillGood)
+                    client.StringSocket.BeginSend(s + "\r", (e, o) => { connectionStillGood = false; }, null);
+            }
+
+            //Send the webpage
+            if (connectionStillGood)
+                client.StringSocket.BeginSend(theWebPage, 
+                                              (e, o) => { client.close(); }, //when we have finished sending the webpage, close the connection.
+                                              theWebPage);
+        }
+
+        ///// <summary>
+        ///// Helper method that sends the message with a '\r' tacked on the end and 
+        ///// doesn't care if the message throws and error sending.
+        ///// </summary>
+        ///// <param name="message">The message to send</param>
+        ///// <param name="client"></param>
+        //private void naiiveWebPageHeaderSend(string message, StringSocket client)
+        //{
+        //    client.BeginSend(message + "\r", error, message);
+        //}
+
+        ///// <summary>
+        ///// Displays an error message to the console.
+        ///// </summary>
+        ///// <param name="e"></param>
+        ///// <param name="o"></param>
+        //private void error(Exception e, object o)
+        //{
+        //    if (e != null)
+        //    {
+        //        if (o == null)
+        //            o = "<null payload>";
+        //        Console.WriteLine("WebServer:\n Error Sending: \"" + o.ToString() + "\"\n because: " + e.Message);
+        //    }
+        //}
+
+        /// <summary>
+        /// Attempts to parse the urlRequest to determine the page 
+        /// being requested and the parameters that were sent
+        /// </summary>
+        /// <param name="urlRequest">The "GET" url request.</param> //Comes in the form of "GET /pageName?param1=value1&param2=value2 HTTP/1.1"
+        /// <param name="pageName">The name of the page requested or string. Empty if there was none. If they did not add an extension then it's assumed to be .html</param>
+        /// <param name="parameters">The parameters that were sent with the page request. Empty set if there weren't any.</param>
+        /// <returns>True if the urlRequest was in proper format and was parsed correctly.</returns>
+        private bool parseURL_Request(string urlRequest, out string pageName,out Dictionary<string,string> parameters)
+        {
+            //Initialize so that we can easily "return false" from any point and have these out parameters set
+            pageName = String.Empty;
+            parameters = new Dictionary<string, string>();
+
+            //Grab the index of the start of the directory request
+            int directoryStartIndex = urlRequest.IndexOf('/');
+            //if the index was not found then we have an improper request
+            if (directoryStartIndex < 0)
+                return false; //failed to parse
+
+            //Find the end of the request
+            int tailOfRequestIndex = urlRequest.LastIndexOf(" HTTP/1.1\r");
+            //make sure we found the ending index
+            if (tailOfRequestIndex < 0)
+                return false;
+
+            //Check that the start of the request is valid
+            if (urlRequest.Substring(0, directoryStartIndex) == "GET ")
+            {
+                //get index of the first '?'
+                int questionMarkIndex = urlRequest.IndexOf('?');
+
+                //At first, assume
+                int endOfPageNameIndex;
+                //if we didn't find one, then there are no parameters, only the page name.
+                if (questionMarkIndex < 0)
+                {
+                    //then the page name ends where the tail of the request begins
+                    endOfPageNameIndex = tailOfRequestIndex;
+                    //and there are no parameters
+                }
+                else //we might have parameters
+                {
+                    //the page name ends where the question mark begins
+                    endOfPageNameIndex = questionMarkIndex;
+
+                    //attempt to extract the parameter sections
+                    string[] paramSplit = urlRequest.Substring(questionMarkIndex + 1, tailOfRequestIndex - questionMarkIndex - 1).Split('&');
+                    string[] tempSectionParse;
+
+                    //loop though each section and only remember those in the valid format
+                    foreach (string section in paramSplit)
+                    {
+                        //split up at All equal signs
+                        tempSectionParse = section.Split('=');
+                        //section is expected to split into only two parts, the paramName and paramValue
+                        if (tempSectionParse.Length == 2)
+                        {
+                            //Add the extracted parameterName and value to the parameters list
+                            parameters.Add(tempSectionParse[0], tempSectionParse[1]);
+                        }
+                    }
+                }
+
+                //now that we've found the page name boundaries, extract it
+                pageName = urlRequest.Substring(directoryStartIndex + 1, endOfPageNameIndex - directoryStartIndex - 1);
+
+                //if they didn't put an extension on the pageName, then tack on .html by default
+                if (!pageName.Contains('.'))
+                {
+                    pageName += ".html";
+                }
+
+                //report success
+                return true;
+            }
+            else //invalid head of the request
+                return false;
+        }
+
+        /// <summary>
+        /// Returns a string representing the html page with the given parameters.
+        /// If the page is null, empty, or doesn't exist then this sends back the default web page code.
+        /// </summary>
+        /// <param name="pageName">The HTML page to load</param>
+        /// <param name="parameters">The parameters for loading the HTML page</param>
+        /// <param name="theWebPageSourceCode">A reference to the string holding the web page source code.</param>
+        /// <returns></returns>
+        private void generateHTML(string pageName, Dictionary<string, string> parameters, ref string theWebPageSourceCode)
+        {
+            //make sure we even have a root web directory
+            if (rootWebDirectoryPath == null)
+            {
+                theWebPageSourceCode = "ERROR: Root Web Directory Not Found.";
+                return;
+            }
+
+            //check if the page exists on the server
+            if (File.Exists(rootWebDirectoryPath + pageName))
+            {
+                //if so, load the page into the web page source code string
+                loadFromFile(pageName, ref theWebPageSourceCode);
+            }
+            else //page didn't exist
+            {
+                //load default error page
+                loadFromFile(ERROR_WEBPAGE, ref theWebPageSourceCode);
+            }
+            
+
+            //replace the special <?tags?> with the custom html stuff
+            editSpecialTags(ref theWebPageSourceCode, parameters);
+            //now return with the modified webPageSourceCode
+        }
+
+        /// <summary>
+        /// Loads the given file into the given string.
+        /// </summary>
+        /// <param name="pageName">The file to load. Name must be exact.</param>
+        /// <param name="theWebPageSourceCode">The string to load the file into.</param>
+        private void loadFromFile(string pageName, ref string theWebPageSourceCode)
+        {
+            //If something goes wrong, tell the server
+            try
+            {
+                //Read the whole file into memory
+                using (StreamReader myFile = new StreamReader(rootWebDirectoryPath + pageName))
+                {
+                    theWebPageSourceCode = myFile.ReadToEnd();
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("WebServer: Error reading page:" + e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Finds and replaces the "special tags" in the html code with their corresponding
+        /// content according to the parameters given.
+        /// </summary>
+        /// <param name="webPageSourceCode"></param>
+        /// <param name="parameters"></param>
+        private void editSpecialTags(ref string webPageSourceCode, Dictionary<string, string> parameters)
+        {
+            //try
+            //{
+            //Loop through each special replacement and check if it's in the web page source code
+                foreach (KeyValuePair<string, Func<Dictionary<string, string>, string>> KeyAndValue in SpecialWebPageReplacementFunctions)
+                {
+                    if (webPageSourceCode.Contains(KeyAndValue.Key))
+                    {
+                        //replace the sections that match
+                        webPageSourceCode = webPageSourceCode.Replace(KeyAndValue.Key, KeyAndValue.Value(parameters));
+                    }
+                }
+            //}
+            //catch (Exception e)
+            //{
+            //    //reload the vanilla error webpage
+            //    loadFromFile(ERROR_WEBPAGE, ref webPageSourceCode);
+            //    Console.WriteLine("WebServer: Error editing special tags:"+e.Message);
+            //}
+            //Microsoft.Security.Application.Encoder.HtmlEncode("");
+        }
+
+
+
+        /// <summary>
+        /// Used to define what a special tag represents.
+        /// </summary>
+        /// <param name="parameters">The parameters of the page request.</param>
+        /// <returns>A multidimentional javascript array with all the "requested" information.</returns>
+        private string PlayersStatTable(Dictionary<string, string> parameters)
+        {
+            //the variable we build the output expression on
+            StringBuilder output = new StringBuilder();
+
+            //Prepare OUT variables
+            List<string> playerName;
+            List<int> numGames_Won;
+            List<int> numGames_Lost;
+            List<int> numGames_Tied;
+            //try
+            //{
+                //If the DatabaseManager is able to give us all the data, then proceed to format and replace
+                if (dbManager.getPlayersStatTable(out playerName, out numGames_Won, out numGames_Lost, out numGames_Tied))
+                {
+                    // [["a",0,1,0],["b",1,0,0]]
+
+                    //If we have an "off" number of entries (so that the rows won't be even) then throw a fit.
+                    if (playerName.Count != numGames_Won.Count || playerName.Count != numGames_Lost.Count || playerName.Count != numGames_Tied.Count)
+                        return defaultWriteError;
+
+                    //grab the index of the last row
+                    int lastRowIndex = playerName.Count - 1;
+
+                    output = output.Append("["); //start of the multidimentional javascript array
+                    //terminate the loop one row early
+                    for (int i = 0; i < lastRowIndex;i++ )
+                    {
+                        _addPlayerStatRow(output, playerName[i], numGames_Won[i], numGames_Lost[i], numGames_Tied[i]);
+                        output = output.Append(","); //append a comma as long as we have more rows
+                    } //Loop ends one row short
+
+                    //Add final row (but without the comma at the end)
+                    _addPlayerStatRow(output, playerName[lastRowIndex], numGames_Won[lastRowIndex], numGames_Lost[lastRowIndex], numGames_Tied[lastRowIndex]);
+                    output = output.Append("]"); //final piece to close the m.d. j.s. array
+                    
+                    //return the completed string
+                    return output.ToString();
+                }
+                else //the dbManager kindly refuses to give us the data
+                {
+                    return defaultWriteError;
+                }
+            //}
+            //catch (Exception e) //if the dbManager throws a fit then encode
+            //{
+            //    Console.WriteLine("WebServer: Exception polling db: \""+e.Message+"\"");
+            //    return defaultWriteError;
+            //}
+
+        }
+
+        /// <summary>
+        /// Helper method for PlayersStatTable. Adds each parameter to the output in proper format.
+        /// </summary>
+        /// <param name="output"></param>
+        /// <param name="playerName"></param>
+        /// <param name="gamesWon"></param>
+        /// <param name="gamesLost"></param>
+        /// <param name="gamesTied"></param>
+        private void _addPlayerStatRow(StringBuilder output, string playerName, int gamesWon, int gamesLost, int gamesTied)
+        {
+            output = output.Append("[\"")
+                           .Append(playerName) //   ["playername",
+                           .Append("\",")
+                           .Append(gamesWon)//               0,
+                           .Append(",")
+                           .Append(gamesLost)//                0,
+                           .Append(",")
+                           .Append(gamesTied)//                  1]
+                           .Append("]");
+        }
+
+        /// <summary>
+        /// Used to define what a special tag represents.
+        /// </summary>
+        /// <param name="parameters">The parameters of the page request.</param>
+        /// <returns>A multidimentional javascript array with all the "requested" information.</returns>
+        private string GamesStatTable(Dictionary<string, string> parameters)
+        {
+            //If we weren't even passed the correct parameters
+            if (!parameters.ContainsKey("player"))
+                return defaultWriteError;
+
+            //the eventual output if all goes well
+            StringBuilder output = new StringBuilder();
+
+            //setup OUT variables
+            List<int> GameID;
+            List<string> DateTime;
+            List<string> OpponentsName;
+            List<int> PlayersScore;
+            List<int> OpponentsScore;
+
+            //try
+            //{
+                //if dbManager gracefully fails to deliver, return default error message.
+                if (!dbManager.getGamesStatTable(parameters["player"], out GameID, out DateTime, out OpponentsName, out PlayersScore, out OpponentsScore))
+                    return defaultWriteError;
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine("WebServer: Exception polling db: \"" + e.Message + "\"");
+            //    return defaultWriteError;
+            //}
+
+            //Make sure we have the same amount in each column
+            if (GameID.Count != DateTime.Count || GameID.Count != OpponentsName.Count || GameID.Count != PlayersScore.Count || GameID.Count != OpponentsScore.Count)
+                return defaultWriteError;
+
+            //Construct the data!
+            output = output.Append("["); //start of multidimentional javascript array
+            int lastRowIndex = GameID.Count - 1;
+            //End loop just before last row is written
+            for (int i = 0; i < lastRowIndex; i++)
+            {
+                _addGameStatTableRow(output, GameID[i], DateTime[i], OpponentsName[i], PlayersScore[i], OpponentsScore[i]);
+                output = output.Append(",");
+            }
+            //Add last row
+            _addGameStatTableRow(output, GameID[lastRowIndex], DateTime[lastRowIndex], OpponentsName[lastRowIndex], PlayersScore[lastRowIndex], OpponentsScore[lastRowIndex]);
+            output = output.Append("]"); //End of md array
+
+            //Return result!
+            return output.ToString();
+        }
+
+        /// <summary>
+        /// Helper method to simply add a formatted row to the output
+        /// </summary>
+        /// <param name="output"></param>
+        /// <param name="GameID"></param>
+        /// <param name="DateTime"></param>
+        /// <param name="OpponentsName"></param>
+        /// <param name="PlayersScore"></param>
+        /// <param name="OpponentsScore"></param>
+        private void _addGameStatTableRow(StringBuilder output, int GameID, string DateTime, string OpponentsName, int PlayersScore, int OpponentsScore)
+        {
+            output = output.AppendFormat("[{0},\"{1}\",\"{2}\",{3},{4}]", GameID,DateTime, OpponentsName, PlayersScore, OpponentsScore);
+        }
+
+        /// <summary>
+        /// Used to define what a special tag represents.
+        /// </summary>
+        /// <param name="parameters">The parameters of the page request.</param>
+        /// <returns>A multidimentional javascript array with all the "requested" information.</returns>
+        private string GameInfo(Dictionary<string, string> parameters)
+        {
+
+            //If we weren't even passed the correct parameters
+            if (!parameters.ContainsKey("id"))
+                return defaultWriteError;
+
+            //the eventual output if all goes well
+            StringBuilder output = new StringBuilder();
+
+            //setup OUT variables
+            string p1Name;
+            string p2Name;
+            int p1Score;
+            int p2Score;
+            string dateTime;
+            string boggleBoard;
+            int timeLimit;
+            List<string> p1Legal;
+            List<string> p2Legal;
+            List<string> inCommon;
+            List<string> p1Ilegal;
+            List<string> p2Ilegal;
+
+            try
+            {
+                //if dbManager gracefully fails to deliver, return default error message.
+                if (!dbManager.getGameInfo(parameters["id"],out p1Name,out p2Name,out p1Score,out p2Score,out dateTime,out boggleBoard,out timeLimit,out p1Legal,out p2Legal,out inCommon, out p1Ilegal,out p2Ilegal))
+                    return defaultWriteError;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("WebServer: Exception polling db: \"" + e.Message + "\"");
+                return defaultWriteError;
+            }
+
+            //Construct the data!
+            output = output //start of multidimentional javascript array
+                     .AppendFormat("[[\"{0}\"],[\"{1}\"],[{2}],[{3}],[\"{4}\"],[\"{5}\"],[{6}],", p1Name, p2Name, p1Score, p2Score, dateTime, boggleBoard, timeLimit)
+                     .AppendFormat("{0},{1},{2},{3},{4}]", toJSArray<string>(p1Legal), toJSArray<string>(p2Legal), toJSArray<string>(inCommon), toJSArray<string>(p1Ilegal), toJSArray<string>(p2Legal));
+
+            //Return result!
+            return output.ToString();
+        }
+
+        private string toJSArray<T>(List<T> theList)
+        {
+            StringBuilder sb = new StringBuilder("[");
+            int lastRowIndex = theList.Count - 1;
+            for (int i = 0; i < lastRowIndex; i++)
+            {
+                if (typeof(T) == typeof(string))
+                    sb = sb.AppendFormat("\"{0}\",", theList[i]);
+                else
+                    sb = sb.AppendFormat("{0},", theList[i]);
+            }
+            sb = sb.AppendFormat("{0}]", theList[lastRowIndex]);
+
+            return sb.ToString();
+        }
+
+        private void _addGameInfoTableRow(StringBuilder output, string p1, string p2, int p3, int p4, string p5, string p6, int p7, string p8, string p9, string inCommon, string p10, string p11)
+        {
+            //Insanity, I know
+            //Honestly, I'm just too tired to write these all compactly and neatly. It's 6:10am after all.
+            output = output.AppendFormat("[\"{0}\",\"{1}\",{2},{3},\"{4}\",\"{5}\",{6},\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\"]", p1, p2, p3, p4, p5, p6, p7, p8, p9, inCommon, p10, p11);
+        }
+
+
+        /// <summary>
+        /// Holds the underlying socket and the String Socket that wraps it.
+        /// This class is necessary to maintain the ability to close the underlying socket.
+        /// </summary>
+        class SocketFacilitator
+        {
+            private Socket theSocket;
+
+            public StringSocket StringSocket;
+            public SocketFacilitator(Socket socket)
+            {
+                this.theSocket = socket;
+                this.StringSocket = new StringSocket(socket, new UTF8Encoding());
+            }
+
+            /// <summary>
+            /// Closes the underlying connection
+            /// </summary>
+            public void close()
+            {
+                //First check if it's connected
+                if (theSocket.Connected)
+                {
+                    theSocket.Shutdown(SocketShutdown.Both);
+                    theSocket.Close();
+                }
+            }
+        }
+
+        /* Failed attempt with regex
+         * Regex always captured exactly 4 elements.
+         * Would not remember more than 2 sets of (parameter=value)
+         * 
+         * I believe it only ever counts "(.+=.+)*" as one capture, even if 
+         *   there were none or multiple of them thanks to the '*'.
+        
+         * -------- From the constructor---------
+            string get = "GET /";
+            string htmlPageName = "([^?]*)";
+            string aParam = "([^?&=]+=[^?&=]+)";
+            string multipleParams = "(?:"+aParam+"(?:&"+aParam+")*)";
+            string finalParameters = @"(?:(?:\?"+multipleParams+")|)"; //?a=b&c=d
+            string closing = @" HTTP/1\.1\r";
+            WebRequestRegex = new Regex("^"+get+htmlPageName+finalParameters+closing+"$");
+         * ----------------------------------------
+         
+        Regex WebRequestRegex;
+         
+        /// <summary>
+        /// Called when the connection sends something.
+        /// </summary>
+        /// <param name="message">The string sent to us. Null if there was an error receiving or they disconnected.</param>
+        /// <param name="theException">The exception, if any, that occured while waiting for a message. Null if we received a message or they disconnected.</param>
+        /// <param name="theStringSocket">The connection that the message or error was recieved from.</param>
+        private void receivedSomething(string message, Exception theException, object theStringSocket)
+        {
+            //Only care if we received a message.
+            if (message != null)
+            {
+                //Parse the received message.
+                Match match = WebRequestRegex.Match(message);
+                if (match.Success)
+                {
+                    Console.WriteLine("Matched!");
+                    Console.WriteLine(" Page Name:\""+match.Groups[1].Value+"\"");
+                    //for (int i = 2; i < match.Groups.Count; i++)
+                        //Console.WriteLine(" Param:\""+match.Groups[i].Value+"\"");
+                    
+                    foreach(Group g in match.Groups)
+                        Console.WriteLine(" Param:\"" + g.Value.ToString() + "\"");
+                }
+                else
+                    Console.WriteLine("Didn't match: \"" + message + "\"");
+
+            }
+            else
+            {
+                if (theException == null)
+                    Console.WriteLine("Didn't receive anything!");
+                else
+                    Console.WriteLine("Received an error:"+theException.Message);
+            }
+
+            //((StringSocket)theStringSocket).BeginSend("", (e,o) => { }, null);
+        }
+        //*/
+
+    }
+}
