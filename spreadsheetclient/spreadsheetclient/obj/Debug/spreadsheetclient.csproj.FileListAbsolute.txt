@@ -1,0 +1,10 @@
+C:\Users\Scott\Documents\Current School Courses\CS3505\spreadsheetclient\spreadsheetclient\bin\Debug\spreadsheetclient.exe.config
+C:\Users\Scott\Documents\Current School Courses\CS3505\spreadsheetclient\spreadsheetclient\bin\Debug\spreadsheetclient.exe
+C:\Users\Scott\Documents\Current School Courses\CS3505\spreadsheetclient\spreadsheetclient\bin\Debug\spreadsheetclient.pdb
+C:\Users\Scott\Documents\Current School Courses\CS3505\spreadsheetclient\spreadsheetclient\bin\Debug\StringSocket.dll
+C:\Users\Scott\Documents\Current School Courses\CS3505\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.csprojResolveAssemblyReference.cache
+C:\Users\Scott\Documents\Current School Courses\CS3505\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.Properties.Resources.resources
+C:\Users\Scott\Documents\Current School Courses\CS3505\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.ssClient.resources
+C:\Users\Scott\Documents\Current School Courses\CS3505\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.csproj.GenerateResource.Cache
+C:\Users\Scott\Documents\Current School Courses\CS3505\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.exe
+C:\Users\Scott\Documents\Current School Courses\CS3505\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.pdb
