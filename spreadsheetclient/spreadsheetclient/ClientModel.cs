@@ -196,7 +196,7 @@ namespace spreadsheetclient
                 try
                 {
                     //Setup the connection
-                    TcpClient client = new TcpClient(s, 2000); //Connect on port 2000 by default
+                    TcpClient client = new TcpClient(s, 2112); //Connect on port 2000 by default
 
                     //Grab the client socket and pass it to the SocketConnection manager
                     connection = new SocketConnection(client.Client, WhenDisconnected, MessageReceived);

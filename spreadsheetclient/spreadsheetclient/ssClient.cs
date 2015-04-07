@@ -12,7 +12,7 @@ namespace spreadsheetclient
 {
     public partial class ssClient : Form
     {
-        public ClientModel model;
+        public ClientModel model = new ClientModel();
         private Action SetupInv(Action a)
         {
             return () => { try { this.Invoke((MethodInvoker)delegate { a(); }); } catch { } };
@@ -78,9 +78,7 @@ namespace spreadsheetclient
 
             ConnectButton.Enabled = false;
             ConnectButton.Text = "Connecting...";
-            model.ConnectToServer(ServerIPTextBox.Text,
-                SetupInv(connectedToServer),
-                SetupInv<string>(failedToConnectToServer));
+            model.ConnectToServer(ServerIPTextBox.Text, SetupInv(connectedToServer), SetupInv<string>(failedToConnectToServer));
         }
     }
 }

@@ -8,3 +8,13 @@ C:\Users\Scott\Documents\Current School Courses\CS3505\spreadsheetclient\spreads
 C:\Users\Scott\Documents\Current School Courses\CS3505\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.csproj.GenerateResource.Cache
 C:\Users\Scott\Documents\Current School Courses\CS3505\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.exe
 C:\Users\Scott\Documents\Current School Courses\CS3505\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.pdb
+C:\Users\Matthew\Desktop\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\bin\Debug\spreadsheetclient.exe.config
+C:\Users\Matthew\Desktop\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.exe
+C:\Users\Matthew\Desktop\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.pdb
+C:\Users\Matthew\Desktop\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\bin\Debug\spreadsheetclient.exe
+C:\Users\Matthew\Desktop\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\bin\Debug\spreadsheetclient.pdb
+C:\Users\Matthew\Desktop\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\bin\Debug\StringSocket.dll
+C:\Users\Matthew\Desktop\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.csprojResolveAssemblyReference.cache
+C:\Users\Matthew\Desktop\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.Properties.Resources.resources
+C:\Users\Matthew\Desktop\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.ssClient.resources
+C:\Users\Matthew\Desktop\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.csproj.GenerateResource.Cache
