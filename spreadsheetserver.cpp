@@ -17,7 +17,7 @@ void* SocketHandler(void*);
 
 int main(){
 
-	int host_port = 2112;
+  int host_port = 2112;
 
   struct sockaddr_in my_addr;
 

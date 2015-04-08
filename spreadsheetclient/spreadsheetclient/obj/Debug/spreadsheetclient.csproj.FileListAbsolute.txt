@@ -8,6 +8,7 @@ C:\Users\Scott\Documents\Current School Courses\CS3505\spreadsheetclient\spreads
 C:\Users\Scott\Documents\Current School Courses\CS3505\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.csproj.GenerateResource.Cache
 C:\Users\Scott\Documents\Current School Courses\CS3505\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.exe
 C:\Users\Scott\Documents\Current School Courses\CS3505\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.pdb
+<<<<<<< Updated upstream
 C:\Users\Matthew\Desktop\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\bin\Debug\spreadsheetclient.exe.config
 C:\Users\Matthew\Desktop\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.exe
 C:\Users\Matthew\Desktop\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.pdb
@@ -18,3 +19,15 @@ C:\Users\Matthew\Desktop\CSForever-3505-Final-Project\spreadsheetclient\spreadsh
 C:\Users\Matthew\Desktop\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.Properties.Resources.resources
 C:\Users\Matthew\Desktop\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.ssClient.resources
 C:\Users\Matthew\Desktop\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.csproj.GenerateResource.Cache
+=======
+Z:\Desktop\cs3505\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\bin\Debug\spreadsheetclient.exe.config
+Z:\Desktop\cs3505\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.exe
+Z:\Desktop\cs3505\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.pdb
+Z:\Desktop\cs3505\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\bin\Debug\spreadsheetclient.exe
+Z:\Desktop\cs3505\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\bin\Debug\spreadsheetclient.pdb
+Z:\Desktop\cs3505\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\bin\Debug\StringSocket.dll
+Z:\Desktop\cs3505\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.csprojResolveAssemblyReference.cache
+Z:\Desktop\cs3505\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.Properties.Resources.resources
+Z:\Desktop\cs3505\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.ssClient.resources
+Z:\Desktop\cs3505\CSForever-3505-Final-Project\spreadsheetclient\spreadsheetclient\obj\Debug\spreadsheetclient.csproj.GenerateResource.Cache
+>>>>>>> Stashed changes
