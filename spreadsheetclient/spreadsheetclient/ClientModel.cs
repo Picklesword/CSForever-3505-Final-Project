@@ -305,6 +305,10 @@ namespace spreadsheetclient
             //Check on status to determine what to do with the received message
             if (status == clientIs.waitingForPartner)
             {
+                if (splinters[0] =="ONE")
+                {
+                    Console.WriteLine("we made it");
+                }
                 //Process only the commands that we expect
                 if (splinters[0]=="START")
                 {
