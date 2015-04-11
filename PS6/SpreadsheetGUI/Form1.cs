@@ -19,7 +19,8 @@ namespace SpreadsheetGUI
     /// </summary>
     public partial class Form1 : Form
     {
-        private SS actual_spreadsheet;// the logic of the spreadsheet
+        private Spreadsheet actual_spreadsheet;// the logic of the spreadsheet
+        private Communicator socketConnection;
         private bool cancel_from_overwrite;// checks to see if canceled when dealing with potential overwrites 
         const string form_error = @"(FormulaError)";// regex used to help detect formula error values in spreadsheet 
         private string file_name;// will be used to look back at last file saved to 
@@ -34,6 +35,7 @@ namespace SpreadsheetGUI
             GUICells.SelectionChanged += displaySelection;
             GUICells.SetSelection(0,0);
             this.Resize += new EventHandler(redraw);
+            socketConnection = new Communicator();
             SaveOnMenu.Click += new EventHandler(saveToolStripMenuItem_Click);
             OpenOnMenu.Click += new EventHandler(openToolStripMenuItem_Click);
             actual_spreadsheet = new Spreadsheet(x => true, x => x.ToUpper(), "ps6");
@@ -455,6 +457,13 @@ namespace SpreadsheetGUI
             string caption = "Help";
             MessageBoxButtons button = MessageBoxButtons.OK;
             DialogResult non_validCell = MessageBox.Show(message, caption, button);
+        }
+
+        private void ConnectButton_Click(object sender, EventArgs e)
+        {
+            socketConnection.Connect(ServerIPTextBox.Text, LoginNameTextBox.Text, fileNameTextBox.Text, portTextBox.Text);
+            
+
         }
     }
 }

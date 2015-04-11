@@ -297,6 +297,82 @@
             Version information
             </summary>
         </member>
+        <member name="T:SS.Communicator">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SS.Communicator.tempString">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SS.Communicator.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SS.Communicator.Connect(System.String,System.String,System.String,System.String)">
+            <summary>
+            Connect to the server at the given hostname and port and with the given name.
+            </summary>
+            <param name="hostname">IP addresses for game server</param>
+            <param name="name">user's name</param>
+            <param name="spreadsheetName">file name</param>
+            <param name="portS">Connection port</param>
+        </member>
+        <member name="M:SS.Communicator.SendMessage(System.String)">
+            <summary>
+            Sends a message from the client to the server.  The message is passed in from the GUI
+            in the line parameter, gets a newline character appended to it, and is sent off.
+            </summary>
+            <param name="line">Message from GUI</param>
+        </member>
+        <member name="M:SS.Communicator.Disconnect">
+            <summary>
+            Helper method used to disconnect clients under any condition that ends the game
+            </summary>
+        </member>
+        <member name="M:SS.Communicator.LineReceived(System.String,System.Exception,System.Object)">
+            <summary>
+            Deal with an arriving line of text. Determine what to do with each message by reading the first word, then 
+            remove that word from the message, trim the message to remove unwanted blank space, and then pass the message
+            to the GUI
+            </summary>
+            <param name="s">Message</param>
+            <param name="e">Exception</param>
+            <param name="p">Payload</param>
+        </member>
+        <member name="E:SS.Communicator.IncomingStartEvent">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:SS.Communicator.IncomingStopEvent">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:SS.Communicator.IncomingTimeEvent">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:SS.Communicator.IncomingScoreEvent">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:SS.Communicator.IncomingTerminatedEvent">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:SS.Communicator.ServerEvent">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="T:SS.Spreadsheet">
             <summary> 
             A Spreadsheet object represents the state of a simple spreadsheet.  A 
@@ -390,7 +466,15 @@
             beginning of the string. 
              </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:SS.Spreadsheet.SetCellContents(System.String,System.Double)" -->
+        <member name="M:SS.Spreadsheet.SetCellContents(System.String,System.Double)">
+            <summary>
+            Sets the contents of the named cell to the number given.
+            Returns a set containing all cells that need recalculated because of the change. 
+            </summary>
+            <param name="name">string</param>
+            <param name="number">double</param>
+            <returns> ISet string</returns>
+        </member>
         <member name="M:SS.Spreadsheet.SetCellContents(System.String,System.String)">
             <summary>
             Sets the contents of the named cell to that of the given string.

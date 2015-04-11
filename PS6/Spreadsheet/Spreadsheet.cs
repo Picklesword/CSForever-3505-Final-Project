@@ -291,7 +291,7 @@ namespace SS
                 throw new SpreadsheetReadWriteException("Reading from file has failed");
 
             }
-            return ""; 
+            //return ""; 
 
             
         }
@@ -387,7 +387,7 @@ namespace SS
         /// Returns a set containing all cells that need recalculated because of the change. 
         /// </summary>
         /// <param name="name">string</param>
-        /// <param name="number" double></param>
+        /// <param name="number">double</param>
         /// <returns> ISet string</returns>
         protected override ISet<String> SetCellContents(String name, double number)
         {

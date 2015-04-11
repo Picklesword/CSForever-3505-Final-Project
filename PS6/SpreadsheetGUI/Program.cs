@@ -72,6 +72,7 @@ namespace SpreadsheetGUI
 
             SpreadsheetGUIApplicationContext spreadsheet_context = SpreadsheetGUIApplicationContext.getSpreadAppContext();
             spreadsheet_context.RunInstance(new Form1());
+            
             Application.Run(spreadsheet_context);
         }
     }

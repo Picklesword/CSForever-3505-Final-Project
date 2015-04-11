@@ -48,6 +48,15 @@
             this.label3 = new System.Windows.Forms.Label();
             this.Open = new System.Windows.Forms.OpenFileDialog();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.portLabel = new System.Windows.Forms.Label();
+            this.portTextBox = new System.Windows.Forms.TextBox();
+            this.filenamelabel = new System.Windows.Forms.Label();
+            this.fileNameTextBox = new System.Windows.Forms.TextBox();
+            this.ServerIPLabel = new System.Windows.Forms.Label();
+            this.NameLabel = new System.Windows.Forms.Label();
+            this.ServerIPTextBox = new System.Windows.Forms.TextBox();
+            this.LoginNameTextBox = new System.Windows.Forms.TextBox();
+            this.ConnectButton = new System.Windows.Forms.Button();
             this.Go_to_Cell = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -68,7 +77,7 @@
             this.HelpOnMenu});
             this.MenuBar.Location = new System.Drawing.Point(0, 0);
             this.MenuBar.Name = "MenuBar";
-            this.MenuBar.Size = new System.Drawing.Size(284, 24);
+            this.MenuBar.Size = new System.Drawing.Size(852, 24);
             this.MenuBar.TabIndex = 0;
             this.MenuBar.Text = "menuStrip1";
             // 
@@ -122,9 +131,9 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
             this.StatusText});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 239);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 469);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(284, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(852, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -151,7 +160,7 @@
             this.GUICells.Location = new System.Drawing.Point(0, 0);
             this.GUICells.MinimumSize = new System.Drawing.Size(284, 102);
             this.GUICells.Name = "GUICells";
-            this.GUICells.Size = new System.Drawing.Size(284, 125);
+            this.GUICells.Size = new System.Drawing.Size(852, 355);
             this.GUICells.TabIndex = 2;
             // 
             // Cell_Name
@@ -212,19 +221,109 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.portLabel);
+            this.panel1.Controls.Add(this.portTextBox);
+            this.panel1.Controls.Add(this.filenamelabel);
+            this.panel1.Controls.Add(this.fileNameTextBox);
+            this.panel1.Controls.Add(this.ServerIPLabel);
+            this.panel1.Controls.Add(this.NameLabel);
+            this.panel1.Controls.Add(this.ServerIPTextBox);
+            this.panel1.Controls.Add(this.LoginNameTextBox);
+            this.panel1.Controls.Add(this.ConnectButton);
+            this.panel1.Controls.Add(this.Cell_Contents);
             this.panel1.Controls.Add(this.Go_to_Cell);
             this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.Cell_Name);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.Cell_Value);
-            this.panel1.Controls.Add(this.Cell_Contents);
             this.panel1.Controls.Add(this.label3);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(284, 86);
+            this.panel1.Size = new System.Drawing.Size(852, 86);
             this.panel1.TabIndex = 9;
+            // 
+            // portLabel
+            // 
+            this.portLabel.AutoSize = true;
+            this.portLabel.Location = new System.Drawing.Point(602, 67);
+            this.portLabel.Name = "portLabel";
+            this.portLabel.Size = new System.Drawing.Size(39, 13);
+            this.portLabel.TabIndex = 18;
+            this.portLabel.Text = "Port #:";
+            // 
+            // portTextBox
+            // 
+            this.portTextBox.Location = new System.Drawing.Point(647, 64);
+            this.portTextBox.Name = "portTextBox";
+            this.portTextBox.Size = new System.Drawing.Size(100, 20);
+            this.portTextBox.TabIndex = 17;
+            this.portTextBox.Text = "2000";
+            this.portTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // filenamelabel
+            // 
+            this.filenamelabel.AutoSize = true;
+            this.filenamelabel.Location = new System.Drawing.Point(584, 27);
+            this.filenamelabel.Name = "filenamelabel";
+            this.filenamelabel.Size = new System.Drawing.Size(57, 13);
+            this.filenamelabel.TabIndex = 16;
+            this.filenamelabel.Text = "File Name:";
+            // 
+            // fileNameTextBox
+            // 
+            this.fileNameTextBox.Location = new System.Drawing.Point(647, 24);
+            this.fileNameTextBox.Name = "fileNameTextBox";
+            this.fileNameTextBox.Size = new System.Drawing.Size(100, 20);
+            this.fileNameTextBox.TabIndex = 15;
+            this.fileNameTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // ServerIPLabel
+            // 
+            this.ServerIPLabel.AutoSize = true;
+            this.ServerIPLabel.Location = new System.Drawing.Point(587, 47);
+            this.ServerIPLabel.Name = "ServerIPLabel";
+            this.ServerIPLabel.Size = new System.Drawing.Size(54, 13);
+            this.ServerIPLabel.TabIndex = 15;
+            this.ServerIPLabel.Text = "Server IP:";
+            // 
+            // NameLabel
+            // 
+            this.NameLabel.AutoSize = true;
+            this.NameLabel.Location = new System.Drawing.Point(574, 6);
+            this.NameLabel.Name = "NameLabel";
+            this.NameLabel.Size = new System.Drawing.Size(67, 13);
+            this.NameLabel.TabIndex = 14;
+            this.NameLabel.Text = "Login Name:";
+            // 
+            // ServerIPTextBox
+            // 
+            this.ServerIPTextBox.Location = new System.Drawing.Point(647, 44);
+            this.ServerIPTextBox.Name = "ServerIPTextBox";
+            this.ServerIPTextBox.Size = new System.Drawing.Size(100, 20);
+            this.ServerIPTextBox.TabIndex = 13;
+            this.ServerIPTextBox.Text = "localhost";
+            this.ServerIPTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // LoginNameTextBox
+            // 
+            this.LoginNameTextBox.Location = new System.Drawing.Point(647, 3);
+            this.LoginNameTextBox.Name = "LoginNameTextBox";
+            this.LoginNameTextBox.Size = new System.Drawing.Size(100, 20);
+            this.LoginNameTextBox.TabIndex = 12;
+            this.LoginNameTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // ConnectButton
+            // 
+            this.ConnectButton.Location = new System.Drawing.Point(752, 3);
+            this.ConnectButton.Margin = new System.Windows.Forms.Padding(2);
+            this.ConnectButton.Name = "ConnectButton";
+            this.ConnectButton.Size = new System.Drawing.Size(100, 81);
+            this.ConnectButton.TabIndex = 11;
+            this.ConnectButton.Text = "Connect";
+            this.ConnectButton.UseVisualStyleBackColor = true;
+            this.ConnectButton.Click += new System.EventHandler(this.ConnectButton_Click);
             // 
             // Go_to_Cell
             // 
@@ -258,7 +357,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.GUICells);
-            this.splitContainer1.Size = new System.Drawing.Size(284, 215);
+            this.splitContainer1.Size = new System.Drawing.Size(852, 445);
             this.splitContainer1.SplitterDistance = 86;
             this.splitContainer1.TabIndex = 10;
             // 
@@ -267,7 +366,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.ClientSize = new System.Drawing.Size(852, 491);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.MenuBar);
@@ -316,6 +415,15 @@
         private System.Windows.Forms.ToolStripStatusLabel StatusText;
         private System.Windows.Forms.TextBox Go_to_Cell;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label ServerIPLabel;
+        private System.Windows.Forms.Label NameLabel;
+        private System.Windows.Forms.TextBox ServerIPTextBox;
+        private System.Windows.Forms.TextBox LoginNameTextBox;
+        private System.Windows.Forms.Button ConnectButton;
+        private System.Windows.Forms.Label filenamelabel;
+        private System.Windows.Forms.TextBox fileNameTextBox;
+        private System.Windows.Forms.Label portLabel;
+        private System.Windows.Forms.TextBox portTextBox;
 
     }
 }
