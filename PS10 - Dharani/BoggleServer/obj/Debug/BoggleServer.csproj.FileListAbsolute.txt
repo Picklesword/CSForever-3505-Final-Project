@@ -6,3 +6,6 @@ C:\Users\dharaniadhikari\Documents\Visual Studio 2013\Projects\PS10\BoggleServer
 C:\Users\dharaniadhikari\Documents\Visual Studio 2013\Projects\PS10\BoggleServer\obj\Debug\BoggleServer.csprojResolveAssemblyReference.cache
 C:\Users\dharaniadhikari\Documents\Visual Studio 2013\Projects\PS10\BoggleServer\obj\Debug\BoggleServer.exe
 C:\Users\dharaniadhikari\Documents\Visual Studio 2013\Projects\PS10\BoggleServer\obj\Debug\BoggleServer.pdb
+\\chips.eng.utah.edu\home\syoung\.win_desktop\GitHub\CSForever-3505-Final-Project\PS10 - Dharani\BoggleServer\bin\Debug\BoggleServer.exe.config
+\\chips.eng.utah.edu\home\syoung\.win_desktop\GitHub\CSForever-3505-Final-Project\PS10 - Dharani\BoggleServer\obj\Debug\BoggleServer.exe
+\\chips.eng.utah.edu\home\syoung\.win_desktop\GitHub\CSForever-3505-Final-Project\PS10 - Dharani\BoggleServer\obj\Debug\BoggleServer.pdb

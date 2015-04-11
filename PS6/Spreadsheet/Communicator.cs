@@ -21,8 +21,23 @@ namespace SS
         /// <summary>
         /// 
         /// </summary>
-        public event Action<String[]> IncomingConnectEvent;
+        public event Action<String[]> IncomingStartEvent;
 
+        /// <summary>
+        /// Action when error received
+        /// </summary>
+        public event Action<String[]> IncomingErrorEvent;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public event Action<String[]> IncomingConnectedEvent;
+
+
+        public event Action<String[]> IncomingCellEvent;
+            
+            
+            
         // This is when we receive a stop string and need to stop all the stuff
         /// <summary>
         /// 
@@ -158,14 +173,26 @@ namespace SS
                 {
 
                 }
-                else
+                else //error 4 is an unregistered username. we disconnect the socket and send a message to user to use a registered name
                 {
-                    
-                    Disconnect();
+                    IncomingErrorEvent(words);
+                    Disconnect(); //disconnect socket
                 }
 
             }
-
+            else if (temp.StartsWith("CONNECTED"))
+            {
+                IncomingConnectedEvent(words);
+                socket.BeginReceive(LineReceived, null);
+            }
+            else if (temp.StartsWith("CELL"))
+            {
+                if(IncomingCellEvent != null)
+                {
+                    IncomingCellEvent(words);
+                    socket.BeginReceive(LineReceived, null);
+                }
+            }
 
             if (temp.StartsWith("START"))
             {

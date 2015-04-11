@@ -31,11 +31,12 @@ namespace SpreadsheetGUI
         public Form1()
         {
             InitializeComponent();
-            this.FormClosing += new FormClosingEventHandler(Form_Close_Check); 
-            GUICells.SelectionChanged += displaySelection;
-            GUICells.SetSelection(0,0);
-            this.Resize += new EventHandler(redraw);
             socketConnection = new Communicator();
+            socketConnection.IncomingErrorEvent += ErrorReceived;
+            this.FormClosing += new FormClosingEventHandler(Form_Close_Check);
+            GUICells.SelectionChanged += displaySelection;
+            GUICells.SetSelection(0, 0);
+            this.Resize += new EventHandler(redraw);
             SaveOnMenu.Click += new EventHandler(saveToolStripMenuItem_Click);
             OpenOnMenu.Click += new EventHandler(openToolStripMenuItem_Click);
             actual_spreadsheet = new Spreadsheet(x => true, x => x.ToUpper(), "ps6");
@@ -48,6 +49,32 @@ namespace SpreadsheetGUI
 
 
         }
+
+        private void ErrorReceived(string[] msg)
+        {
+            if (msg[1].CompareTo("0") == 0)
+            {
+                              
+            }
+            else if(msg[1].CompareTo("1") == 0)
+            {
+
+            }
+            else if(msg[1].CompareTo("2") == 0)
+            {
+
+            }
+            else if (msg[1].CompareTo("3") == 0)
+            {
+
+            }
+            else //error 4
+            { 
+                MessageBox.Show("User name is invalid. It is already registered or has not been added by another registered user.")
+            }
+
+        }
+
 
         /// <summary>
         /// Causes the appropriate information to be displayed by cells 
@@ -105,8 +132,8 @@ namespace SpreadsheetGUI
                 }
                 catch
                 {
-                    StatusText.Text = " A Circular Dependency has occured."; 
-                    statusStrip1.Invalidate(); 
+                    StatusText.Text = " A Circular Dependency has occured.";
+                    statusStrip1.Invalidate();
                     GUICells.GetSelection(out col, out row);
                     GUICells.SetValue(col, row, "");
                     return;
@@ -116,7 +143,7 @@ namespace SpreadsheetGUI
                 if (Regex.IsMatch(actual_spreadsheet.GetCellValue(Cell_Name.Text).ToString(), form_error))
                 {
                     GUICells.SetValue(col, row, "");
-                    StatusText.Text = " Not All Formulas Able to Evaluate"; 
+                    StatusText.Text = " Not All Formulas Able to Evaluate";
                 }
                 else
                 {
@@ -130,7 +157,7 @@ namespace SpreadsheetGUI
                     if (Regex.IsMatch(actual_spreadsheet.GetCellValue(s).ToString(), form_error))
                     {
                         GUICells.SetValue(cell_adress.Item1, cell_adress.Item2, "");
-                        StatusText.Text = "Not All Formulas Able to Evaluate"; 
+                        StatusText.Text = "Not All Formulas Able to Evaluate";
 
                     }
                     else
@@ -138,8 +165,8 @@ namespace SpreadsheetGUI
                         GUICells.SetValue(cell_adress.Item1, cell_adress.Item2, actual_spreadsheet.GetCellValue(s).ToString());
                     }
                 }
-                 IEnumerable<string> temp_it =actual_spreadsheet.GetNamesOfAllNonemptyCells();
-                foreach( string s in temp_it)
+                IEnumerable<string> temp_it = actual_spreadsheet.GetNamesOfAllNonemptyCells();
+                foreach (string s in temp_it)
                 {
                     if (Regex.IsMatch(actual_spreadsheet.GetCellValue(s).ToString(), form_error))
                     {
@@ -161,16 +188,16 @@ namespace SpreadsheetGUI
         /// <returns></returns>
         private Tuple<int, int> Reverse_Cell_Name(string s)
         {
-            int col, row; 
+            int col, row;
 
             row = 0;
             col = s[0] - 'A';
             string letter = s[0].ToString();
-            string temp = s.Replace(letter, ""); 
+            string temp = s.Replace(letter, "");
             int add = 0;
             Int32.TryParse(temp, out add);
-            
-      
+
+
             row = add - 1;
             return new Tuple<int, int>(col, row);
         }
@@ -183,7 +210,7 @@ namespace SpreadsheetGUI
         private void saveToolStripMenuItem_Click(object sender, System.EventArgs e)
         {
 
-            Save.FileName = file_name; 
+            Save.FileName = file_name;
             Save.FileOk += new CancelEventHandler(saveFileDialog1_FileOk);
             Save.Filter = "Spreadsheet File (*.sprd)|*.sprd|All Files (*.*)|*.*";
             Save.Disposed += new EventHandler(saveFileDialog1_FileCancel);
@@ -197,8 +224,8 @@ namespace SpreadsheetGUI
         /// <param name="e"></param>
         private void openToolStripMenuItem_Click(object sender, System.EventArgs e)
         {
-            Open.FileName = ""; 
-            cancel_from_overwrite = false; 
+            Open.FileName = "";
+            cancel_from_overwrite = false;
             if (actual_spreadsheet.Changed && !possible_overide(Open))
             {
                 cancel_from_overwrite = true;
@@ -219,32 +246,32 @@ namespace SpreadsheetGUI
         {
             string spread_ext = @"(.sprd)$";
             string temp_name = Save.FileName;
-            if(temp_name != file_name)
+            if (temp_name != file_name)
             {
-                Save.CheckFileExists = true; 
+                Save.CheckFileExists = true;
             }
-            Save.CheckFileExists = false; 
-            file_name = temp_name; 
+            Save.CheckFileExists = false;
+            file_name = temp_name;
             if (Save.FilterIndex == 0 && !Regex.IsMatch(temp_name, spread_ext))
             {
                 temp_name = temp_name + ".sprd";
-  
+
             }
             try
             {
                 actual_spreadsheet.Save(temp_name);
-                
+
             }
-            catch(Exception execpt)
+            catch (Exception execpt)
             {
-                file_name = null; 
-                string message = "Could not save file\r\n" +execpt.Message;
+                file_name = null;
+                string message = "Could not save file\r\n" + execpt.Message;
                 string caption = "Save failed";
                 MessageBoxButtons button = MessageBoxButtons.OK;
                 DialogResult error_mes = MessageBox.Show(message, caption, button);
 
             }
-            
+
 
         }
 
@@ -277,9 +304,9 @@ namespace SpreadsheetGUI
             {
                 actual_spreadsheet = new Spreadsheet(Open.FileName, x => true, x => x.ToUpper(), "ps6");
             }
-            catch(Exception except)
-            { 
-                string message = "Could not open file\r\n" +except.Message;
+            catch (Exception except)
+            {
+                string message = "Could not open file\r\n" + except.Message;
                 string caption = "Open Failed";
                 MessageBoxButtons button = MessageBoxButtons.OK;
                 DialogResult error_mes = MessageBox.Show(message, caption, button);
@@ -308,11 +335,12 @@ namespace SpreadsheetGUI
             GUICells.Invalidate();
             GUICells.SetSelection(0, 0);
             Cell_Name.Text = "A1";
-            if(actual_spreadsheet.GetCellContents("A1").GetType() != typeof(double) &&
+            if (actual_spreadsheet.GetCellContents("A1").GetType() != typeof(double) &&
                 actual_spreadsheet.GetCellContents("A1").GetType() != typeof(string))
             {
                 Cell_Contents.Text = "=" + actual_spreadsheet.GetCellContents("A1").ToString();
-            }else
+            }
+            else
             {
                 Cell_Contents.Text = actual_spreadsheet.GetCellContents("A1").ToString();
             }
@@ -334,7 +362,7 @@ namespace SpreadsheetGUI
             DialogResult overwrite_mes = MessageBox.Show(message, caption, button);
             if (overwrite_mes == DialogResult.Yes)
             {
-               
+
                 saveToolStripMenuItem_Click(SaveOnMenu, new EventArgs());
                 return cancel_from_overwrite;
             }
@@ -376,7 +404,7 @@ namespace SpreadsheetGUI
         /// <param name="e"></param>
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Close(); 
+            Close();
         }
 
         /// <summary>
@@ -385,13 +413,13 @@ namespace SpreadsheetGUI
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Form_Close_Check (object sender, FormClosingEventArgs e)
+        private void Form_Close_Check(object sender, FormClosingEventArgs e)
         {
-            cancel_from_overwrite = false; 
+            cancel_from_overwrite = false;
             if (actual_spreadsheet.Changed && !possible_overide(Open))
             {
                 cancel_from_overwrite = true;
-                e.Cancel = true; 
+                e.Cancel = true;
                 return;
             }
 
@@ -406,18 +434,19 @@ namespace SpreadsheetGUI
         private void GoToCell(object sender, KeyEventArgs e)
         {
             if (Go_to_Cell.Focused == true && e.KeyCode == Keys.Return)
-            {   Tuple<int,int> cell_address;
+            {
+                Tuple<int, int> cell_address;
 
-                 Go_to_Cell.Text = Go_to_Cell.Text.ToUpper(); 
+                Go_to_Cell.Text = Go_to_Cell.Text.ToUpper();
                 cell_address = Reverse_Cell_Name(Go_to_Cell.Text);
-                
+
                 try
                 {
 
                     string cellnames = @"^[A-Z]\d{1,2}$";
-                    if(!Regex.IsMatch(Go_to_Cell.Text, cellnames))
+                    if (!Regex.IsMatch(Go_to_Cell.Text, cellnames))
                     {
-                        throw new Exception(); 
+                        throw new Exception();
                     }
                     GUICells.SetSelection(cell_address.Item1, cell_address.Item2);
                     Cell_Name.Text = Go_to_Cell.Text;
@@ -425,18 +454,19 @@ namespace SpreadsheetGUI
                         && actual_spreadsheet.GetCellContents(Go_to_Cell.Text).GetType() != typeof(Double))
                     {
                         Cell_Contents.Text = "=" + actual_spreadsheet.GetCellContents(Go_to_Cell.Text).ToString();
-                    }else
+                    }
+                    else
                     {
                         Cell_Contents.Text = actual_spreadsheet.GetCellContents(Go_to_Cell.Text).ToString();
                     }
                     Cell_Value.Text = actual_spreadsheet.GetCellValue(Go_to_Cell.Text).ToString();
-                    Go_to_Cell.Text = ""; 
-                    
-                        
+                    Go_to_Cell.Text = "";
+
+
                 }
                 catch
                 {
-                    Go_to_Cell.Text = ""; 
+                    Go_to_Cell.Text = "";
                     string message = "Cell entered is not valid on the grid";
                     string caption = "Possible Dataloss";
                     MessageBoxButtons button = MessageBoxButtons.OK;
@@ -462,7 +492,7 @@ namespace SpreadsheetGUI
         private void ConnectButton_Click(object sender, EventArgs e)
         {
             socketConnection.Connect(ServerIPTextBox.Text, LoginNameTextBox.Text, fileNameTextBox.Text, portTextBox.Text);
-            
+
 
         }
     }
