@@ -19,7 +19,7 @@ namespace SpreadsheetGUI
     /// </summary>
     public partial class Form1 : Form
     {
-        private Spreadsheet actual_spreadsheet;// the logic of the spreadsheet
+        private SS actual_spreadsheet;// the logic of the spreadsheet
         private bool cancel_from_overwrite;// checks to see if canceled when dealing with potential overwrites 
         const string form_error = @"(FormulaError)";// regex used to help detect formula error values in spreadsheet 
         private string file_name;// will be used to look back at last file saved to 

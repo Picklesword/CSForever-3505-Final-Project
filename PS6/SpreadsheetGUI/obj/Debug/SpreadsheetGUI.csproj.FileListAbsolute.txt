@@ -35,3 +35,7 @@ C:\Users\Matthew\Desktop\PS6\SpreadsheetGUI\obj\Debug\SpreadsheetGUI.csprojResol
 C:\Users\Matthew\Desktop\PS6\SpreadsheetGUI\obj\Debug\SpreadsheetGUI.Form1.resources
 C:\Users\Matthew\Desktop\PS6\SpreadsheetGUI\obj\Debug\SpreadsheetGUI.Properties.Resources.resources
 C:\Users\Matthew\Desktop\PS6\SpreadsheetGUI\obj\Debug\SpreadsheetGUI.csproj.GenerateResource.Cache
+Z:\Desktop\cs3505\CSForever-3505-Final-Project\PS6\SpreadsheetGUI\bin\Debug\SpreadsheetGUI.exe.config
+Z:\Desktop\cs3505\CSForever-3505-Final-Project\PS6\SpreadsheetGUI\bin\Debug\SpreadsheetGUI.XML
+Z:\Desktop\cs3505\CSForever-3505-Final-Project\PS6\SpreadsheetGUI\obj\Debug\SpreadsheetGUI.exe
+Z:\Desktop\cs3505\CSForever-3505-Final-Project\PS6\SpreadsheetGUI\obj\Debug\SpreadsheetGUI.pdb

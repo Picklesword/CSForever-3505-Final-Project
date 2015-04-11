@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoggleServer", "BoggleServer\BoggleServer.csproj", "{52752BB4-C494-430D-8EE6-E79A26DB35FC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{948A1579-BEE1-4CDB-98EC-E8375986B7AD}"
+	ProjectSection(SolutionItems) = preProject
+		BoggleServer\bin\Debug\dictionary.txt = BoggleServer\bin\Debug\dictionary.txt
+		Readme.txt = Readme.txt
+		StringSocketOfficial.dll = StringSocketOfficial.dll
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoggleClient", "BoggleClient\BoggleClient.csproj", "{3EC3940B-3D7A-4E83-9AE6-978BABC3681E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoggleClientTest", "BoggleClientTest\BoggleClientTest.csproj", "{101A5451-CD4B-47E6-89AF-A577E4298855}"
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{52752BB4-C494-430D-8EE6-E79A26DB35FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52752BB4-C494-430D-8EE6-E79A26DB35FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52752BB4-C494-430D-8EE6-E79A26DB35FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52752BB4-C494-430D-8EE6-E79A26DB35FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EC3940B-3D7A-4E83-9AE6-978BABC3681E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EC3940B-3D7A-4E83-9AE6-978BABC3681E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EC3940B-3D7A-4E83-9AE6-978BABC3681E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EC3940B-3D7A-4E83-9AE6-978BABC3681E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{101A5451-CD4B-47E6-89AF-A577E4298855}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{101A5451-CD4B-47E6-89AF-A577E4298855}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{101A5451-CD4B-47E6-89AF-A577E4298855}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{101A5451-CD4B-47E6-89AF-A577E4298855}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -51,7 +51,7 @@ namespace spreadsheetclient
         private void connectedToServer()
         {
             model.SendName(LoginNameTextBox.Text);
-            ConnectButton.Text = "Waiting for partner...";
+            ConnectButton.Text = "You are connected.";
         }
 
         private void failedToConnectToServer(String errorMessage)
