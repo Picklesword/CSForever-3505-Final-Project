@@ -173,7 +173,8 @@ namespace SpreadsheetGUI
         {
             if (Cell_Contents.Focused == true && e.KeyCode == Keys.Return)
             {
-                UpdateCell(Cell_Name.Text, Cell_Contents.Text);
+                UpdateCell(Cell_Name.Text, Cell_Contents.Text); //may need to remove this and only do it when the server accepts the change
+
                 //sendToServer = true; //not needed
                 /* Tuple<int, int> cell_adress;
                  IEnumerable<string> updates = null;
