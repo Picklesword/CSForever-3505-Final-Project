@@ -24,7 +24,7 @@ namespace SpreadsheetGUI
         private bool cancel_from_overwrite;// checks to see if canceled when dealing with potential overwrites 
         const string form_error = @"(FormulaError)";// regex used to help detect formula error values in spreadsheet 
         private string file_name;// will be used to look back at last file saved to 
-        private bool sendToServer = false;
+        private bool sendToServer;
         private int numberOfCellsReceived;
         /// <summary>
         /// Generates a new gui for the spreadsheet 
@@ -32,7 +32,7 @@ namespace SpreadsheetGUI
         public Form1()
         {
             InitializeComponent();
-
+            sendToServer = false;
             // following components handle communication with server
             communicator = new Communicator();
             communicator.IncomingErrorEvent += ErrorReceived;
@@ -99,6 +99,7 @@ namespace SpreadsheetGUI
                 ServertextBox.Text = ServertextBox.Text + msg[i];
             }
             numberOfCellsReceived = Convert.ToInt32(msg[1]);//not sure what use this is but it is required in the spec
+            sendToServer = true;
             ConnectButton.Text = "Register User"; 
             //if message that user has connected is received change the text on the Connect button to Register User
             //to allow a person that is logged in to register a user.
@@ -173,7 +174,7 @@ namespace SpreadsheetGUI
             if (Cell_Contents.Focused == true && e.KeyCode == Keys.Return)
             {
                 UpdateCell(Cell_Name.Text, Cell_Contents.Text);
-                sendToServer = true;
+                //sendToServer = true; //not needed
                 /* Tuple<int, int> cell_adress;
                  IEnumerable<string> updates = null;
                  try
@@ -242,7 +243,7 @@ namespace SpreadsheetGUI
              }*/
                 // added by Dharani, edited by Scott
             }
-            if (sendToServer)
+            if (sendToServer) //if statement is not needed but doesn't hurt anything
             {
                 try
                 {
@@ -254,7 +255,7 @@ namespace SpreadsheetGUI
                     MessageBox.Show("Could not send the cell information to Server!\n" + ex.Message);
                     return;
                 }
-                sendToServer = false;
+                //sendToServer = false;
             }
         }
 
@@ -274,7 +275,8 @@ namespace SpreadsheetGUI
                 updates = actual_spreadsheet.SetContentsOfCell(cellName, content);
             }
             catch
-            {
+            {//need to update this section when a circular dependency occurs to revert the cells back to previous value in cell
+                //currently it is just setting the cell to equal ""
                 StatusText.Text = " A Circular Dependency has occured.";
                 statusStrip1.Invalidate();
                 GUICells.GetSelection(out col, out row);

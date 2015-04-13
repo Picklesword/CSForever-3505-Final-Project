@@ -1,0 +1,257 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SpreadsheetGUI</name>
+    </assembly>
+    <members>
+        <member name="T:SpreadsheetGUI.Form1">
+            <summary>
+            This is the gui for the spreadsheet.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.#ctor">
+            <summary>
+            Generates a new gui for the spreadsheet 
+            </summary>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.ServerStatusReceived(System.String)">
+            <summary>
+            This method pops up a message box to display the message sent by server about it's status
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.CellUpdateReceived(System.String[])">
+            <summary>
+            This invent updates the content of a cell
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.ConnectedMsgReceived(System.String[])">
+            <summary>
+            This method updates the status of connection with the server, when it is connected.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.ConnectErrorReceived(System.String)">
+            <summary>
+            This method is invoked when a connection could not be established either because the server
+            is not running or the IP address and port are incorrect
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.ErrorReceived(System.String)">
+            <summary>
+            This method is invoked when an error message is received from the server
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.displaySelection(SS.SpreadsheetPanel)">
+            <summary>
+            Causes the appropriate information to be displayed by cells 
+            and also the textboxes for name value and content 
+            </summary>
+            <param name="ss"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.redraw(System.Object,System.EventArgs)">
+            <summary>
+            Causes the spreadsheet panel to refresh itself 
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.Edit_Cell_Contents(System.Object,System.Windows.Forms.KeyEventArgs)">
+            <summary>
+            Updates the spreadsheet logic and causes the 
+            cells to be refreshed. Also determines 
+            if cells should show content in case of 
+            formula that can't eval or circular dependency 
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.UpdateCell(System.String,System.String)">
+            <summary>
+            This method updates the cell contents to spreadsheet and refreshes GUI
+            </summary>
+            <param name="cellName"></param>
+            <param name="content"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.Reverse_Cell_Name(System.String)">
+            <summary>
+            This get two ints corresponding to the col and row 
+            based on given string version of the cell name 
+            </summary>
+            <param name="s"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.saveToolStripMenuItem_Click(System.Object,System.EventArgs)">
+            <summary>
+            This sets up the save dialog box 
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.openToolStripMenuItem_Click(System.Object,System.EventArgs)">
+            <summary>
+            Sets up the open/load dialog box when open is clicked on from menu 
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.saveFileDialog1_FileOk(System.Object,System.ComponentModel.CancelEventArgs)">
+            <summary>
+            Will check if a file exist and give warning 
+            and try to save to choosen file address 
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.saveFileDialog1_FileCancel(System.Object,System.EventArgs)">
+            <summary>
+            makes note that 
+            after choosing to save 
+            to prevent data loss
+            cancel was pressed 
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.opendFileDialog1_FileOk(System.Object,System.ComponentModel.CancelEventArgs)">
+            <summary>
+            Attempts to open from file given 
+            also warns if current data is unsaved
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.possible_overide(System.Object)">
+            <summary>
+            Creates the message box 
+            giving the option to save so data 
+            is not lost 
+            </summary>
+            <param name="sender"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.label1_Click(System.Object,System.EventArgs)">
+            <summary>
+            nothing accidentally generated it
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.newToolStripMenuItem_Click(System.Object,System.EventArgs)">
+            <summary>
+            Starts a new instance of the spreadsheet gui
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.closeToolStripMenuItem_Click(System.Object,System.EventArgs)">
+            <summary>
+            starts to close the current gui app 
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.Form_Close_Check(System.Object,System.Windows.Forms.FormClosingEventArgs)">
+            <summary>
+            Checks to make sure not overriding data 
+            and give the option to save if you are 
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.GoToCell(System.Object,System.Windows.Forms.KeyEventArgs)">
+            <summary>
+            Will set up so you can input to desired cell 
+            but will not take you there on the grid 
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.HelpOnMenu_Click(System.Object,System.EventArgs)">
+            <summary>
+            Launches the help message box 
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.undoToolStripMenuItem_Click(System.Object,System.EventArgs)">
+            <summary>
+            Sends the message undo to the server.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="F:SpreadsheetGUI.Form1.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:SpreadsheetGUI.SpreadsheetGUIApplicationContext">
+            <summary>
+            The SpreadsheetGUIApplicationContext will allow for mulitple 
+            instances of the smae form type to exist without all closing when single 
+            closes
+            </summary>
+        </member>
+        <member name="M:SpreadsheetGUI.SpreadsheetGUIApplicationContext.#ctor">
+            <summary>
+            creates instance of spreadsheetguiApplicationcontext
+            </summary>
+        </member>
+        <member name="M:SpreadsheetGUI.SpreadsheetGUIApplicationContext.getSpreadAppContext">
+            <summary>
+            Creates a new app context if one does not exist 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SpreadsheetGUI.SpreadsheetGUIApplicationContext.RunInstance(System.Windows.Forms.Form)">
+            <summary>
+            Make sure some instance is running and checks 
+            if any instances are running when one closes 
+            so thread can end. 
+            </summary>
+            <param name="form"></param>
+        </member>
+        <member name="T:SpreadsheetGUI.Program">
+            <summary>
+            The main program lanches the gui 
+            </summary>
+        </member>
+        <member name="M:SpreadsheetGUI.Program.Main">
+            <summary>
+            The main entry point for the application to start.
+            </summary>
+        </member>
+        <member name="T:SpreadsheetGUI.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:SpreadsheetGUI.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:SpreadsheetGUI.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+    </members>
+</doc>

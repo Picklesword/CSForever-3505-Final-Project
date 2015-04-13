@@ -9,3 +9,14 @@
 \\chips.eng.utah.edu\home\syoung\.win_my_documents\GitHub\CSForever-3505-Final-Project\PS6\Spreadsheet\obj\Debug\Spreadsheet.csprojResolveAssemblyReference.cache
 \\chips.eng.utah.edu\home\syoung\.win_my_documents\GitHub\CSForever-3505-Final-Project\PS6\Spreadsheet\obj\Debug\Spreadsheet.dll
 \\chips.eng.utah.edu\home\syoung\.win_my_documents\GitHub\CSForever-3505-Final-Project\PS6\Spreadsheet\obj\Debug\Spreadsheet.pdb
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\PS6\Spreadsheet\bin\Debug\Spreadsheet.XML
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\PS6\Spreadsheet\bin\Debug\Spreadsheet.dll
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\PS6\Spreadsheet\bin\Debug\Spreadsheet.pdb
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\PS6\Spreadsheet\bin\Debug\Formula.dll
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\PS6\Spreadsheet\bin\Debug\SpreadsheetUtilities.dll
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\PS6\Spreadsheet\bin\Debug\StringSocketOfficial.dll
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\PS6\Spreadsheet\bin\Debug\Formula.xml
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\PS6\Spreadsheet\bin\Debug\SpreadsheetUtilities.xml
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\PS6\Spreadsheet\obj\Debug\Spreadsheet.csprojResolveAssemblyReference.cache
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\PS6\Spreadsheet\obj\Debug\Spreadsheet.dll
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\PS6\Spreadsheet\obj\Debug\Spreadsheet.pdb
