@@ -10,73 +10,42 @@ using System.Threading.Tasks;
 namespace SS
 {
     /// <summary>
-    /// 
+    /// This class handles the communication between the server and the spreadsheet client and provides
+    /// appropriate information to the view (spreadsheet GUI).
     /// </summary>
     public class Communicator
     {
         // The socket used to communicate with the server
         private StringSocket socket;
-
-        // This is when we receive a start string and need to start all the stuff
-        /// <summary>
-        /// 
-        /// </summary>
-        public event Action<String[]> IncomingStartEvent;
-
+       
         /// <summary>
         /// Action when error received
         /// </summary>
-        public event Action<String[]> IncomingErrorEvent;
+        public event Action<String> IncomingErrorEvent;
 
         /// <summary>
-        /// 
+        /// This event triggeres the view to display the status that the client is connected to the server
         /// </summary>
         public event Action<String[]> IncomingConnectedEvent;
 
-
+        /// <summary>
+        /// This event triggers the cells to he updated after receiving update signal from the server
+        /// </summary>
         public event Action<String[]> IncomingCellEvent;
-            
-            
-            
-        // This is when we receive a stop string and need to stop all the stuff
-        /// <summary>
-        /// 
-        /// </summary>
-        public event Action<String[]> IncomingStopEvent;
 
-        // This is when we receive a time and need to update it
         /// <summary>
-        /// 
-        /// </summary>
-        public event Action<String> IncomingTimeEvent;
-
-        // This is when we receive the score and need to update it
-        /// <summary>
-        /// 
-        /// </summary>
-        public event Action<String[]> IncomingScoreEvent;
-
-        // This is when we receive the game has been terminated
-        /// <summary>
-        /// 
-        /// </summary>
-        public event Action<String> IncomingTerminatedEvent;
-
-        // This is when we receive the game has been terminated
-        /// <summary>
-        /// 
+        /// This event provides the status of server to the view
         /// </summary>
         public event Action<String> ServerEvent;
 
-        // This is when we receive the game has been terminated
-        //public event Action<String> AnythingEvent;
         /// <summary>
-        /// 
+        /// This event is used to provide message to the client when the server is not runnig or if 
+        /// the server info is incorrect
         /// </summary>
-        public string tempString = "";
-
+        public event Action<String> IncomingConnectEvent; 
+      
         /// <summary>
-        /// 
+        /// This is the default constructor. It just initializes the socket to null.
         /// </summary>
         public Communicator()
         {
@@ -92,10 +61,28 @@ namespace SS
         /// <param name="portS">Connection port</param>
         public void Connect(string hostname, String name, String spreadsheetName, String portS)
         {
-            int port = Convert.ToInt32(portS, 10);
-            TcpClient client = new TcpClient(hostname, port);
-            socket = new StringSocket(client.Client, ASCIIEncoding.Default);
-            socket.BeginSend("connect|" + name + "|" + spreadsheetName + "\n", (e, p) => { }, null);
+            try
+            {
+                int port = Convert.ToInt32(portS, 10);
+                TcpClient client = new TcpClient(hostname, port);
+                socket = new StringSocket(client.Client, ASCIIEncoding.Default);
+                socket.BeginSend("connect|" + name + "|" + spreadsheetName + "\n", (e, p) => { }, null);
+                socket.BeginReceive(LineReceived, null);
+            }
+            catch(SocketException)
+            {
+                Disconnect();
+                IncomingConnectEvent("Could not connect to the server! \nEither server is not running or the server IP address and port number are not correct. \n\nPlease try again.");
+            }
+        }
+
+        /// <summary>
+        /// //method to send to server to register a new user
+        /// </summary>
+        /// <param name="name">String</param>
+        public void RegisterUser(String name)
+        {
+            socket.BeginSend("register|" + name, (e, p) => { }, null);
             socket.BeginReceive(LineReceived, null);
         }
 
@@ -106,6 +93,9 @@ namespace SS
         /// <param name="line">Message from GUI</param>
         public void SendMessage(String line)
         {
+            //If the client is not connected to the server, The spreadsheet will still update the local copy of spreadsheet.
+            // but it won't be saved to the server. -Dharani
+            
             if (socket != null)
             {
                 try
@@ -119,6 +109,10 @@ namespace SS
                     ServerEvent("The server has crashed");
                 }
             }
+            else
+            {
+                throw new Exception("Could not update the server. You are not connected!");
+            }
         }
 
         /// <summary>
@@ -126,7 +120,8 @@ namespace SS
         /// </summary>
         public void Disconnect()
         {
-            socket.Close();
+            if(socket != null)
+                socket.Close();
         }
 
         /// <summary>
@@ -148,8 +143,14 @@ namespace SS
             }
 
             string temp = s.ToUpper();
-            s = s.Trim();
             string[] words = s.Split('|');
+            int wordsCount = words.Count();
+
+            // remove any white spaces between words
+            for( int i = 0; i < wordsCount; i ++)
+            {
+                words[i] = words[i].Trim();
+            }
 
 
             // handles reception of start game message, the letters of the board, populates client timer, 
@@ -157,25 +158,35 @@ namespace SS
 
             if(temp.StartsWith("ERROR"))
             {
+
+                // Dharani: 
+                // I  was not sure if we need to disconnect on every occurance of error. I think this should not be the case
+                // but would like to change it after team discussion
+                //Also, protocol says the error command and the ID are separated by an space only. We might
+                // need to parse it differently just for handling error. It should be a very easy fix if we need to change.
                 if(words[1].CompareTo("0") == 0)
                 {
-
+                    IncomingErrorEvent("Unknown error occured!");
+                    Disconnect(); //disconnect socket
                 }
                 else if(words[1].CompareTo("1") == 0)
                 {
-
+                    IncomingErrorEvent("Invalid cell change request!");
+                    Disconnect(); //disconnect socket
                 }
                 else if (words[1].CompareTo("2") == 0)
                 {
-
+                    IncomingErrorEvent("Invalid command or the syntax is not was not recignized!");
+                    Disconnect(); //disconnect socket
                 }
                 else if (words[1].CompareTo("3") == 0)
                 {
-
+                    IncomingErrorEvent("Unable to perform the command in the current state!");
+                    Disconnect(); //disconnect socket
                 }
                 else //error 4 is an unregistered username. we disconnect the socket and send a message to user to use a registered name
                 {
-                    IncomingErrorEvent(words);
+                    IncomingErrorEvent("The username provided is invalid. \nMake sure you are registered before logging in.");
                     Disconnect(); //disconnect socket
                 }
 
@@ -188,65 +199,13 @@ namespace SS
             else if (temp.StartsWith("CELL"))
             {
                 if(IncomingCellEvent != null)
-                {
+                { 
                     IncomingCellEvent(words);
                     socket.BeginReceive(LineReceived, null);
                 }
             }
 
-            if (temp.StartsWith("START"))
-            {
-                if (IncomingStartEvent != null)
-                {
-                    IncomingStartEvent(words);
-                    socket.BeginReceive(LineReceived, null);
-                }
-            }
-
-            // handles reception of Score update message, updates both scores, the format is own score first.
-            else if (temp.StartsWith("SCORE"))
-            {
-                if (IncomingScoreEvent != null)
-                {
-                    IncomingScoreEvent(words);
-                    socket.BeginReceive(LineReceived, null);
-                }
-            }
-
-            // handles reception of game timer update message, updates the game timer every second.
-            else if (temp.StartsWith("TIME"))
-            {
-                if (IncomingTimeEvent != null)
-                {
-                    IncomingTimeEvent(words[1]);
-                    socket.BeginReceive(LineReceived, null);
-                }
-            }
-
-            // handles reception of game over message, this string comes as a long list of 5 types of words:
-            // own valid words, opponent valid words, common valid words, own invalid words, and opponent invalid words, 
-            // and updates the MainButton State
-
-            else if (temp.StartsWith("STOP"))
-            {
-                if (IncomingStopEvent != null)
-                {
-                    IncomingStopEvent(words);
-                    socket.BeginReceive(LineReceived, null);
-                }
-            }
-
-            // handles reception of game disconnect message, Displays a terminated message to the player, and updates
-            // The MainButton state.
-
-            else if (temp.StartsWith("TERMINATED"))
-            {
-                if (IncomingTerminatedEvent != null)
-                {
-                    IncomingTerminatedEvent(words[0]);
-                }
-            }
-
+            
             else
             {
                 // should never happen, here for debugging

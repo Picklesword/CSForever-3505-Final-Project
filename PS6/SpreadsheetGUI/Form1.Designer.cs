@@ -60,6 +60,8 @@
             this.Go_to_Cell = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.ServertextBox = new System.Windows.Forms.TextBox();
+            this.SConsollabel = new System.Windows.Forms.Label();
             this.MenuBar.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -221,6 +223,8 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.SConsollabel);
+            this.panel1.Controls.Add(this.ServertextBox);
             this.panel1.Controls.Add(this.portLabel);
             this.panel1.Controls.Add(this.portTextBox);
             this.panel1.Controls.Add(this.filenamelabel);
@@ -293,9 +297,9 @@
             this.NameLabel.AutoSize = true;
             this.NameLabel.Location = new System.Drawing.Point(574, 6);
             this.NameLabel.Name = "NameLabel";
-            this.NameLabel.Size = new System.Drawing.Size(67, 13);
+            this.NameLabel.Size = new System.Drawing.Size(63, 13);
             this.NameLabel.TabIndex = 14;
-            this.NameLabel.Text = "Login Name:";
+            this.NameLabel.Text = "User Name:";
             // 
             // ServerIPTextBox
             // 
@@ -361,6 +365,24 @@
             this.splitContainer1.SplitterDistance = 86;
             this.splitContainer1.TabIndex = 10;
             // 
+            // ServertextBox
+            // 
+            this.ServertextBox.Location = new System.Drawing.Point(371, 3);
+            this.ServertextBox.Multiline = true;
+            this.ServertextBox.Name = "ServertextBox";
+            this.ServertextBox.Size = new System.Drawing.Size(197, 20);
+            this.ServertextBox.TabIndex = 19;
+            this.ServertextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // SConsollabel
+            // 
+            this.SConsollabel.AutoSize = true;
+            this.SConsollabel.Location = new System.Drawing.Point(283, 6);
+            this.SConsollabel.Name = "SConsollabel";
+            this.SConsollabel.Size = new System.Drawing.Size(82, 13);
+            this.SConsollabel.TabIndex = 20;
+            this.SConsollabel.Text = "Server Console:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -424,6 +446,8 @@
         private System.Windows.Forms.TextBox fileNameTextBox;
         private System.Windows.Forms.Label portLabel;
         private System.Windows.Forms.TextBox portTextBox;
+        private System.Windows.Forms.Label SConsollabel;
+        private System.Windows.Forms.TextBox ServertextBox;
 
     }
 }

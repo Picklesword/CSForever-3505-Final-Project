@@ -22,3 +22,4 @@
 \\chips.eng.utah.edu\home\syoung\.win_desktop\PS6\SpreadsheetGUI\bin\Debug\SpreadsheetGUI.XML
 \\chips.eng.utah.edu\home\syoung\.win_desktop\PS6\SpreadsheetGUI\obj\Debug\SpreadsheetGUI.exe
 \\chips.eng.utah.edu\home\syoung\.win_desktop\PS6\SpreadsheetGUI\obj\Debug\SpreadsheetGUI.pdb
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\PS6\SpreadsheetGUI\bin\Debug\SpreadsheetGUI.exe.config

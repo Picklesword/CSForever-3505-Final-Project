@@ -20,19 +20,28 @@ namespace SpreadsheetGUI
     public partial class Form1 : Form
     {
         private Spreadsheet actual_spreadsheet;// the logic of the spreadsheet
-        private Communicator socketConnection;
+        private Communicator communicator;
         private bool cancel_from_overwrite;// checks to see if canceled when dealing with potential overwrites 
         const string form_error = @"(FormulaError)";// regex used to help detect formula error values in spreadsheet 
         private string file_name;// will be used to look back at last file saved to 
-
+        private bool sendToServer = false;
+        private int numberOfCellsReceived;
         /// <summary>
         /// Generates a new gui for the spreadsheet 
         /// </summary>
         public Form1()
         {
             InitializeComponent();
-            socketConnection = new Communicator();
-            socketConnection.IncomingErrorEvent += ErrorReceived;
+
+            // following components handle communication with server
+            communicator = new Communicator();
+            communicator.IncomingErrorEvent += ErrorReceived;
+            communicator.IncomingConnectEvent += ConnectErrorReceived;
+            communicator.IncomingConnectedEvent += ConnectedMsgReceived;
+            communicator.IncomingCellEvent += CellUpdateReceived;
+            communicator.ServerEvent += ServerStatusReceived;
+            numberOfCellsReceived = 0;
+            //Internal spreadsheet events
             this.FormClosing += new FormClosingEventHandler(Form_Close_Check);
             GUICells.SelectionChanged += displaySelection;
             GUICells.SetSelection(0, 0);
@@ -45,34 +54,60 @@ namespace SpreadsheetGUI
             Cell_Name.Text = "A1";
             Cell_Value.Text = "";
             Go_to_Cell.KeyDown += new KeyEventHandler(GoToCell);
-
-
-
         }
 
-        private void ErrorReceived(string[] msg)
+        /// <summary>
+        /// This method pops up a message box to display the message sent by server about it's status
+        /// </summary>
+        /// <param name="obj"></param>
+        private void ServerStatusReceived(string obj)
         {
-            if (msg[1].CompareTo("0") == 0)
-            {
-                              
-            }
-            else if(msg[1].CompareTo("1") == 0)
-            {
+            MessageBox.Show(obj);
+        }
+        /// <summary>
+        /// This invent updates the content of a cell
+        /// </summary>
+        /// <param name="msg"></param>
+        private void CellUpdateReceived(string[] msg)
+        {
+            //Update the cell locally.
+            UpdateCell(msg[1], msg[2]); 
+            //msg[0] contains the word cell, the following array locations should contain cell name and
+            //contents
+            
+        }
 
-            }
-            else if(msg[1].CompareTo("2") == 0)
-            {
+        /// <summary>
+        /// This method updates the status of connection with the server, when it is connected.
+        /// </summary>
+        /// <param name="obj"></param>
+        private void ConnectedMsgReceived(string[] msg)
+        {
+            //when connected message is received from the server it sends the number of cells 
+            //contained in the spreadsheet
+            numberOfCellsReceived = Convert.ToInt32(msg[1]);//not sure what use this is but it is required in the spec
+            ConnectButton.Text = "Register User"; 
+            //if message that user has connected is received change the text on the Connect button to Register User
+            //to allow a person that is logged in to register a user.
+        }
 
-            }
-            else if (msg[1].CompareTo("3") == 0)
-            {
+        /// <summary>
+        /// This method is invoked when a connection could not be established either because the server
+        /// is not running or the IP address and port are incorrect
+        /// </summary>
+        /// <param name="msg"></param>
+        private void ConnectErrorReceived(string msg)
+        {
+            MessageBox.Show(msg);
+        }
 
-            }
-            else //error 4
-            { 
-                MessageBox.Show("User name is invalid. It is already registered or has not been added by another registered user.")
-            }
-
+        /// <summary>
+        /// This method is invoked when an error message is received from the server
+        /// </summary>
+        /// <param name="msg"></param>
+        private void ErrorReceived(string msg)
+        {
+            MessageBox.Show(msg);
         }
 
 
@@ -120,64 +155,154 @@ namespace SpreadsheetGUI
         /// <param name="e"></param>
         private void Edit_Cell_Contents(object sender, KeyEventArgs e)
         {
-            int row, col;
             if (Cell_Contents.Focused == true && e.KeyCode == Keys.Return)
             {
-                Tuple<int, int> cell_adress;
-                IEnumerable<string> updates = null;
+                UpdateCell(Cell_Name.Text, Cell_Contents.Text);
+                sendToServer = true;
+                /* Tuple<int, int> cell_adress;
+                 IEnumerable<string> updates = null;
+                 try
+                 {
+                     updates = actual_spreadsheet.SetContentsOfCell(Cell_Name.Text, Cell_Contents.Text);
+                 }
+                 catch
+                 {
+                     StatusText.Text = " A Circular Dependency has occured.";
+                     statusStrip1.Invalidate();
+                     GUICells.GetSelection(out col, out row);
+                     GUICells.SetValue(col, row, "");
+                     return;
+                 }
+
+                 // added by Dharani
+                 try
+                 {
+                     string cellInfo = Cell_Name.Text + "|" + Cell_Contents.Text;
+                     communicator.SendMessage(cellInfo);
+                 }
+                 catch(Exception ex)
+                 {
+                     StatusText.Text = " Could not send the cell information to Server!\n" + ex.Message;
+                     return;
+                 }
+
+
+                 StatusText.Text = " All Formulas Able to Evaluate";
+                 GUICells.GetSelection(out col, out row);
+                 if (Regex.IsMatch(actual_spreadsheet.GetCellValue(Cell_Name.Text).ToString(), form_error))
+                 {
+                     GUICells.SetValue(col, row, "");
+                     StatusText.Text = " Not All Formulas Able to Evaluate";
+                 }
+                 else
+                 {
+                     GUICells.SetValue(col, row, actual_spreadsheet.GetCellValue(Cell_Name.Text).ToString());
+                 }
+
+
+                 foreach (string s in updates)
+                 {
+                     cell_adress = Reverse_Cell_Name(s);
+                     if (Regex.IsMatch(actual_spreadsheet.GetCellValue(s).ToString(), form_error))
+                     {
+                         GUICells.SetValue(cell_adress.Item1, cell_adress.Item2, "");
+                         StatusText.Text = "Not All Formulas Able to Evaluate";
+
+                     }
+                     else
+                     {
+                         GUICells.SetValue(cell_adress.Item1, cell_adress.Item2, actual_spreadsheet.GetCellValue(s).ToString());
+                     }
+                 }
+                 IEnumerable<string> temp_it = actual_spreadsheet.GetNamesOfAllNonemptyCells();
+                 foreach (string s in temp_it)
+                 {
+                     if (Regex.IsMatch(actual_spreadsheet.GetCellValue(s).ToString(), form_error))
+                     {
+                         StatusText.Text = "Not All Formulas Able to Evaluate";
+
+                     }
+                 } 
+                 displaySelection(GUICells);
+             }*/
+                // added by Dharani
+            }
+            if (sendToServer)
+            {
                 try
                 {
-                    updates = actual_spreadsheet.SetContentsOfCell(Cell_Name.Text, Cell_Contents.Text);
-
+                    string cellInfo = Cell_Name.Text + "|" + Cell_Contents.Text;
+                    communicator.SendMessage(cellInfo);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    StatusText.Text = " A Circular Dependency has occured.";
-                    statusStrip1.Invalidate();
-                    GUICells.GetSelection(out col, out row);
-                    GUICells.SetValue(col, row, "");
+                    MessageBox.Show("Could not send the cell information to Server!\n" + ex.Message);
                     return;
                 }
-                StatusText.Text = " All Formulas Able to Evaluate";
+            }
+        }
+
+        /// <summary>
+        /// This method updates the cell contents to spreadsheet and refreshes GUI
+        /// </summary>
+        /// <param name="cellName"></param>
+        /// <param name="content"></param>
+
+        private void UpdateCell(string cellName, string content)
+        {
+            int row, col;
+            Tuple<int, int> cell_adress;
+            IEnumerable<string> updates = null;
+            try
+            {
+                updates = actual_spreadsheet.SetContentsOfCell(cellName, content);
+            }
+            catch
+            {
+                StatusText.Text = " A Circular Dependency has occured.";
+                statusStrip1.Invalidate();
                 GUICells.GetSelection(out col, out row);
-                if (Regex.IsMatch(actual_spreadsheet.GetCellValue(Cell_Name.Text).ToString(), form_error))
+                GUICells.SetValue(col, row, "");
+                return;
+            }
+
+            StatusText.Text = " All Formulas Able to Evaluate";
+            GUICells.GetSelection(out col, out row);
+            if (Regex.IsMatch(actual_spreadsheet.GetCellValue(Cell_Name.Text).ToString(), form_error))
+            {
+                GUICells.SetValue(col, row, "");
+                StatusText.Text = " Not All Formulas Able to Evaluate";
+            }
+            else
+            {
+                GUICells.SetValue(col, row, actual_spreadsheet.GetCellValue(Cell_Name.Text).ToString());
+            }
+
+
+            foreach (string s in updates)
+            {
+                cell_adress = Reverse_Cell_Name(s);
+                if (Regex.IsMatch(actual_spreadsheet.GetCellValue(s).ToString(), form_error))
                 {
-                    GUICells.SetValue(col, row, "");
-                    StatusText.Text = " Not All Formulas Able to Evaluate";
+                    GUICells.SetValue(cell_adress.Item1, cell_adress.Item2, "");
+                    StatusText.Text = "Not All Formulas Able to Evaluate";
+
                 }
                 else
                 {
-                    GUICells.SetValue(col, row, actual_spreadsheet.GetCellValue(Cell_Name.Text).ToString());
+                    GUICells.SetValue(cell_adress.Item1, cell_adress.Item2, actual_spreadsheet.GetCellValue(s).ToString());
                 }
-
-
-                foreach (string s in updates)
-                {
-                    cell_adress = Reverse_Cell_Name(s);
-                    if (Regex.IsMatch(actual_spreadsheet.GetCellValue(s).ToString(), form_error))
-                    {
-                        GUICells.SetValue(cell_adress.Item1, cell_adress.Item2, "");
-                        StatusText.Text = "Not All Formulas Able to Evaluate";
-
-                    }
-                    else
-                    {
-                        GUICells.SetValue(cell_adress.Item1, cell_adress.Item2, actual_spreadsheet.GetCellValue(s).ToString());
-                    }
-                }
-                IEnumerable<string> temp_it = actual_spreadsheet.GetNamesOfAllNonemptyCells();
-                foreach (string s in temp_it)
-                {
-                    if (Regex.IsMatch(actual_spreadsheet.GetCellValue(s).ToString(), form_error))
-                    {
-                        StatusText.Text = "Not All Formulas Able to Evaluate";
-
-                    }
-                }
-                displaySelection(GUICells);
-
-
             }
+            IEnumerable<string> temp_it = actual_spreadsheet.GetNamesOfAllNonemptyCells();
+            foreach (string s in temp_it)
+            {
+                if (Regex.IsMatch(actual_spreadsheet.GetCellValue(s).ToString(), form_error))
+                {
+                    StatusText.Text = "Not All Formulas Able to Evaluate";
+
+                }
+            }
+            displaySelection(GUICells);
         }
 
         /// <summary>
@@ -271,8 +396,6 @@ namespace SpreadsheetGUI
                 DialogResult error_mes = MessageBox.Show(message, caption, button);
 
             }
-
-
         }
 
         /// <summary>
@@ -461,8 +584,6 @@ namespace SpreadsheetGUI
                     }
                     Cell_Value.Text = actual_spreadsheet.GetCellValue(Go_to_Cell.Text).ToString();
                     Go_to_Cell.Text = "";
-
-
                 }
                 catch
                 {
@@ -491,9 +612,42 @@ namespace SpreadsheetGUI
 
         private void ConnectButton_Click(object sender, EventArgs e)
         {
-            socketConnection.Connect(ServerIPTextBox.Text, LoginNameTextBox.Text, fileNameTextBox.Text, portTextBox.Text);
+            //if ConnectButton.Text == Connect then the user hasn't connected to the server. once it has the text will change
+            if (ConnectButton.Text == "Connect")
+            {
+                if (LoginNameTextBox.Text == "")
+                {
+                    MessageBox.Show("Please enter your username!");
+                    LoginNameTextBox.Focus();
+                    return;
+                }
+                else if (fileNameTextBox.Text == "")
+                {
+                    MessageBox.Show("Please enter the filename you want to open or create!");
+                    fileNameTextBox.Focus();
+                    return;
+                }
+                else if (ServerIPTextBox.Text == "")
+                {
+                    MessageBox.Show("Please enter the IP address of the server you want to connect to.");
+                    ServerIPTextBox.Focus();
+                    return;
+                }
+                else
+                    communicator.Connect(ServerIPTextBox.Text, LoginNameTextBox.Text, fileNameTextBox.Text, portTextBox.Text);
+            }
+            else if(ConnectButton.Text == "Register User")
+            {
+                if (LoginNameTextBox.Text == "")
+                {
+                    MessageBox.Show("Please enter a name to be registered");
+                    LoginNameTextBox.Focus();
+                    return;
+                }
+                else
+                    communicator.RegisterUser(LoginNameTextBox.Text);
 
-
-        }
+            }
+        }//end ConnectButton Method
     }
 }
