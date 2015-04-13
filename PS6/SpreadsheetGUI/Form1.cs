@@ -240,13 +240,13 @@ namespace SpreadsheetGUI
                  } 
                  displaySelection(GUICells);
              }*/
-                // added by Dharani
+                // added by Dharani, edited by Scott
             }
             if (sendToServer)
             {
                 try
                 {
-                    string cellInfo = Cell_Name.Text + "|" + Cell_Contents.Text;
+                    string cellInfo = "cell|" + Cell_Name.Text + "|" + Cell_Contents.Text;
                     communicator.SendMessage(cellInfo);
                 }
                 catch (Exception ex)
@@ -254,6 +254,7 @@ namespace SpreadsheetGUI
                     MessageBox.Show("Could not send the cell information to Server!\n" + ex.Message);
                     return;
                 }
+                sendToServer = false;
             }
         }
 
@@ -627,7 +628,7 @@ namespace SpreadsheetGUI
 
         private void ConnectButton_Click(object sender, EventArgs e)
         {
-            //if ConnectButton.Text == Connect then the user hasn't connected to the server. once it has the text will change
+            //if ConnectButton.Text == Connect then the user hasn't connected to the server. once it has the text will change to register user
             if (ConnectButton.Text == "Connect")
             {
                 if (LoginNameTextBox.Text == "")
