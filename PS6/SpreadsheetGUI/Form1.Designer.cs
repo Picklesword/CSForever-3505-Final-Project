@@ -34,6 +34,8 @@
             this.SaveOnMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenOnMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.CloseOnMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpOnMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -48,6 +50,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.Open = new System.Windows.Forms.OpenFileDialog();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.SConsollabel = new System.Windows.Forms.Label();
+            this.ServertextBox = new System.Windows.Forms.TextBox();
             this.portLabel = new System.Windows.Forms.Label();
             this.portTextBox = new System.Windows.Forms.TextBox();
             this.filenamelabel = new System.Windows.Forms.Label();
@@ -60,10 +64,6 @@
             this.Go_to_Cell = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.ServertextBox = new System.Windows.Forms.TextBox();
-            this.SConsollabel = new System.Windows.Forms.Label();
-            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuBar.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -123,6 +123,21 @@
             this.CloseOnMenu.Size = new System.Drawing.Size(103, 22);
             this.CloseOnMenu.Text = "Close";
             this.CloseOnMenu.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.undoToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.editToolStripMenuItem.Text = "Edit";
+            // 
+            // undoToolStripMenuItem
+            // 
+            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.undoToolStripMenuItem.Text = "Undo";
+            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
             // HelpOnMenu
             // 
@@ -251,6 +266,23 @@
             this.panel1.Size = new System.Drawing.Size(852, 86);
             this.panel1.TabIndex = 9;
             // 
+            // SConsollabel
+            // 
+            this.SConsollabel.AutoSize = true;
+            this.SConsollabel.Location = new System.Drawing.Point(283, 6);
+            this.SConsollabel.Name = "SConsollabel";
+            this.SConsollabel.Size = new System.Drawing.Size(82, 13);
+            this.SConsollabel.TabIndex = 20;
+            this.SConsollabel.Text = "Server Console:";
+            // 
+            // ServertextBox
+            // 
+            this.ServertextBox.Location = new System.Drawing.Point(371, 3);
+            this.ServertextBox.Multiline = true;
+            this.ServertextBox.Name = "ServertextBox";
+            this.ServertextBox.Size = new System.Drawing.Size(197, 77);
+            this.ServertextBox.TabIndex = 19;
+            // 
             // portLabel
             // 
             this.portLabel.AutoSize = true;
@@ -367,39 +399,6 @@
             this.splitContainer1.Size = new System.Drawing.Size(852, 445);
             this.splitContainer1.SplitterDistance = 86;
             this.splitContainer1.TabIndex = 10;
-            // 
-            // ServertextBox
-            // 
-            this.ServertextBox.Location = new System.Drawing.Point(371, 3);
-            this.ServertextBox.Multiline = true;
-            this.ServertextBox.Name = "ServertextBox";
-            this.ServertextBox.Size = new System.Drawing.Size(197, 20);
-            this.ServertextBox.TabIndex = 19;
-            this.ServertextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // SConsollabel
-            // 
-            this.SConsollabel.AutoSize = true;
-            this.SConsollabel.Location = new System.Drawing.Point(283, 6);
-            this.SConsollabel.Name = "SConsollabel";
-            this.SConsollabel.Size = new System.Drawing.Size(82, 13);
-            this.SConsollabel.TabIndex = 20;
-            this.SConsollabel.Text = "Server Console:";
-            // 
-            // editToolStripMenuItem
-            // 
-            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.undoToolStripMenuItem});
-            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
-            this.editToolStripMenuItem.Text = "Edit";
-            // 
-            // undoToolStripMenuItem
-            // 
-            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.undoToolStripMenuItem.Text = "Undo";
-            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
             // Form1
             // 

@@ -168,29 +168,30 @@ namespace SS
                 // but would like to change it after team discussion
                 //Also, protocol says the error command and the ID are separated by an space only. We might
                 // need to parse it differently just for handling error. It should be a very easy fix if we need to change.
+                //Note added by Scott: Server determines the message being sent to the client.  Client does not determine the error msg.
                 if(words[1].CompareTo("0") == 0)
                 {
-                    IncomingErrorEvent("Unknown error occured!");
+                    IncomingErrorEvent(words[2]);
                     Disconnect(); //disconnect socket
                 }
                 else if(words[1].CompareTo("1") == 0)
                 {
-                    IncomingErrorEvent("Invalid cell change request!");
+                    IncomingErrorEvent(words[2]);
                     Disconnect(); //disconnect socket
                 }
                 else if (words[1].CompareTo("2") == 0)
                 {
-                    IncomingErrorEvent("Invalid command or the syntax is not was not recignized!");
+                    IncomingErrorEvent(words[2]);
                     Disconnect(); //disconnect socket
                 }
                 else if (words[1].CompareTo("3") == 0)
                 {
-                    IncomingErrorEvent("Unable to perform the command in the current state!");
+                    IncomingErrorEvent(words[2]);
                     Disconnect(); //disconnect socket
                 }
                 else //error 4 is an unregistered username. we disconnect the socket and send a message to user to use a registered name
                 {
-                    IncomingErrorEvent("The username provided is invalid. \nMake sure you are registered before logging in.");
+                    IncomingErrorEvent(words[2]);
                     Disconnect(); //disconnect socket
                 }
 
