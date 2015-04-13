@@ -62,6 +62,8 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.ServertextBox = new System.Windows.Forms.TextBox();
             this.SConsollabel = new System.Windows.Forms.Label();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuBar.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -76,6 +78,7 @@
             this.MenuBar.BackColor = System.Drawing.SystemColors.ControlLight;
             this.MenuBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FileOnMenu,
+            this.editToolStripMenuItem,
             this.HelpOnMenu});
             this.MenuBar.Location = new System.Drawing.Point(0, 0);
             this.MenuBar.Name = "MenuBar";
@@ -383,6 +386,21 @@
             this.SConsollabel.TabIndex = 20;
             this.SConsollabel.Text = "Server Console:";
             // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.undoToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.editToolStripMenuItem.Text = "Edit";
+            // 
+            // undoToolStripMenuItem
+            // 
+            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.undoToolStripMenuItem.Text = "Undo";
+            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -448,6 +466,8 @@
         private System.Windows.Forms.TextBox portTextBox;
         private System.Windows.Forms.Label SConsollabel;
         private System.Windows.Forms.TextBox ServertextBox;
+        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem undoToolStripMenuItem;
 
     }
 }

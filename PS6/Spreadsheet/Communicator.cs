@@ -82,9 +82,12 @@ namespace SS
         /// <param name="name">String</param>
         public void RegisterUser(String name)
         {
-            socket.BeginSend("register|" + name, (e, p) => { }, null);
+            socket.BeginSend("register|" + name + "\n", (e, p) => { }, null);
             socket.BeginReceive(LineReceived, null);
         }
+
+        
+        
 
         /// <summary>
         /// Sends a message from the client to the server.  The message is passed in from the GUI
@@ -101,6 +104,7 @@ namespace SS
                 try
                 {
                     socket.BeginSend(line + "\n", (e, p) => { }, null);
+                    socket.BeginReceive(LineReceived, null); //Scott added this to make sure that this is listening after it sends its message
                 }
                 catch (Exception e)
                 {

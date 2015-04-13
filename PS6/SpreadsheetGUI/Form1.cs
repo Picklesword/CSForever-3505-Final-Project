@@ -62,6 +62,7 @@ namespace SpreadsheetGUI
         /// <param name="obj"></param>
         private void ServerStatusReceived(string obj)
         {
+            ServertextBox.Text = obj;
             MessageBox.Show(obj);
         }
         /// <summary>
@@ -70,6 +71,14 @@ namespace SpreadsheetGUI
         /// <param name="msg"></param>
         private void CellUpdateReceived(string[] msg)
         {
+            //outputs what we see from the server for debug and possible to allow the user to see what the server is sending
+            /*
+            for (int i = 0; i < msg.Length; i++)
+            {
+                ServertextBox.Text = ServertextBox.Text + msg[i];
+
+            }
+             */
             //Update the cell locally.
             UpdateCell(msg[1], msg[2]); 
             //msg[0] contains the word cell, the following array locations should contain cell name and
@@ -85,6 +94,10 @@ namespace SpreadsheetGUI
         {
             //when connected message is received from the server it sends the number of cells 
             //contained in the spreadsheet
+            for (int i = 0; i < msg.Length; i++)
+            {
+                ServertextBox.Text = ServertextBox.Text + msg[i];
+            }
             numberOfCellsReceived = Convert.ToInt32(msg[1]);//not sure what use this is but it is required in the spec
             ConnectButton.Text = "Register User"; 
             //if message that user has connected is received change the text on the Connect button to Register User
@@ -98,6 +111,7 @@ namespace SpreadsheetGUI
         /// <param name="msg"></param>
         private void ConnectErrorReceived(string msg)
         {
+            ServertextBox.Text = msg;
             MessageBox.Show(msg);
         }
 
@@ -107,6 +121,7 @@ namespace SpreadsheetGUI
         /// <param name="msg"></param>
         private void ErrorReceived(string msg)
         {
+            ServertextBox.Text = msg;
             MessageBox.Show(msg);
         }
 
@@ -648,6 +663,16 @@ namespace SpreadsheetGUI
                     communicator.RegisterUser(LoginNameTextBox.Text);
 
             }
+        }
+
+        /// <summary>
+        /// Sends the message undo to the server.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            communicator.SendMessage("undo");
         }//end ConnectButton Method
     }
 }
