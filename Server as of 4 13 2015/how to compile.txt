@@ -1,0 +1,3 @@
+Line to compile server
+
+g++ server.cpp spreadhseet.cpp -lpthread
