@@ -182,7 +182,7 @@ namespace SpreadsheetGUI
         {
             if (Cell_Contents.Focused == true && e.KeyCode == Keys.Return)
             {
-                UpdateCell(Cell_Name.Text, Cell_Contents.Text); //may need to remove this and only do it when the server accepts the change
+                UpdateCell(Cell_Name.Text, Cell_Contents.Text); 
 
                 //sendToServer = true; //not needed
                 /* Tuple<int, int> cell_adress;
@@ -278,6 +278,9 @@ namespace SpreadsheetGUI
         private void UpdateCell(string cellName, string content)
         {
             int row, col;
+            //store previous cell contents to reset back to old value if error occurs
+            //object tempCellContents = actual_spreadsheet.GetCellValue(cellName);
+
             Tuple<int, int> cell_adress;
             IEnumerable<string> updates = null;
             try
@@ -289,6 +292,7 @@ namespace SpreadsheetGUI
                 //currently it is just setting the cell to equal ""
                 StatusText.Text = " A Circular Dependency has occured.";
                 statusStrip1.Invalidate();
+           
                 GUICells.GetSelection(out col, out row);
                 GUICells.SetValue(col, row, "");
                 return;
