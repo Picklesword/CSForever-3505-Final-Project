@@ -62,7 +62,7 @@ namespace SpreadsheetGUI
         /// <param name="obj"></param>
         private void ServerStatusReceived(string obj)
         {
-            ServertextBox.Text = obj;
+          ServertextBox.Text = obj;
             MessageBox.Show(obj);
         }
         /// <summary>
@@ -139,7 +139,12 @@ namespace SpreadsheetGUI
             ss.GetSelection(out col, out row);
             ss.GetValue(col, row, out value);
             Cell_Name.Text = ((char)('A' + col)).ToString() + (row + 1).ToString();
+            if(InvokeRequired)
+            {
+                Cell_Value.Invoke(new MethodInvoker(delegate { Cell_Value.Text = actual_spreadsheet.GetCellValue(Cell_Name.Text).ToString(); }));
+            }
             Cell_Value.Text = actual_spreadsheet.GetCellValue(Cell_Name.Text).ToString();
+            
             if (actual_spreadsheet.GetCellContents(Cell_Name.Text).GetType() != typeof(Double) &&
                 actual_spreadsheet.GetCellContents(Cell_Name.Text).GetType() != typeof(string))
             {
@@ -147,6 +152,10 @@ namespace SpreadsheetGUI
             }
             else
             {
+                if (InvokeRequired)
+                {
+                    Cell_Contents.Invoke(new MethodInvoker(delegate { Cell_Contents.Text = actual_spreadsheet.GetCellContents(Cell_Name.Text).ToString(); }));
+                }
                 Cell_Contents.Text = actual_spreadsheet.GetCellContents(Cell_Name.Text).ToString();
             }
         }
