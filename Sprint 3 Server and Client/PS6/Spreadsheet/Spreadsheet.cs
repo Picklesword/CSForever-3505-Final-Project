@@ -71,7 +71,7 @@ namespace SS
         /// <summary>
         /// Creates a new empty spreadsheet. Using default version validator and normalizer.
         /// </summary>
-        public Spreadsheet() : base(s => true, s => s, "default") {
+        public Spreadsheet() : base(s => true, s => s.ToUpper(), "default") {
             sheet = new Dictionary<string, Cell>();
             sheet_deps = new DependencyGraph();
             
@@ -347,6 +347,7 @@ namespace SS
         public override ISet<String> SetContentsOfCell(String name, String content)
         {
             double temp_doub;
+            //name = name.ToUpper(); //sets the name to uppercase
             ISet<string> return_set; 
 
             if (content == null) throw new ArgumentNullException();                                // checks to make sure conent is provided 

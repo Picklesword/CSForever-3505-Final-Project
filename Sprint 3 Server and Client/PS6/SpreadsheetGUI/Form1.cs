@@ -79,8 +79,22 @@ namespace SpreadsheetGUI
 
             }
              */
+            string cellContents = "";
             //Update the cell locally.
-            UpdateCell(msg[1], msg[2]); 
+            for (int i = 2; i < msg.Length; i++)
+            {
+                
+                //creates a string from the message received from the server
+                if (i == msg.Length - 1)
+                    cellContents = cellContents + msg[i];
+                else
+                    cellContents = cellContents + msg + " ";
+
+                
+            }
+
+            UpdateCell(msg[1], cellContents);
+            //UpdateCell(msg[1], msg[2]); 
             //msg[0] contains the word cell, the following array locations should contain cell name and
             //contents
             
@@ -94,13 +108,31 @@ namespace SpreadsheetGUI
         {
             //when connected message is received from the server it sends the number of cells 
             //contained in the spreadsheet
-            for (int i = 0; i < msg.Length; i++)
+            if (InvokeRequired)
             {
-                ServertextBox.Text = ServertextBox.Text + msg[i];
+                for (int i = 0; i < msg.Length; i++)
+                {
+                    ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = ServertextBox.Text + msg[i]; }));
+                }
+            }
+            else
+            {
+                for (int i = 0; i < msg.Length; i++)
+                {
+                    ServertextBox.Text = ServertextBox.Text + msg[i];
+                }
             }
             numberOfCellsReceived = Convert.ToInt32(msg[1]);//not sure what use this is but it is required in the spec
             sendToServer = true;
-            ConnectButton.Text = "Register User"; 
+            if (InvokeRequired)
+            {
+                ConnectButton.Invoke(new MethodInvoker(delegate { ConnectButton.Text = "Register User"; }));
+            }
+            else
+            {
+                ConnectButton.Text = "Register User";
+            }
+             
             //if message that user has connected is received change the text on the Connect button to Register User
             //to allow a person that is logged in to register a user.
         }
@@ -112,8 +144,16 @@ namespace SpreadsheetGUI
         /// <param name="msg"></param>
         private void ConnectErrorReceived(string msg)
         {
-            ServertextBox.Text = msg;
-            MessageBox.Show(msg);
+            if (InvokeRequired)
+            {
+                ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = msg; }));
+            }
+            else
+            {
+                ServertextBox.Text = msg;
+            }
+            
+            //MessageBox.Show(msg);
         }
 
         /// <summary>
@@ -122,8 +162,15 @@ namespace SpreadsheetGUI
         /// <param name="msg"></param>
         private void ErrorReceived(string msg)
         {
-            ServertextBox.Text = msg;
-            MessageBox.Show(msg);
+            if (InvokeRequired)
+            {
+                ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = msg; }));
+            }
+            else
+            {
+                ServertextBox.Text = msg;
+            }
+            //MessageBox.Show(msg);
         }
 
 
@@ -278,9 +325,7 @@ namespace SpreadsheetGUI
         private void UpdateCell(string cellName, string content)
         {
             int row, col;
-            //store previous cell contents to reset back to old value if error occurs
-            //object tempCellContents = actual_spreadsheet.GetCellValue(cellName);
-
+            //cellName = cellName.ToUpper(); //makes the cell name uppercase
             Tuple<int, int> cell_adress;
             IEnumerable<string> updates = null;
             try
@@ -292,9 +337,9 @@ namespace SpreadsheetGUI
                 //currently it is just setting the cell to equal ""
                 StatusText.Text = " A Circular Dependency has occured.";
                 statusStrip1.Invalidate();
-           
-                GUICells.GetSelection(out col, out row);
-                GUICells.SetValue(col, row, "");
+                sendToServer = false;
+                //GUICells.GetSelection(out col, out row);
+                //GUICells.SetValue(col, row, "");
                 return;
             }
 
@@ -334,6 +379,7 @@ namespace SpreadsheetGUI
 
                 }
             }
+            sendToServer = true;
             displaySelection(GUICells);
         }
 
@@ -647,6 +693,7 @@ namespace SpreadsheetGUI
             //if ConnectButton.Text == Connect then the user hasn't connected to the server. once it has the text will change to register user
             if (ConnectButton.Text == "Connect")
             {
+                actual_spreadsheet = new Spreadsheet(x => true, x => x.ToUpper(), "ps6"); //make a new clean spreadsheet
                 if (LoginNameTextBox.Text == "")
                 {
                     MessageBox.Show("Please enter your username!");
