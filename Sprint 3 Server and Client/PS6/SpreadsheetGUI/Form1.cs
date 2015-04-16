@@ -56,14 +56,31 @@ namespace SpreadsheetGUI
             Go_to_Cell.KeyDown += new KeyEventHandler(GoToCell);
         }
 
+        private void ErrorReceived(string[] msg)
+        {
+            if (InvokeRequired)
+            {
+                ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = msg[2]; }));
+            }
+            else
+            {
+                ServertextBox.Text = msg[2];
+            }
+        }
+
         /// <summary>
         /// This method pops up a message box to display the message sent by server about it's status
         /// </summary>
         /// <param name="obj"></param>
         private void ServerStatusReceived(string obj)
         {
-          ServertextBox.Text = obj;
-            MessageBox.Show(obj);
+            if (InvokeRequired)
+            {
+                ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = obj; }));
+            }
+            else
+                ServertextBox.Text = obj;
+            //MessageBox.Show(obj);
         }
         /// <summary>
         /// This invent updates the content of a cell
@@ -83,21 +100,21 @@ namespace SpreadsheetGUI
             //Update the cell locally.
             for (int i = 2; i < msg.Length; i++)
             {
-                
+
                 //creates a string from the message received from the server
                 if (i == msg.Length - 1)
                     cellContents = cellContents + msg[i];
                 else
                     cellContents = cellContents + msg + " ";
 
-                
+
             }
 
             UpdateCell(msg[1], cellContents);
             //UpdateCell(msg[1], msg[2]); 
             //msg[0] contains the word cell, the following array locations should contain cell name and
             //contents
-            
+
         }
 
         /// <summary>
@@ -132,7 +149,7 @@ namespace SpreadsheetGUI
             {
                 ConnectButton.Text = "Register User";
             }
-             
+
             //if message that user has connected is received change the text on the Connect button to Register User
             //to allow a person that is logged in to register a user.
         }
@@ -152,24 +169,7 @@ namespace SpreadsheetGUI
             {
                 ServertextBox.Text = msg;
             }
-            
-            //MessageBox.Show(msg);
-        }
 
-        /// <summary>
-        /// This method is invoked when an error message is received from the server
-        /// </summary>
-        /// <param name="msg"></param>
-        private void ErrorReceived(string msg)
-        {
-            if (InvokeRequired)
-            {
-                ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = msg; }));
-            }
-            else
-            {
-                ServertextBox.Text = msg;
-            }
             //MessageBox.Show(msg);
         }
 
@@ -186,12 +186,12 @@ namespace SpreadsheetGUI
             ss.GetSelection(out col, out row);
             ss.GetValue(col, row, out value);
             Cell_Name.Text = ((char)('A' + col)).ToString() + (row + 1).ToString();
-            if(InvokeRequired)
+            if (InvokeRequired)
             {
                 Cell_Value.Invoke(new MethodInvoker(delegate { Cell_Value.Text = actual_spreadsheet.GetCellValue(Cell_Name.Text).ToString(); }));
             }
             Cell_Value.Text = actual_spreadsheet.GetCellValue(Cell_Name.Text).ToString();
-            
+
             if (actual_spreadsheet.GetCellContents(Cell_Name.Text).GetType() != typeof(Double) &&
                 actual_spreadsheet.GetCellContents(Cell_Name.Text).GetType() != typeof(string))
             {
@@ -229,7 +229,7 @@ namespace SpreadsheetGUI
         {
             if (Cell_Contents.Focused == true && e.KeyCode == Keys.Return)
             {
-                UpdateCell(Cell_Name.Text, Cell_Contents.Text); 
+                UpdateCell(Cell_Name.Text, Cell_Contents.Text);
 
                 //sendToServer = true; //not needed
                 /* Tuple<int, int> cell_adress;
@@ -715,7 +715,7 @@ namespace SpreadsheetGUI
                 else
                     communicator.Connect(ServerIPTextBox.Text, LoginNameTextBox.Text, fileNameTextBox.Text, portTextBox.Text);
             }
-            else if(ConnectButton.Text == "Register User")
+            else if (ConnectButton.Text == "Register User")
             {
                 if (LoginNameTextBox.Text == "")
                 {

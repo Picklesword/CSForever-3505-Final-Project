@@ -21,7 +21,7 @@ namespace SS
         /// <summary>
         /// Action when error received
         /// </summary>
-        public event Action<String> IncomingErrorEvent;
+        public event Action<String[]> IncomingErrorEvent;
 
         /// <summary>
         /// This event triggeres the view to display the status that the client is connected to the server
@@ -171,27 +171,27 @@ namespace SS
                 //Note added by Scott: Server determines the message being sent to the client.  Client does not determine the error msg.
                 if(words[1].CompareTo("0") == 0)
                 {
-                    IncomingErrorEvent(words[2]);
+                    IncomingErrorEvent(words);
                     Disconnect(); //disconnect socket
                 }
                 else if(words[1].CompareTo("1") == 0)
                 {
-                    IncomingErrorEvent(words[2]);
+                    IncomingErrorEvent(words);
                     Disconnect(); //disconnect socket
                 }
                 else if (words[1].CompareTo("2") == 0)
                 {
-                    IncomingErrorEvent(words[2]);
+                    IncomingErrorEvent(words);
                     Disconnect(); //disconnect socket
                 }
                 else if (words[1].CompareTo("3") == 0)
                 {
-                    IncomingErrorEvent(words[2]);
+                    IncomingErrorEvent(words);
                     Disconnect(); //disconnect socket
                 }
                 else //error 4 is an unregistered username. we disconnect the socket and send a message to user to use a registered name
                 {
-                    IncomingErrorEvent(words[2]);
+                    IncomingErrorEvent(words);
                     Disconnect(); //disconnect socket
                 }
 
