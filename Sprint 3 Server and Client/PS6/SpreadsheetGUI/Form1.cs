@@ -42,6 +42,7 @@ namespace SpreadsheetGUI
             communicator.ServerEvent += ServerStatusReceived;
             numberOfCellsReceived = 0;
             //Internal spreadsheet events
+            ServertextBox.Enabled = false; //disables user interaction with the console window from server
             this.FormClosing += new FormClosingEventHandler(Form_Close_Check);
             GUICells.SelectionChanged += displaySelection;
             GUICells.SetSelection(0, 0);
@@ -174,11 +175,17 @@ namespace SpreadsheetGUI
         {
             if (InvokeRequired)
             {
+                if (msg.CompareTo("The server has crashed") == 0)
+                    actual_spreadsheet = new Spreadsheet(x => true, x => x.ToUpper(), "ps6"); //make a new clean spreadsheet
+
                 ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = ""; }));
                 ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = msg; }));
             }
             else
             {
+                if (msg.CompareTo("The server has crashed") == 0)
+                    actual_spreadsheet = new Spreadsheet(x => true, x => x.ToUpper(), "ps6"); //make a new clean spreadsheet
+                
                 ServertextBox.Text = "";
                 ServertextBox.Text = msg;
             }
