@@ -64,7 +64,7 @@ namespace SpreadsheetGUI
         {
             if (InvokeRequired)
             {
-                ServertextBox.Text = "";
+                ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = ""; }));
                 for (int i = 2; i < msg.Length; i++)
                     ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = msg[i] + " "; }));
             }
@@ -84,7 +84,7 @@ namespace SpreadsheetGUI
         {
             if (InvokeRequired)
             {
-                ServertextBox.Text = "";
+                ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = ""; }));
                 ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = obj; }));
             }
             else
@@ -136,7 +136,7 @@ namespace SpreadsheetGUI
             //contained in the spreadsheet
             if (InvokeRequired)
             {
-                ServertextBox.Text = "";
+                ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = ""; }));
                 for (int i = 0; i < msg.Length; i++)
                 {
                     ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = ServertextBox.Text + msg[i] + " "; }));
@@ -174,10 +174,12 @@ namespace SpreadsheetGUI
         {
             if (InvokeRequired)
             {
+                ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = ""; }));
                 ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = msg; }));
             }
             else
             {
+                ServertextBox.Text = "";
                 ServertextBox.Text = msg;
             }
 
@@ -242,6 +244,23 @@ namespace SpreadsheetGUI
             {
                 UpdateCell(Cell_Name.Text, Cell_Contents.Text);
 
+
+
+                if (sendToServer) //if statement is not needed but doesn't hurt anything
+                {
+                    try
+                    {
+                        string cellInfo = "cell " + Cell_Name.Text + " " + Cell_Contents.Text;
+                        communicator.SendMessage(cellInfo);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Could not send the cell information to Server!\n" + ex.Message);
+                        return;
+                    }
+                    sendToServer = false;
+                }
+                
                 //sendToServer = true; //not needed
                 /* Tuple<int, int> cell_adress;
                  IEnumerable<string> updates = null;
@@ -311,20 +330,7 @@ namespace SpreadsheetGUI
              }*/
                 // added by Dharani, edited by Scott
             }
-            if (sendToServer) //if statement is not needed but doesn't hurt anything
-            {
-                try
-                {
-                    string cellInfo = "cell " + Cell_Name.Text + " " + Cell_Contents.Text;
-                    communicator.SendMessage(cellInfo);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Could not send the cell information to Server!\n" + ex.Message);
-                    return;
-                }
-                //sendToServer = false;
-            }
+            
         }
 
         /// <summary>
@@ -332,7 +338,6 @@ namespace SpreadsheetGUI
         /// </summary>
         /// <param name="cellName"></param>
         /// <param name="content"></param>
-
         private void UpdateCell(string cellName, string content)
         {
             int row, col;

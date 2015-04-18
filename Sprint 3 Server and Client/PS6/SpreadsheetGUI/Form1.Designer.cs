@@ -316,6 +316,7 @@
             this.fileNameTextBox.Name = "fileNameTextBox";
             this.fileNameTextBox.Size = new System.Drawing.Size(100, 20);
             this.fileNameTextBox.TabIndex = 15;
+            this.fileNameTextBox.Text = "test";
             this.fileNameTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // ServerIPLabel
