@@ -86,7 +86,14 @@ namespace SpreadsheetGUI
             if (obj.CompareTo("The server has crashed") == 0)
             {
                 GUICells.Clear();
-                ConnectButton.Text = "Connect";
+                if (InvokeRequired)
+                {
+                    ConnectButton.Invoke(new MethodInvoker(delegate { ConnectButton.Text = "Connect"; }));
+                }
+                else
+                {
+                    ConnectButton.Text = "Connect";
+                }
                
             }
 
@@ -110,13 +117,25 @@ namespace SpreadsheetGUI
         private void CellUpdateReceived(string[] msg)
         {
             //outputs what we see from the server for debug and possible to allow the user to see what the server is sending
-            /*
+            if(InvokeRequired)
+                {
+                    ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = ""; }));
+                }
+                else
+                    ServertextBox.Text = "";
+
             for (int i = 0; i < msg.Length; i++)
             {
-                ServertextBox.Text = ServertextBox.Text + msg[i];
+
+                if(InvokeRequired)
+                {
+                    ServertextBox.Invoke(new MethodInvoker(delegate {ServertextBox.Text = ServertextBox.Text + msg[i] + " ";}));
+                }
+                else
+                    ServertextBox.Text = ServertextBox.Text + msg[i] + " ";
 
             }
-             */
+            
             string cellContents = "";
             //Update the cell locally.
             for (int i = 2; i < msg.Length; i++)
@@ -724,7 +743,7 @@ namespace SpreadsheetGUI
             //if ConnectButton.Text == Connect then the user hasn't connected to the server. once it has the text will change to register user
             if (ConnectButton.Text == "Connect")
             {
-                
+                GUICells.Clear(); //clear the cells so that it only contains what from the server
                 if (LoginNameTextBox.Text == "")
                 {
                     MessageBox.Show("Please enter your username!");
