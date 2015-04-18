@@ -64,11 +64,13 @@ namespace SpreadsheetGUI
         {
             if (InvokeRequired)
             {
+                ServertextBox.Text = "";
                 for (int i = 2; i < msg.Length; i++)
                     ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = msg[i] + " "; }));
             }
             else
             {
+                ServertextBox.Text = "";
                 for (int i = 2; i < msg.Length; i++)
                     ServertextBox.Text = msg[i] + " ";
             }
@@ -82,6 +84,7 @@ namespace SpreadsheetGUI
         {
             if (InvokeRequired)
             {
+                ServertextBox.Text = "";
                 ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = obj; }));
             }
             else
@@ -133,6 +136,7 @@ namespace SpreadsheetGUI
             //contained in the spreadsheet
             if (InvokeRequired)
             {
+                ServertextBox.Text = "";
                 for (int i = 0; i < msg.Length; i++)
                 {
                     ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = ServertextBox.Text + msg[i] + " "; }));
@@ -140,6 +144,7 @@ namespace SpreadsheetGUI
             }
             else
             {
+                ServertextBox.Text = "";
                 for (int i = 0; i < msg.Length; i++)
                 {
                     ServertextBox.Text = ServertextBox.Text + msg[i] + " ";
