@@ -83,13 +83,20 @@ namespace SpreadsheetGUI
         /// <param name="obj">string</param>
         private void ServerStatusReceived(string obj)
         {
+            if (obj.CompareTo("The server has crashed") == 0)
+                actual_spreadsheet = new Spreadsheet(x => true, x => x.ToUpper(), "ps6"); //make a new clean spreadsheet
+
             if (InvokeRequired)
             {
                 ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = ""; }));
                 ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = obj; }));
             }
             else
+            {
+                ServertextBox.Text = "";
                 ServertextBox.Text = obj;
+            }
+                
             //MessageBox.Show(obj);
         }
         /// <summary>
@@ -173,19 +180,16 @@ namespace SpreadsheetGUI
         /// <param name="msg"></param>
         private void ConnectErrorReceived(string msg)
         {
+            
             if (InvokeRequired)
             {
-                if (msg.CompareTo("The server has crashed") == 0)
-                    actual_spreadsheet = new Spreadsheet(x => true, x => x.ToUpper(), "ps6"); //make a new clean spreadsheet
+                 
 
                 ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = ""; }));
                 ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = msg; }));
             }
             else
-            {
-                if (msg.CompareTo("The server has crashed") == 0)
-                    actual_spreadsheet = new Spreadsheet(x => true, x => x.ToUpper(), "ps6"); //make a new clean spreadsheet
-                
+            {               
                 ServertextBox.Text = "";
                 ServertextBox.Text = msg;
             }
