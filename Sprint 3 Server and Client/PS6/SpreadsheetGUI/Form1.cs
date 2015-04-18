@@ -65,12 +65,12 @@ namespace SpreadsheetGUI
             if (InvokeRequired)
             {
                 for (int i = 2; i < msg.Length; i++)
-                    ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = msg[i]; }));
+                    ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = msg[i] + " "; }));
             }
             else
             {
                 for (int i = 2; i < msg.Length; i++)
-                    ServertextBox.Text = msg[i];
+                    ServertextBox.Text = msg[i] + " ";
             }
         }
 
@@ -135,14 +135,14 @@ namespace SpreadsheetGUI
             {
                 for (int i = 0; i < msg.Length; i++)
                 {
-                    ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = ServertextBox.Text + msg[i]; }));
+                    ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = ServertextBox.Text + msg[i] + " "; }));
                 }
             }
             else
             {
                 for (int i = 0; i < msg.Length; i++)
                 {
-                    ServertextBox.Text = ServertextBox.Text + msg[i];
+                    ServertextBox.Text = ServertextBox.Text + msg[i] + " ";
                 }
             }
             numberOfCellsReceived = Convert.ToInt32(msg[1]);//not sure what use this is but it is required in the spec

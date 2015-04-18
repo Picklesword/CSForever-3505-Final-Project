@@ -14,11 +14,17 @@
             Generates a new gui for the spreadsheet 
             </summary>
         </member>
+        <member name="M:SpreadsheetGUI.Form1.ErrorReceived(System.String[])">
+            <summary>
+            outputs the message received from the server for errors
+            </summary>
+            <param name="msg">string[]</param>
+        </member>
         <member name="M:SpreadsheetGUI.Form1.ServerStatusReceived(System.String)">
             <summary>
-            This method pops up a message box to display the message sent by server about it's status
+            This method displays a message sent by server about it's status
             </summary>
-            <param name="obj"></param>
+            <param name="obj">string</param>
         </member>
         <member name="M:SpreadsheetGUI.Form1.CellUpdateReceived(System.String[])">
             <summary>
