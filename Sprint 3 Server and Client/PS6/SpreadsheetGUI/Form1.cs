@@ -84,7 +84,11 @@ namespace SpreadsheetGUI
         private void ServerStatusReceived(string obj)
         {
             if (obj.CompareTo("The server has crashed") == 0)
-                actual_spreadsheet = new Spreadsheet(x => true, x => x.ToUpper(), "ps6"); //make a new clean spreadsheet
+            {
+                GUICells.Clear();
+                ConnectButton.Text = "Connect";
+               
+            }
 
             if (InvokeRequired)
             {
@@ -720,7 +724,7 @@ namespace SpreadsheetGUI
             //if ConnectButton.Text == Connect then the user hasn't connected to the server. once it has the text will change to register user
             if (ConnectButton.Text == "Connect")
             {
-                actual_spreadsheet = new Spreadsheet(x => true, x => x.ToUpper(), "ps6"); //make a new clean spreadsheet
+                
                 if (LoginNameTextBox.Text == "")
                 {
                     MessageBox.Show("Please enter your username!");
