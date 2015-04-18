@@ -41,6 +41,7 @@ namespace SpreadsheetGUI
             communicator.IncomingCellEvent += CellUpdateReceived;
             communicator.ServerEvent += ServerStatusReceived;
             numberOfCellsReceived = 0;
+            GUICells.Enabled = false;
             //Internal spreadsheet events
             ServertextBox.Enabled = false; //disables user interaction with the console window from server
             this.FormClosing += new FormClosingEventHandler(Form_Close_Check);
@@ -86,6 +87,11 @@ namespace SpreadsheetGUI
             if (obj.CompareTo("The server has crashed") == 0)
             {
                 GUICells.Clear();
+                if (InvokeRequired)
+                {
+                    GUICells.Invoke(new MethodInvoker(delegate { GUICells.Enabled = false; }));
+                }
+
                 if (InvokeRequired)
                 {
                     ConnectButton.Invoke(new MethodInvoker(delegate { ConnectButton.Text = "Connect"; }));
@@ -145,7 +151,7 @@ namespace SpreadsheetGUI
                 if (i == msg.Length - 1)
                     cellContents = cellContents + msg[i];
                 else
-                    cellContents = cellContents + msg + " ";
+                    cellContents = cellContents + msg[i] + " ";
 
 
             }
@@ -183,6 +189,12 @@ namespace SpreadsheetGUI
             }
             numberOfCellsReceived = Convert.ToInt32(msg[1]);//not sure what use this is but it is required in the spec
             sendToServer = true;
+            if(InvokeRequired)
+            {
+                GUICells.Invoke(new MethodInvoker(delegate { GUICells.Enabled = true; }));
+            }
+            
+
             if (InvokeRequired)
             {
                 ConnectButton.Invoke(new MethodInvoker(delegate { ConnectButton.Text = "Register User"; }));
@@ -743,7 +755,8 @@ namespace SpreadsheetGUI
             //if ConnectButton.Text == Connect then the user hasn't connected to the server. once it has the text will change to register user
             if (ConnectButton.Text == "Connect")
             {
-                GUICells.Clear(); //clear the cells so that it only contains what from the server
+                //GUICells.Clear(); //clear the cells so that it only contains what from the server
+                GUICells.Invalidate();
                 if (LoginNameTextBox.Text == "")
                 {
                     MessageBox.Show("Please enter your username!");

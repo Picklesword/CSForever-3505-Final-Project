@@ -460,7 +460,7 @@ namespace SS
                 }
             }
             //recalculate(name);                                                                          // will recalculate the dependents value 
-            IEnumerable<string> temp_ien = GetCellsToRecalculate(name).Skip(1);                                 // an ieunumerable containing all direct and indirect dependents 
+            IEnumerable<string> temp_ien = GetCellsToRecalculate(name);                                 // an ieunumerable containing all direct and indirect dependents 
             HashSet<string> temp_set = new HashSet<string>();                                          //  // a hash set to hold these depents 
        
             

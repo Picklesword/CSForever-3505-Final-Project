@@ -1,0 +1,10 @@
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\bin\Release\Spreadsheet.dll
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\bin\Release\Spreadsheet.pdb
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\bin\Release\Formula.dll
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\bin\Release\SpreadsheetUtilities.dll
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\bin\Release\StringSocketOfficial.dll
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\bin\Release\Formula.xml
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\bin\Release\SpreadsheetUtilities.xml
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\obj\Release\Spreadsheet.csprojResolveAssemblyReference.cache
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\obj\Release\Spreadsheet.dll
+C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\obj\Release\Spreadsheet.pdb
