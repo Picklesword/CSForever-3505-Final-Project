@@ -298,7 +298,7 @@
             this.portTextBox.Name = "portTextBox";
             this.portTextBox.Size = new System.Drawing.Size(100, 20);
             this.portTextBox.TabIndex = 17;
-            this.portTextBox.Text = "2000";
+            this.portTextBox.Text = "2112";
             this.portTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // filenamelabel
@@ -342,7 +342,7 @@
             this.ServerIPTextBox.Name = "ServerIPTextBox";
             this.ServerIPTextBox.Size = new System.Drawing.Size(100, 20);
             this.ServerIPTextBox.TabIndex = 13;
-            this.ServerIPTextBox.Text = "localhost";
+            this.ServerIPTextBox.Text = "155.98.111.67";
             this.ServerIPTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // LoginNameTextBox
@@ -351,6 +351,7 @@
             this.LoginNameTextBox.Name = "LoginNameTextBox";
             this.LoginNameTextBox.Size = new System.Drawing.Size(100, 20);
             this.LoginNameTextBox.TabIndex = 12;
+            this.LoginNameTextBox.Text = "sysadmin";
             this.LoginNameTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // ConnectButton

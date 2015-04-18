@@ -56,22 +56,28 @@ namespace SpreadsheetGUI
             Go_to_Cell.KeyDown += new KeyEventHandler(GoToCell);
         }
 
+        /// <summary>
+        /// outputs the message received from the server for errors
+        /// </summary>
+        /// <param name="msg">string[]</param>
         private void ErrorReceived(string[] msg)
         {
             if (InvokeRequired)
             {
-                ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = msg[2]; }));
+                for (int i = 2; i < msg.Length; i++)
+                    ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = msg[i]; }));
             }
             else
             {
-                ServertextBox.Text = msg[2];
+                for (int i = 2; i < msg.Length; i++)
+                    ServertextBox.Text = msg[i];
             }
         }
 
         /// <summary>
-        /// This method pops up a message box to display the message sent by server about it's status
+        /// This method displays a message sent by server about it's status
         /// </summary>
-        /// <param name="obj"></param>
+        /// <param name="obj">string</param>
         private void ServerStatusReceived(string obj)
         {
             if (InvokeRequired)
