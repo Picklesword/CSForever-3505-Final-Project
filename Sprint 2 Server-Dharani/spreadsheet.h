@@ -5,10 +5,17 @@
 
 #include <string.h>
 #include <map>
+#include <stack>
 
 /* Holds a spreadsheet information
  */
 using namespace std;
+
+typedef struct
+{
+  string first;
+  string last;
+} myTuple;
 
 class spreadsheet
 {
@@ -20,7 +27,8 @@ public:
   ~spreadsheet();
 
   map<string, string> cells;
-  stack<tuple<string, string>> stackOfevents;
+  stack< pair<string, string> > stackOfChanges; //added by Dharani
+  pair<string, string> undo(void); //Added by Dharani
 
   string name;  
 
@@ -29,9 +37,8 @@ public:
 private:
   void load_spreadsheet(std::string filename);
   void save_spreadsheet(std::string filename);  
-  void update_spreadsheet();
-  bool undo(); 
-
+  void update_spreadsheet(void);
+  
 };
 #endif
 

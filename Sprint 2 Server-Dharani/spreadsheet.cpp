@@ -143,7 +143,6 @@ void spreadsheet::save_spreadsheet(std::string filename)
    cells.insert ( pair<string,string>("c3","=10+1"));
    */
     ofstream save_file (full_name.c_str()); 
-
     if(save_file.is_open()){
         
         for (map<string,string>::iterator it = cells.begin(); it != cells.end(); ++it){
@@ -171,8 +170,13 @@ void spreadsheet::save_spreadsheet(std::string filename)
   
 }
 
-bool undo(void);
+//Added by Dharani
+pair <string, string> spreadsheet::undo(void)
 {
-  
+  pair <string, string> lastChange = stackOfChanges.top();
+  stackOfChanges.pop();
+  // myTuple lastChange = 
+  cells.erase(lastChange.first);
+  return lastChange;
 }
 
