@@ -9,9 +9,9 @@
           
           if(cell_contents[0] == '='){
 
-             set<string> temp_deps;                
+             set<char*> temp_deps;                
 
-            temp_deps = opened_spreadseets[spreadsheet]->Dependency_Check(temp_deps, const_cast<char*> (cell_name),const_cast<char*> (cell_contents), &dep);// this line should work but it seemed to not like the conversion in partial compile but did not have definition             
+            temp_deps = opened_spreadseets[spreadsheet]->Dependency_Check(temp_deps, const_cast<char*> (cell_name.c_str()),const_cast<char*> (cell_contents.c_str()), &dep);            
 
 			if(!dep){
 		  parsed = strtok(NULL, " =+/*-");//this line may require saving the previous contents as a separate char*
