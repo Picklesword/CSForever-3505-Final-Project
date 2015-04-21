@@ -1,0 +1,40 @@
+//code that should be about how to integrate into server rough did not have time to finish 
+
+//sets the cell contents as a string
+	  parsed = strtok (NULL, "\n\r");
+          string cell_contents(parsed);
+          cout << cell_contents << endl; 
+
+          int dep = 0; 
+          
+          if(cell_contents[0] == '='){
+
+             set<string> temp_deps;                
+
+            temp_deps = opened_spreadseets[spreadsheet]->Dependency_Check(temp_deps, const_cast<char*> (cell_name),const_cast<char*> (cell_contents), &dep);// this line should work but it seemed to not like the conversion in partial compile but did not have definition             
+
+			if(!dep){
+		  parsed = strtok(NULL, " =+/*-");//this line may require saving the previous contents as a separate char*
+          while(parsed !=NULL){
+
+		   opened_spreadsheets[spreadsheet]->depgraph.AddDependency(cell_name,parsed); 
+		   
+          parsed = strtok(NULL, " =+/*-");     
+               
+          
+          
+          }   
+          } else{
+
+		  //error handle 
+		  
+          }		  
+          } else{
+ 
+           opened_spreadsheets[spreadsheet]->depgraph.AddDependency(cell_name,cell_contents);		  
+          }		  
+
+          
+          
+
+          
