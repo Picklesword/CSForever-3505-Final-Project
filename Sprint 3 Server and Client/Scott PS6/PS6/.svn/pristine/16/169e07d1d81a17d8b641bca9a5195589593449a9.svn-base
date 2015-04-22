@@ -1,0 +1,909 @@
+﻿//Scott Young
+//U0824833
+//11-2-2013
+//this program create
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using SpreadsheetUtilities;
+using SS;
+using System.Text.RegularExpressions;
+
+namespace SpreadsheetGUI
+{
+    public partial class GUI : Form
+    {
+        private Spreadsheet sheet = new Spreadsheet();
+        private string filePath;
+        private Dictionary<string, List<string>> Cell;
+        private GUI gui;
+
+        public GUI()
+        {
+            InitializeComponent();
+            filePath = "";
+            Cell = new Dictionary<string, List<string>>();
+            //this.KeyPreview = true;
+            sheet = new Spreadsheet(isValid, Normalize, "ps6"); //need to implement an constructor that will normalize the values and get the version ps6
+
+            //spreadsheetPanel1.Size = System.Drawing.Size.Round(new SizeF(600, 600));
+            spreadsheetPanel1.SelectionChanged += displaySelection; //this is what displays the cells contents when you click on it
+            CellContentTB.KeyUp += new KeyEventHandler(CellContentTB_KeyUp);
+            backgroundWorker1.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
+            backgroundWorker1.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
+            //spreadsheetPanel1.SetSelection(0, 0);//sets the start locating in A1
+            backgroundWorker1.WorkerSupportsCancellation = true;
+            displaySelection(spreadsheetPanel1);
+            this.FormClosing += new FormClosingEventHandler(this.Form1_FormClosing);
+            //String cellName = calculateCellName(0) + (0 + 1);//gets the cell name 
+            //CellNameTB.Text = cellName; //stores cell name in TextBox
+
+
+
+        }
+
+        public GUI(string filePath)
+        {
+            InitializeComponent();
+            this.filePath = filePath;
+            sheet = new Spreadsheet(this.filePath, isValid, Normalize, "ps6");
+            updateAllDependentCells(sheet.GetNamesOfAllNonemptyCells().ToList());
+            backgroundWorker1.WorkerSupportsCancellation = true;
+            spreadsheetPanel1.SelectionChanged += displaySelection; //this is what updates the cells need to create text             
+            CellContentTB.KeyUp += new KeyEventHandler(CellContentTB_KeyUp);
+            displaySelection(spreadsheetPanel1);
+            this.FormClosing += new FormClosingEventHandler(this.Form1_FormClosing);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            string message = "Are you sure you would like to exit without saving?";
+            string caption = "Closing spreadsheet";
+
+            if (sheet.Changed)
+            {
+                var result = MessageBox.Show(message, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.No)
+                {
+                    e.Cancel = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CellContentTB_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (backgroundWorker1.IsBusy != true)
+                {
+                    // Start the asynchronous operation.
+                    backgroundWorker1.RunWorkerAsync();
+                }
+                //setCellContentsUpdateCellContents();
+                //if (sheet.Changed)
+                //    saveToolStripMenuItem.Enabled = true;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="st"></param>
+        /// <returns></returns>
+        public String Normalize(String st)
+        {
+            //String inputChanger;
+            st = st.ToUpper();
+            //inputChanger = "_" + st;
+
+            return st;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="st"></param>
+        /// <returns></returns>
+        public bool isValid(String st)
+        {
+            //Regex check = new Regex(@"(^[A-Z]");
+            Regex check = new Regex(@"(^[A-Z]+)([1-9]+)([0-9]*$)");
+            if (check.IsMatch(st))
+                return true;
+            else
+                return false;
+        }
+
+        // Every time the selection changes, this method is called with the
+        // Spreadsheet as its parameter.  We display the current time in the cell.
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ss"></param>
+        private void displaySelection(SpreadsheetPanel ss)
+        {
+            int row, col;
+            String value;
+            ss.GetSelection(out col, out row);
+            ss.GetValue(col, row, out value);
+
+            ClearCellValueTB();
+            //CellValueTB.Clear();
+            ClearCellContentTB();
+            //CellContentTB.Clear();
+
+            if (value == "")
+            {
+                getCellName(col, row);
+            }
+            else
+            {
+
+                String cellName = calculateCellName(col) + (row + 1);
+
+                UpdateCellNameTB(cellName);
+                //CellNameTB.Text = cellName;
+                UpdateCellContentTB(sheet.GetCellContents(cellName).ToString());
+                //CellContentTB.Text = sheet.GetCellContents(cellName).ToString();
+                UpdateCellValueTB(sheet.GetCellValue(cellName).ToString());
+                //CellValueTB.Text = sheet.GetCellValue(cellName).ToString();
+
+                ss.SetValue(col, row, sheet.GetCellValue(cellName).ToString());
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="text"></param>
+        private void UpdateCellNameTB(string text)
+        {
+            if (InvokeRequired)
+                Invoke(new Action<string>(UpdateCellNameTB), text);
+            else
+                CellNameTB.Text = text;
+        }
+
+        private void ClearCellValueTB()
+        {
+            if (InvokeRequired)
+                Invoke(new Action(ClearCellValueTB));
+            else
+                CellValueTB.Clear();
+        
+        }
+
+        private void ClearCellContentTB()
+        {
+            if (InvokeRequired)
+                Invoke(new Action(ClearCellContentTB));
+            else
+                CellContentTB.Clear();
+
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void setCellContentsUpdateCellContents(bool fromFindCell, string contentsFromFindAndReplace)
+        {
+            List<String> cellsToUpdate = new List<string>();
+            int row, col;
+            String value;
+            spreadsheetPanel1.GetSelection(out col, out row);
+            spreadsheetPanel1.GetValue(col, row, out value);
+
+            String cellName = calculateCellName(col) + (row + 1);
+            string cellValue = "";
+            CellNameTB.Text = cellName;
+            string contentsOfCell = "";
+
+            if (fromFindCell)
+                contentsOfCell = contentsFromFindAndReplace;
+            else
+                contentsOfCell = CellContentTB.Text;
+
+            List<string> currentCellName = new List<string>();
+            currentCellName.Add(cellName);
+
+            string tmpValue = "";
+            List<string> tempList = sheet.GetNamesOfAllNonemptyCells().ToList();
+            if(tempList.Contains(cellName))
+                tmpValue = sheet.GetCellValue(cellName).ToString();
+            
+            try
+            {
+                cellsToUpdate = sheet.SetContentsOfCell(cellName, contentsOfCell).ToList();
+                if (sheet.Changed)
+                    saveToolStripMenuItem.Enabled = true;
+
+                UpdateCellContentTB(sheet.GetCellContents(cellName).ToString());
+                //CellContentTB.Text = sheet.GetCellContents(cellName).ToString();
+                UpdateCellValueTB(sheet.GetCellValue(cellName).ToString());
+                //CellValueTB.Text = sheet.GetCellValue(cellName).ToString();
+                cellValue = sheet.GetCellValue(cellName).ToString();
+
+                FindListModifier(tmpValue, cellValue, cellName, cellsToUpdate);
+
+                spreadsheetPanel1.SetValue(col, row, sheet.GetCellValue(cellName).ToString());
+
+                if (cellsToUpdate.Count > 1)
+                {
+                    cellsToUpdate.RemoveAt(0);
+                    updateAllDependentCells(cellsToUpdate);
+                }
+            }
+            catch (CircularException exception)
+            {
+                handleCircularException(exception, contentsOfCell);
+                cellValue = sheet.GetCellValue(cellName).ToString();
+                FindListModifier(tmpValue, cellValue, cellName, cellsToUpdate);
+            }
+            catch (FormulaFormatException formulaEx)
+            {
+                handleInvalidNameException(formulaEx, contentsOfCell);
+                cellValue = sheet.GetCellValue(cellName).ToString();
+                FindListModifier(tmpValue, cellValue, cellName, cellsToUpdate);
+            }
+
+            
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tmpValue"></param>
+        /// <param name="cellValue"></param>
+        private void FindListModifier(string tmpValue, string cellValue, string cellName, List<String> cellsToUpdate)
+        {
+            if ((Cell.ContainsKey(tmpValue) && tmpValue != "") || Cell.ContainsKey(cellValue))
+            {
+                List<string> listName = new List<string>();
+                List<string> tmpList = new List<string>();
+                if (tmpValue != "")
+                {
+                    Cell.TryGetValue(tmpValue, out listName);
+                    foreach (string n in listName)
+                        tmpList.Add(n);
+                    int iterator = 0;
+                    foreach (string st in cellsToUpdate)
+                    {
+                        if (iterator == 0)
+                        {
+                            iterator++;
+                            continue;
+                        }
+                        tmpList.Add(st);
+                        listName.Add(st);
+                    }
+
+                    foreach (string n in listName)
+                    {
+                        string temp = sheet.GetCellValue(n).ToString();
+                        if (temp != tmpValue)
+                            tmpList.Remove(n);
+                    }
+
+                    listName = tmpList;
+                    
+                    if (listName.Count() == 0)
+                        Cell.Remove(tmpValue);
+                    else
+                    {
+                        //listName.Add(cellName);
+                        Cell.Remove(tmpValue);//remove the list 
+                        Cell.Add(tmpValue, listName); //create a new list
+                    }
+                }
+
+                if (Cell.ContainsKey(cellValue) && tmpValue != cellValue)
+                {
+                    listName = new List<string>();
+                    //tmpList = new List<string>();
+                    Cell.TryGetValue(cellValue, out listName);
+
+                    if (listName.Count() == 0)
+                    {
+                        Cell.Remove(cellValue);
+                    }
+                    else
+                    {
+                        //foreach (string n in listName)
+                        //tmpList.Add(n);
+                        listName.Add(cellName);
+
+                        if (cellsToUpdate.Count > 1)
+                        {
+                            int iterator = 0;
+                            foreach (string n in cellsToUpdate)
+                            {
+                                if (iterator == 0)
+                                {
+                                    iterator++;
+                                    continue;
+                                }
+                                listName.Add(n);
+                            }
+                        }
+
+                        Cell.Remove(cellValue);
+                        Cell.Add(cellValue, listName);
+                    }
+
+                }
+                else if(!Cell.ContainsKey(cellValue) && tmpValue != cellValue)
+                {
+                    List<string> listCellName = new List<string>();
+                    if (cellsToUpdate.Count > 1)
+                    {
+                        int iterator = 0;
+                        foreach (string n in cellsToUpdate)
+                        {
+                            if (iterator == 0)
+                            {
+                                iterator++;
+                                continue;
+                            }
+                            listCellName.Add(n);
+                        }
+                    }
+
+                    listCellName.Add(cellName);
+                    Cell.Add(cellValue, listCellName); //adding to dictionary for find gui.
+                }
+                //Cell.Remove();
+                //Cell.Add(cellName, cellValue);
+            }
+            else
+            {
+
+                List<string> listName = new List<string>();
+                listName.Add(cellName);
+                if (cellsToUpdate.Count > 1)
+                {
+                    int iterator = 0;
+                    foreach (string n in cellsToUpdate)
+                    {
+                        if (iterator == 0)
+                        {
+                            iterator++;
+                            continue;
+                        }
+                        listName.Add(n);
+                    }
+                }
+                Cell.Add(cellValue, listName); //adding to dictionary for find gui.
+            }
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="text"></param>
+        private void UpdateCellContentTB(string text)
+        {
+            if (InvokeRequired)
+                Invoke(new Action<string>(UpdateCellContentTB), text);
+            else
+                CellContentTB.Text = text;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="text"></param>
+        private void UpdateCellValueTB(string text)
+        {
+            if (InvokeRequired)
+                Invoke(new Action<string>(UpdateCellValueTB), text);
+            else
+                CellValueTB.Text = text;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cellsToUpdate"></param>
+        private void updateAllDependentCells(List<string> cellsToUpdate)
+        {
+            for (int i = 0; i < cellsToUpdate.Count; i++)
+            {
+                String tempCellName = cellsToUpdate.ElementAt(i);
+
+                char[] charCellName = tempCellName.ToCharArray();
+
+                int row = 0;
+                int tempRow = 0;
+                int col = 0;
+                for (int ix = 0; ix < charCellName.Length; ix++)
+                {
+
+                    if (int.TryParse(charCellName.ElementAt(ix).ToString(), out tempRow))
+                    {
+                        tempRow = tempRow - 1;
+                        row += tempRow;
+                    }
+                    else
+                        col += getColValue(charCellName.ElementAt(ix));
+
+                }
+                spreadsheetPanel1.SetValue(col, row, sheet.GetCellValue(tempCellName).ToString());
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="exception"></param>
+        /// <param name="formula"></param>
+        private void handleCircularException(CircularException exception, string formula)
+        {
+            int row, col;
+            //string value;
+            spreadsheetPanel1.GetSelection(out col, out row);
+
+            spreadsheetPanel1.SetValue(col, row, exception.Message);
+
+            string cellName = calculateCellName(col) + (row + 1);
+
+            sheet.SetContentsOfCell(cellName, (exception.Message + " \"" + formula + "\""));
+
+            UpdateCellValueTB((exception.Message) + sheet.GetCellValue(cellName).ToString());
+            UpdateCellContentTB((exception.Message) + sheet.GetCellContents(cellName).ToString());
+            //CellValueTB.Text = (exception.Message) + sheet.GetCellValue(cellName).ToString();
+            //CellContentTB.Text = (exception.Message) + sheet.GetCellContents(cellName).ToString();
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private int getColValue(char p)
+        {
+            switch (p)
+            {
+                case 'A':
+                    return 0;
+                case 'B':
+                    return 1;
+                case 'C':
+                    return 2;
+                case 'D':
+                    return 3;
+                case 'E':
+                    return 4;
+                case 'F':
+                    return 5;
+                case 'G':
+                    return 6;
+                case 'H':
+                    return 7;
+                case 'I':
+                    return 8;
+                case 'J':
+                    return 9;
+                case 'K':
+                    return 10;
+                case 'L':
+                    return 11;
+                case 'M':
+                    return 12;
+                case 'N':
+                    return 13;
+                case 'O':
+                    return 14;
+                case 'P':
+                    return 15;
+                case 'Q':
+                    return 16;
+                case 'R':
+                    return 17;
+                case 'S':
+                    return 18;
+                case 'T':
+                    return 19;
+                case 'U':
+                    return 20;
+                case 'V':
+                    return 21;
+                case 'W':
+                    return 22;
+                case 'X':
+                    return 23;
+                case 'Y':
+                    return 24;
+                case 'Z':
+                    return 25;
+                default:
+                    return -1;
+            }
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="col"></param>
+        /// <param name="row"></param>
+        private void getCellName(int col, int row)
+        {
+            String cellName = calculateCellName(col) + (row + 1);
+            CellNameTB.Text = cellName;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="col"></param>
+        /// <returns></returns>
+        private String calculateCellName(int col)
+        {
+            switch (col)
+            {
+                case 0:
+                    return "A";
+                case 1:
+                    return "B";
+                case 2:
+                    return "C";
+                case 3:
+                    return "D";
+                case 4:
+                    return "E";
+                case 5:
+                    return "F";
+                case 6:
+                    return "G";
+                case 7:
+                    return "H";
+                case 8:
+                    return "I";
+                case 9:
+                    return "J";
+                case 10:
+                    return "K";
+                case 11:
+                    return "L";
+                case 12:
+                    return "M";
+                case 13:
+                    return "N";
+                case 14:
+                    return "O";
+                case 15:
+                    return "P";
+                case 16:
+                    return "Q";
+                case 17:
+                    return "R";
+                case 18:
+                    return "S";
+                case 19:
+                    return "T";
+                case 20:
+                    return "U";
+                case 21:
+                    return "V";
+                case 22:
+                    return "W";
+                case 23:
+                    return "X";
+                case 24:
+                    return "Y";
+                case 25:
+                    return "Z";
+                default:
+                    return "Error on finding cell name";
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
+
+
+        // Deals with the New menu
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void newToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            // Tell the application context to run the form on the same
+            // thread as the other forms.
+            NewApplicationContext.getAppContext().RunForm(new GUI());
+        }
+
+        // Deals with the Close menu
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close(); //closes the program
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void Save()
+        {
+            if (filePath.Equals("") || filePath != null)
+            {
+                SaveAs();
+            }
+            else
+            {
+                sheet.Save(filePath);
+                saveToolStripMenuItem.Enabled = false;
+            }
+            
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Save();
+        }
+
+        private void SaveAs()
+        {
+            //SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            //SaveFileDialog1.CheckFileExists = true;
+            //SaveFileDialog1.CheckPathExists = true;
+            saveFileDialog1.Title = "Save As";
+            saveFileDialog1.InitialDirectory = @"C:\";
+            //saveFileDialog1.DefaultExt = "ss";
+            saveFileDialog1.Filter = "ss files (*.ss)|*.ss|All files (*.*)|*.*";
+            saveFileDialog1.FilterIndex = 1;
+            //SaveFileDialog1.ShowDialog();
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+
+                if (saveFileDialog1.Filter == "ss files")
+                    saveFileDialog1.DefaultExt = "ss";
+                string file = saveFileDialog1.FileName;
+                sheet.Save(file);
+                filePath = file;
+                saveToolStripMenuItem.Enabled = false;
+            }
+            
+        }
+
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveAs();
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Title = "Open";
+            openFileDialog1.InitialDirectory = @"C:\";
+            //OpenFileDialog1.DefaultExt = "ss";
+            openFileDialog1.Filter = "ss files (*.ss)|*.ss|All files (*.*)|*.*";
+            openFileDialog1.FilterIndex = 1;
+            //OpenFileDialog1.ShowDialog();
+            //need to implement the spreadsheet xml stuff into this method
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+
+                if (openFileDialog1.Filter == "ss files")
+                    openFileDialog1.DefaultExt = "ss";
+
+                string file = openFileDialog1.FileName;
+                gui = new GUI(file);
+                NewApplicationContext.getAppContext().RunForm(gui);
+
+                //string file = openFileDialog1.FileName;
+                //sheet = new Spreadsheet(file, isValid, Normalize, "ps6");
+                //updateAllDependentCells(sheet.GetNamesOfAllNonemptyCells().ToList());
+                //filePath = file;
+            }
+            saveToolStripMenuItem.Enabled = false;
+        }
+
+        private void handleInvalidNameException(FormulaFormatException formulaEx, string ContentsOfCell)
+        {
+            int row, col;
+            //string value;
+
+            spreadsheetPanel1.GetSelection(out col, out row);
+
+            spreadsheetPanel1.SetValue(col, row, formulaEx.Message);
+
+            string cellName = calculateCellName(col) + (row + 1);
+
+            sheet.SetContentsOfCell(cellName, (formulaEx.Message + " \"" + ContentsOfCell + "\""));
+
+            CellValueTB.Text = sheet.GetCellValue(cellName).ToString();
+            CellContentTB.Text = sheet.GetCellContents(cellName).ToString();
+        }
+
+        private void CellNameTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void CellContentTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void CellValueTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+
+
+
+        private void UpdateButton_Click(object sender, EventArgs e)
+        {
+            if (backgroundWorker1.IsBusy != true)
+            {
+                // Start the asynchronous operation.
+                backgroundWorker1.RunWorkerAsync();
+            }
+
+            //setCellContentsUpdateCellContents();
+            //if (sheet.Changed)
+            //    saveToolStripMenuItem.Enabled = true;
+        }
+
+        private void howToUseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RichTextBox richTextBox1 = new RichTextBox();
+
+            float height = 500;
+            float width = 800;
+            Font Title = new Font("Times New Roman", 20f, FontStyle.Bold);
+            Font subTitle = new Font("Times New Roman", 16f, FontStyle.Bold);
+            Font subText = new Font("Times New Roman", 12f, FontStyle.Regular);
+
+            richTextBox1.SelectionFont = Title;
+            richTextBox1.AppendText("How To Use Spreadheet\n");
+
+            richTextBox1.SelectionFont = subTitle;
+            richTextBox1.AppendText("\n\tCreating A Cell:");
+
+            richTextBox1.SelectionFont = subText;
+            richTextBox1.AppendText("\n\t\tTo create a cell select the cell to create and then in the text" +
+             " box field \"Cell Content\" enter the contents you would \t\tlike to be in the cell and either select" +
+             " the enter key, or select the button next to \"Cell Content\" labeled \"Update Cell \t\tContents\" ");
+
+            richTextBox1.AppendText("\n\n\t\tThe contents of each cell may contain a string for example a name, a number," +
+                " or a formula represented with an =. \t\tTo create a formula select a cell, for example A1 and put a value in it. Then select B1, in B1 " +
+                "type \"=A1\", then \t\t\tselect enter. This creates a formula and B1 will now contain the value of A1.");
+
+            richTextBox1.SelectionFont = subTitle;
+            richTextBox1.AppendText("\n\n\tLoading A Spreadsheet:\n");
+
+            richTextBox1.SelectionFont = subText;
+            richTextBox1.AppendText("\t\tTo load a spreadsheet from a file of type .ss by selecting the option in the open popup for ss files, or you can choose all files and get any file type.  Do this by selecting  \"file\" \"Open\" or use Hotkey \"ctrl+o\"\n");
+
+            richTextBox1.SelectionFont = subTitle;
+            richTextBox1.AppendText("\n\tSaving A Spreadsheet:\n");
+
+            richTextBox1.SelectionFont = subText;
+            richTextBox1.AppendText("\t\tTo save a spreadsheet to a specific file location select \"file\" \"save As\" and select destenation" +
+                " of where you would \t\tlike to save." + "\n\t\tTo save a file to its current file location select \"file\" \"Save\" or use Hotkey \"ctrl+s\"\n");
+
+            richTextBox1.SelectionFont = subTitle;
+            richTextBox1.AppendText("\n\tFind:\n");
+            richTextBox1.SelectionFont = subText;
+            richTextBox1.AppendText("\t\t");
+
+            richTextBox1.Size = System.Drawing.Size.Round(new SizeF(width, height));
+            richTextBox1.ReadOnly = true;
+
+            Form RichMessageBox = new Form();
+
+            RichMessageBox.Controls.Add(richTextBox1);
+            RichMessageBox.StartPosition = FormStartPosition.CenterScreen;
+            RichMessageBox.Size = System.Drawing.Size.Round(new SizeF(width, height));
+            RichMessageBox.Name = "How to use spreadsheet";
+            RichMessageBox.ShowDialog();
+        }
+
+        private void spreadsheetPanel1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void CellNameLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// This method creates a new thread to take care of calculations and inputs in the the Text Boxes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+            if ((worker.CancellationPending == true))
+            {
+                e.Cancel = true;
+                //break;
+            }
+            else
+            {
+                setCellContentsUpdateCellContents(false, "");
+                backgroundWorker1.CancelAsync();
+                //if (sheet.Changed)
+                    //saveToolStripMenuItem.Enabled = true;
+            }
+        }
+
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+
+        }
+
+        private void findToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Find findLocation = new Find(spreadsheetPanel1, sheet, Cell, navigateToCell, setCellContentsUpdateCellContents);
+            findLocation.Visible = true;
+        }
+
+        public void navigateToCell(string cellName)
+        {
+            displaySelection(spreadsheetPanel1);
+        }
+
+
+
+
+
+
+
+
+
+    }
+}

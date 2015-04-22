@@ -1,0 +1,338 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using SS;
+
+namespace SpreadsheetGUI
+{
+    public partial class GUI : Form
+    {
+        private Spreadsheet sheet = new Spreadsheet();
+        
+        public GUI()
+        {
+            InitializeComponent();
+            this.KeyPreview = true;
+            //sheet = new Spreadsheet(isValid, normalize, version); //need to implement an constructor that will normalize the values and get the version ps6
+            CellContentTB.KeyUp += new KeyEventHandler(CellContentTB_KeyUp);
+
+            
+            spreadsheetPanel3.SelectionChanged += displaySelection; //this is what updates the cells need to create text 
+            //spreadsheetPanel3.KeyUp += CellContentTB;
+        }
+
+
+        private void CellContentTB_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                setCellContentsUpdateCellContents();
+            }
+        }
+
+        // Every time the selection changes, this method is called with the
+        // Spreadsheet as its parameter.  We display the current time in the cell.
+
+        private void displaySelection(SpreadsheetPanel ss)
+        {
+            int row, col;
+            String value;
+            ss.GetSelection(out col, out row);
+            ss.GetValue(col, row, out value);
+
+            CellValueTB.Clear();
+            CellContentTB.Clear();
+
+            if (value == "")
+            {
+                getCellName(col, row);
+            }
+            else
+            {
+
+                String cellName = calculateCellName(col) + (row + 1);
+                CellNameTB.Text = cellName;
+
+                CellContentTB.Text = sheet.GetCellContents(cellName).ToString();
+                CellValueTB.Text = sheet.GetCellValue(cellName).ToString();
+
+                ss.SetValue(col, row, sheet.GetCellValue(cellName).ToString());
+            }
+        }
+
+        private void setCellContentsUpdateCellContents()
+        {
+            List<String> cellsToUpdate;
+            int row, col;
+            String value;
+            spreadsheetPanel3.GetSelection(out col, out row);
+            spreadsheetPanel3.GetValue(col, row, out value);
+
+            String cellName = calculateCellName(col) + (row + 1);
+            CellNameTB.Text = cellName;
+
+            string ContentsOfCell = CellContentTB.Text;
+
+            cellsToUpdate = sheet.SetContentsOfCell(cellName, ContentsOfCell).ToList();
+
+            CellContentTB.Text = sheet.GetCellContents(cellName).ToString();
+            CellValueTB.Text = sheet.GetCellValue(cellName).ToString();
+
+            spreadsheetPanel3.SetValue(col, row, sheet.GetCellValue(cellName).ToString());
+
+            if (cellsToUpdate.Count > 1)
+                updateAllDependentCells(cellsToUpdate);
+
+        }
+
+        private void updateAllDependentCells(List<string> cellsToUpdate)
+        {
+            for (int i = 1; i < cellsToUpdate.Count; i++)
+            {
+                String tempCellName = cellsToUpdate.ElementAt(i);
+
+                char[] charCellName = tempCellName.ToCharArray();
+
+                int row = 0;
+                int tempRow = 0;
+                int col = 0;
+                for (int ix = 0; ix < charCellName.Length; ix++)
+                {
+
+                    if (int.TryParse(charCellName.ElementAt(ix).ToString(), out tempRow))
+                    {
+                        tempRow = tempRow - 1;
+                        row += tempRow;
+                    }
+                    else
+                        col += getColValue(charCellName.ElementAt(ix));
+
+                }
+                spreadsheetPanel3.SetValue(col, row, sheet.GetCellValue(tempCellName).ToString());
+            }
+        }
+
+        private int getColValue(char p)
+        {
+            switch (p)
+            {
+                case 'A':
+                    return 0;
+                case 'B':
+                    return 1;
+                case 'C':
+                    return 2;
+                case 'D':
+                    return 3;
+                case 'E':
+                    return 4;
+                case 'F':
+                    return 5;
+                case 'G':
+                    return 6;
+                case 'H':
+                    return 7;
+                case 'I':
+                    return 8;
+                case 'J':
+                    return 9;
+                case 'K':
+                    return 10;
+                case 'L':
+                    return 11;
+                case 'M':
+                    return 12;
+                case 'N':
+                    return 13;
+                case 'O':
+                    return 14;
+                case 'P':
+                    return 15;
+                case 'Q':
+                    return 16;
+                case 'R':
+                    return 17;
+                case 'S':
+                    return 18;
+                case 'T':
+                    return 19;
+                case 'U':
+                    return 20;
+                case 'V':
+                    return 21;
+                case 'W':
+                    return 22;
+                case 'X':
+                    return 23;
+                case 'Y':
+                    return 24;
+                case 'Z':
+                    return 24;
+                default:
+                    return -1;
+            }
+        }
+
+
+
+        private void getCellName(int col, int row)
+        {
+            String cellName = calculateCellName(col) + (row + 1);
+            CellNameTB.Text = cellName;
+        }
+
+
+        private String calculateCellName(int col)
+        {
+            switch (col)
+            {
+                case 0:
+                    return "A";
+                case 1:
+                    return "B";
+                case 2:
+                    return "C";
+                case 3:
+                    return "D";
+                case 4:
+                    return "E";
+                case 5:
+                    return "F";
+                case 6:
+                    return "G";
+                case 7:
+                    return "H";
+                case 8:
+                    return "I";
+                case 9:
+                    return "J";
+                case 10:
+                    return "K";
+                case 11:
+                    return "L";
+                case 12:
+                    return "M";
+                case 13:
+                    return "N";
+                case 14:
+                    return "O";
+                case 15:
+                    return "P";
+                case 16:
+                    return "Q";
+                case 17:
+                    return "R";
+                case 18:
+                    return "S";
+                case 19:
+                    return "T";
+                case 20:
+                    return "U";
+                case 21:
+                    return "V";
+                case 22:
+                    return "W";
+                case 23:
+                    return "X";
+                case 24:
+                    return "Y";
+                case 25:
+                    return "Z";
+                default:
+                    return "Error on finding cell name";
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
+
+
+        // Deals with the New menu
+        private void newToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            // Tell the application context to run the form on the same
+            // thread as the other forms.
+            NewApplicationContext.getAppContext().RunForm(new GUI());
+        }
+
+        // Deals with the Close menu
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close(); //closes the program
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog SaveFileDialog1 = new SaveFileDialog();
+            //SaveFileDialog1.CheckFileExists = true;
+            //SaveFileDialog1.CheckPathExists = true;
+            saveFileDialog1.Title = "Save";
+            SaveFileDialog1.InitialDirectory = @"C:\";
+            SaveFileDialog1.DefaultExt = "ss";
+            SaveFileDialog1.Filter = "ss files (*.ss)|*.ss|All files (*.*)|*.*";
+            SaveFileDialog1.FilterIndex = 1;
+            SaveFileDialog1.ShowDialog();
+            
+            //need to implement the spreadsheet xml stuff into this method
+
+            //SaveFileDialog1.FileName;
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog OpenFileDialog1 = new OpenFileDialog();
+            OpenFileDialog1.Title = "Open";
+            OpenFileDialog1.InitialDirectory = @"C:\";
+            OpenFileDialog1.DefaultExt = "ss";
+            OpenFileDialog1.Filter = "ss files (*.ss)|*.ss|All files (*.*)|*.*";
+            OpenFileDialog1.FilterIndex = 1;
+            OpenFileDialog1.ShowDialog();
+            //need to implement the spreadsheet xml stuff into this method
+        }
+
+        private void CellNameTB_TextChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void CellContentTB_TextChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        
+        private void CellValueTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void spreadsheetPanel3_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void UpdateButton_Click(object sender, EventArgs e)
+        {
+            setCellContentsUpdateCellContents();
+        }
+
+
+        
+
+
+
+    }
+}

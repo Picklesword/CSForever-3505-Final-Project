@@ -1,0 +1,1 @@
+﻿<?xml version="1.0" encoding="utf-8"?><spreadsheet version="Version 1.0"><cell><name>A1</name><contents>=B1+C1</contents></cell><cell><name>B1</name><contents>20</contents></cell><cell><name>C1</name><contents>15</contents></cell></spreadsheet>

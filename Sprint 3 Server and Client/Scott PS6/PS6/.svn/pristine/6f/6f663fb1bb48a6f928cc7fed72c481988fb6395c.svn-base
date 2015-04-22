@@ -1,0 +1,57 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace SpreadsheetGUI
+{
+    public partial class Find : Form
+    {
+        private SS.SpreadsheetPanel spreadsheetPanel1;
+        private SS.Spreadsheet sheet;
+        private GUI gui;
+        Dictionary<string, string> Cell;
+
+        public Find()
+        {
+            InitializeComponent();
+            textBoxFind.KeyUp += new KeyEventHandler(textBoxFind_KeyUp);
+        }
+
+        public Find(SS.SpreadsheetPanel _spreadsheetPanel1, SS.Spreadsheet _sheet, GUI _gui, Dictionary<string, string> _Cell)
+        {
+            InitializeComponent();
+            this.spreadsheetPanel1 = _spreadsheetPanel1;
+            this.sheet = _sheet;
+            this.gui = _gui;
+            this.Cell = _Cell;
+        }
+
+        private void textBoxFind_KeyUp(object sender, KeyEventArgs e)
+        {
+            
+        }
+
+        private void Replace_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBoxFind_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBoxReplace_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        
+    }
+}

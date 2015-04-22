@@ -1,0 +1,5 @@
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS6\CodedUITestProject2\bin\Release\CodedUITestProject2.dll
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS6\CodedUITestProject2\bin\Release\CodedUITestProject2.pdb
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS6\CodedUITestProject2\obj\Release\CodedUITestProject2.csprojResolveAssemblyReference.cache
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS6\CodedUITestProject2\obj\Release\CodedUITestProject2.dll
+C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS6\CodedUITestProject2\obj\Release\CodedUITestProject2.pdb
