@@ -69,6 +69,20 @@
             <param name="sender"></param>
             <param name="e"></param>
         </member>
+        <member name="M:SpreadsheetGUI.Form1.calculateCellName(System.Int32)">
+            <summary>
+            switch statement that allows you to get the cell letter to ensure they are updated or selecting the correct cell.
+            </summary>
+            <param name="col"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SpreadsheetGUI.Form1.getColValue(System.Char)">
+            <summary>
+            helper method that gets the value of a cell for reverse of creating a cell.  This is used when setting contents in the cells
+            </summary>
+            <param name="p"></param>
+            <returns></returns>
+        </member>
         <member name="M:SpreadsheetGUI.Form1.UpdateCell(System.String,System.String)">
             <summary>
             This method updates the cell contents to spreadsheet and refreshes GUI

@@ -249,12 +249,19 @@ namespace SpreadsheetGUI
             {
                 Cell_Value.Invoke(new MethodInvoker(delegate { Cell_Value.Text = actual_spreadsheet.GetCellValue(Cell_Name.Text).ToString(); }));
             }
-            Cell_Value.Text = actual_spreadsheet.GetCellValue(Cell_Name.Text).ToString();
+            else
+                Cell_Value.Text = actual_spreadsheet.GetCellValue(Cell_Name.Text).ToString();
 
             if (actual_spreadsheet.GetCellContents(Cell_Name.Text).GetType() != typeof(Double) &&
                 actual_spreadsheet.GetCellContents(Cell_Name.Text).GetType() != typeof(string))
             {
-                Cell_Contents.Text = "=" + actual_spreadsheet.GetCellContents(Cell_Name.Text).ToString();
+
+                if (InvokeRequired)
+                {
+                    Cell_Contents.Invoke(new MethodInvoker(delegate { Cell_Contents.Text = "=" + actual_spreadsheet.GetCellContents(Cell_Name.Text).ToString(); }));
+                }
+                else
+                    Cell_Contents.Text = "=" + actual_spreadsheet.GetCellContents(Cell_Name.Text).ToString();
             }
             else
             {
@@ -262,7 +269,8 @@ namespace SpreadsheetGUI
                 {
                     Cell_Contents.Invoke(new MethodInvoker(delegate { Cell_Contents.Text = actual_spreadsheet.GetCellContents(Cell_Name.Text).ToString(); }));
                 }
-                Cell_Contents.Text = actual_spreadsheet.GetCellContents(Cell_Name.Text).ToString();
+                else
+                    Cell_Contents.Text = actual_spreadsheet.GetCellContents(Cell_Name.Text).ToString();
             }
         }
 
@@ -288,11 +296,23 @@ namespace SpreadsheetGUI
         {
             if (Cell_Contents.Focused == true && e.KeyCode == Keys.Return)
             {
+                
+                //checks to see if contents contains a \n.  this is not a valide character to use
+                string invalidCharTest = "";
+                invalidCharTest = Cell_Contents.Text;
+
+                if(invalidCharTest.Contains('\n'))
+                {
+                    //ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = ""; }));
+                    ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = "Error, cannot send \n in cell text"; }));
+                    return; //exit function
+                }
+                
                 UpdateCell(Cell_Name.Text, Cell_Contents.Text);
 
 
 
-                if (sendToServer) //if statement is not needed but doesn't hurt anything
+                if (sendToServer) 
                 {
                     try
                     {
@@ -379,6 +399,140 @@ namespace SpreadsheetGUI
             
         }
 
+
+        /// <summary>
+        /// switch statement that allows you to get the cell letter to ensure they are updated or selecting the correct cell.
+        /// </summary>
+        /// <param name="col"></param>
+        /// <returns></returns>
+        private String calculateCellName(int col)
+        {
+            switch (col)
+            {
+                case 0:
+                    return "A";
+                case 1:
+                    return "B";
+                case 2:
+                    return "C";
+                case 3:
+                    return "D";
+                case 4:
+                    return "E";
+                case 5:
+                    return "F";
+                case 6:
+                    return "G";
+                case 7:
+                    return "H";
+                case 8:
+                    return "I";
+                case 9:
+                    return "J";
+                case 10:
+                    return "K";
+                case 11:
+                    return "L";
+                case 12:
+                    return "M";
+                case 13:
+                    return "N";
+                case 14:
+                    return "O";
+                case 15:
+                    return "P";
+                case 16:
+                    return "Q";
+                case 17:
+                    return "R";
+                case 18:
+                    return "S";
+                case 19:
+                    return "T";
+                case 20:
+                    return "U";
+                case 21:
+                    return "V";
+                case 22:
+                    return "W";
+                case 23:
+                    return "X";
+                case 24:
+                    return "Y";
+                case 25:
+                    return "Z";
+                default:
+                    return "Error on finding cell name";
+            }
+        }
+
+
+        /// <summary>
+        /// helper method that gets the value of a cell for reverse of creating a cell.  This is used when setting contents in the cells
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private int getColValue(char p)
+        {
+            switch (p)
+            {
+                case 'A':
+                    return 0;
+                case 'B':
+                    return 1;
+                case 'C':
+                    return 2;
+                case 'D':
+                    return 3;
+                case 'E':
+                    return 4;
+                case 'F':
+                    return 5;
+                case 'G':
+                    return 6;
+                case 'H':
+                    return 7;
+                case 'I':
+                    return 8;
+                case 'J':
+                    return 9;
+                case 'K':
+                    return 10;
+                case 'L':
+                    return 11;
+                case 'M':
+                    return 12;
+                case 'N':
+                    return 13;
+                case 'O':
+                    return 14;
+                case 'P':
+                    return 15;
+                case 'Q':
+                    return 16;
+                case 'R':
+                    return 17;
+                case 'S':
+                    return 18;
+                case 'T':
+                    return 19;
+                case 'U':
+                    return 20;
+                case 'V':
+                    return 21;
+                case 'W':
+                    return 22;
+                case 'X':
+                    return 23;
+                case 'Y':
+                    return 24;
+                case 'Z':
+                    return 25;
+                default:
+                    return -1;
+            }
+        }
+
         /// <summary>
         /// This method updates the cell contents to spreadsheet and refreshes GUI
         /// </summary>
@@ -387,6 +541,8 @@ namespace SpreadsheetGUI
         private void UpdateCell(string cellName, string content)
         {
             int row, col;
+            col = getColValue(cellName[0]);
+            row = cellName[1] - 49;
             //cellName = cellName.ToUpper(); //makes the cell name uppercase
             Tuple<int, int> cell_adress;
             IEnumerable<string> updates = null;
@@ -395,8 +551,7 @@ namespace SpreadsheetGUI
                 updates = actual_spreadsheet.SetContentsOfCell(cellName, content);
             }
             catch
-            {//need to update this section when a circular dependency occurs to revert the cells back to previous value in cell
-                //currently it is just setting the cell to equal ""
+            {
                 StatusText.Text = " A Circular Dependency has occured.";
                 statusStrip1.Invalidate();
                 sendToServer = false;
@@ -406,7 +561,8 @@ namespace SpreadsheetGUI
             }
 
             StatusText.Text = " All Formulas Able to Evaluate";
-            GUICells.GetSelection(out col, out row);
+            //GUICells.GetSelection(out col, out row);
+            
             if (Regex.IsMatch(actual_spreadsheet.GetCellValue(Cell_Name.Text).ToString(), form_error))
             {
                 GUICells.SetValue(col, row, "");

@@ -206,6 +206,7 @@ namespace SS
                 if(IncomingCellEvent != null)
                 { 
                     IncomingCellEvent(words);
+                    
                     socket.BeginReceive(LineReceived, null);
                 }
             }
