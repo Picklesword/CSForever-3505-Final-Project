@@ -68,7 +68,7 @@ namespace SpreadsheetGUI
         /// outputs the message received from the server for errors
         /// </summary>
         /// <param name="msg">string[]</param>
-        private void ErrorReceived(string msg)
+        private void ErrorReceived(string[] msg)
         {
             if (InvokeRequired)
             {
