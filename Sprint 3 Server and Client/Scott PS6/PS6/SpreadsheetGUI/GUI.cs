@@ -179,7 +179,7 @@ namespace SpreadsheetGUI
 
 
             }
-            UpdateCellContents(msg[0], cellContents);//updated the cell contents
+            UpdateCellContents(msg[1], cellContents);//updated the cell contents
             //UpdateCell(msg[1], cellContents); //need to change to current setup
             
             //msg[0] contains the word cell, the following array locations should contain cell name and
