@@ -42,3 +42,14 @@ C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and
 C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\obj\Debug\Spreadsheet.csprojResolveAssemblyReference.cache
 C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\obj\Debug\Spreadsheet.dll
 C:\Users\Scott\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\obj\Debug\Spreadsheet.pdb
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\bin\Debug\Spreadsheet.XML
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\bin\Debug\Spreadsheet.dll
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\bin\Debug\Spreadsheet.pdb
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\bin\Debug\Formula.dll
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\bin\Debug\SpreadsheetUtilities.dll
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\bin\Debug\StringSocketOfficial.dll
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\bin\Debug\Formula.xml
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\bin\Debug\SpreadsheetUtilities.xml
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\obj\Debug\Spreadsheet.csprojResolveAssemblyReference.cache
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\obj\Debug\Spreadsheet.dll
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\PS6\Spreadsheet\obj\Debug\Spreadsheet.pdb

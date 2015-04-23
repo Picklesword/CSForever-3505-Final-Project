@@ -7,3 +7,13 @@ C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS6\Spreadsheet\bin\Debug\S
 C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS6\Spreadsheet\obj\Debug\Spreadsheet.csprojResolveAssemblyReference.cache
 C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS6\Spreadsheet\obj\Debug\Spreadsheet.dll
 C:\Users\Scott\Documents\Visual Studio 2012\Projects\PS6\Spreadsheet\obj\Debug\Spreadsheet.pdb
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\Scott PS6\PS6\Spreadsheet\bin\Debug\Spreadsheet.dll
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\Scott PS6\PS6\Spreadsheet\bin\Debug\Spreadsheet.pdb
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\Scott PS6\PS6\Spreadsheet\bin\Debug\Formula.dll
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\Scott PS6\PS6\Spreadsheet\bin\Debug\SpreadsheetUtilities.dll
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\Scott PS6\PS6\Spreadsheet\bin\Debug\StringSocketOfficial.dll
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\Scott PS6\PS6\Spreadsheet\bin\Debug\Formula.xml
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\Scott PS6\PS6\Spreadsheet\bin\Debug\SpreadsheetUtilities.xml
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\Scott PS6\PS6\Spreadsheet\obj\Debug\Spreadsheet.csprojResolveAssemblyReference.cache
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\Scott PS6\PS6\Spreadsheet\obj\Debug\Spreadsheet.dll
+C:\Users\Jonathan\Documents\GitHub\CSForever-3505-Final-Project\Sprint 3 Server and Client\Scott PS6\PS6\Spreadsheet\obj\Debug\Spreadsheet.pdb

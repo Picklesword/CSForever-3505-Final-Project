@@ -68,7 +68,7 @@ namespace SpreadsheetGUI
         /// outputs the message received from the server for errors
         /// </summary>
         /// <param name="msg">string[]</param>
-        private void ErrorReceived(string msg)
+        private void ErrorReceived(string[] msg)
         {
             if (InvokeRequired)
             {
@@ -179,7 +179,7 @@ namespace SpreadsheetGUI
 
 
             }
-            UpdateCellContents(msg[0], cellContents);//updated the cell contents
+            UpdateCellContents(msg[1], cellContents);//updated the cell contents
             //UpdateCell(msg[1], cellContents); //need to change to current setup
             
             //msg[0] contains the word cell, the following array locations should contain cell name and
