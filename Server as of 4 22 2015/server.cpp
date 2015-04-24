@@ -45,487 +45,487 @@ ifstream users("users.txt");
 
 int main()
 {
-    int pId, portNo, listenFd;
-    int size = 10;
-    int connFd;
-    socklen_t len; //store size of the address
-    bool loop = false;
-    struct sockaddr_in svrAdd, clntAdd;
+	int pId, portNo, listenFd;
+	int size = 10;
+	int connFd;
+	socklen_t len; //store size of the address
+	bool loop = false;
+	struct sockaddr_in svrAdd, clntAdd;
 
-    open_user_list();    
+	open_user_list();
 
-    pthread_t threadA[size];
-    
-    portNo = 2112;
-    
-    
-    //create socket
-    listenFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    
-    if(listenFd < 0)
-    {
-        cerr << "Cannot open socket" << endl;
-        return 0;
-    }
-    
-    bzero((char*) &svrAdd, sizeof(svrAdd));
-    
-    svrAdd.sin_family = AF_INET;
-    svrAdd.sin_addr.s_addr = INADDR_ANY;
-    svrAdd.sin_port = htons(portNo);
-    
-    //bind socket
-    if(bind(listenFd, (struct sockaddr *)&svrAdd, sizeof(svrAdd)) < 0)
-    {
-        cerr << "Cannot bind" << endl;
-        return 0;
-    }
-    
-    listen(listenFd, 5);
-    
-    int noThread = 0;
+	pthread_t threadA[size];
 
-    while (true)
-    {
-        cout << "Listening" << endl;
-        socklen_t len = sizeof(clntAdd);
+	portNo = 2112;
 
-        //this is where client connects. svr will hang in this mode until client conn
-        connFd = accept(listenFd, (struct sockaddr *)&clntAdd, &len);
 
-        if (connFd < 0)
-        {
-            cerr << "Cannot accept connection" << endl;
-            return 0;
-        }
-        else
-        {
-            cout << "Connection successful" << endl;
-        }
-        
-        pthread_create(&threadA[noThread], NULL, connect, (void *) connFd); 
-        
-        noThread++;
-    }
-    
-    for(int i = 0; i < noThread; i++)
-    {
-        pthread_join(threadA[i], NULL);
-    }    
+	//create socket
+	listenFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+	if (listenFd < 0)
+	{
+		cerr << "Cannot open socket" << endl;
+		return 0;
+	}
+
+	bzero((char*)&svrAdd, sizeof(svrAdd));
+
+	svrAdd.sin_family = AF_INET;
+	svrAdd.sin_addr.s_addr = INADDR_ANY;
+	svrAdd.sin_port = htons(portNo);
+
+	//bind socket
+	if (bind(listenFd, (struct sockaddr *)&svrAdd, sizeof(svrAdd)) < 0)
+	{
+		cerr << "Cannot bind" << endl;
+		return 0;
+	}
+
+	listen(listenFd, 5);
+
+	int noThread = 0;
+
+	while (true)
+	{
+		cout << "Listening" << endl;
+		socklen_t len = sizeof(clntAdd);
+
+		//this is where client connects. svr will hang in this mode until client conn
+		connFd = accept(listenFd, (struct sockaddr *)&clntAdd, &len);
+
+		if (connFd < 0)
+		{
+			cerr << "Cannot accept connection" << endl;
+			return 0;
+		}
+		else
+		{
+			cout << "Connection successful" << endl;
+		}
+
+		pthread_create(&threadA[noThread], NULL, connect, (void *)connFd);
+
+		noThread++;
+	}
+
+	for (int i = 0; i < noThread; i++)
+	{
+		pthread_join(threadA[i], NULL);
+	}
 }
 void looper()
 {
-  while(true)
-  {
-  }
+	while (true)
+	{
+	}
 }
 // The first connection received by a client will be checked here.
 void *connect(void *client_sock)
 {
-    long connFd = (long)client_sock;
-    
-    cout << "Thread No: " << pthread_self() << endl;
-    char buffer[300];
-    char * parsed;
-    bzero(buffer, 301);
-    bool loop = false;
-    bool connected = false;
-    string empt =""; 
-    while(!loop)
-    {    
-        //Reads from connected client
-        bzero(buffer, 301);
-        
-        
-        //Checks to see if a socket is closed
-        int toclose = read(connFd, buffer, 300);
-        
-        // Socket has closed; close connection
-        if(toclose == 0)
-        {
-          // Remove user from editing spreadsheet list
-          string spreadsheet = users_editing[connFd];
-          spreadsheet_editors[spreadsheet].remove(connFd);
+	long connFd = (long)client_sock;
 
-          //remove user key since they are no longer editing form editing map
-	  users_editing.erase(connFd);
-
-          //close the socket
-	  close(connFd);
-	  break;
-        }
-        
-        //Parse command for checking
-        parsed = strtok (buffer, " \n\r");
-          
-        if(parsed != NULL)
+	cout << "Thread No: " << pthread_self() << endl;
+	char buffer[300];
+	char * parsed;
+	bzero(buffer, 301);
+	bool loop = false;
+	bool connected = false;
+	string empt = "";
+	while (!loop)
 	{
+		//Reads from connected client
+		bzero(buffer, 301);
 
-	//Client requests to connect to server with their username
-        if(!strcmp(parsed, "connect"))
-        {
-	  //iterate to user name
-	  parsed = strtok (NULL, " \n\r");	 	  
-	  string temp(parsed);
-          
-	  if(registered_users.count(temp) == 0 && temp != "sysadmin")
-	  {
-	    send(connFd, "error 4 blah\n", 10, MSG_NOSIGNAL);
-          }
-          //Open/Create Spreadsheet file
-	  else
-	  {
 
-  	    //iterate to spreadsheet file
-	    parsed = strtok (NULL, " \n\r");
-	    string temp(parsed);
+		//Checks to see if a socket is closed
+		int toclose = read(connFd, buffer, 300);
 
-	    //if the spreadsheet is not being edited
- 	    if(opened_spreadsheets.count(temp) == 0)
-	    {
-	      spreadsheet *item = new spreadsheet(temp);
-	      list<long> editors;
-	      editors.push_back(connFd);
-	      spreadsheet_editors.insert(make_pair(temp, editors));
-	      opened_spreadsheets.insert(make_pair(temp, item));
-	      users_editing.insert(make_pair(connFd, temp));
-	      
-	      //return conncted command of size of spreadhseet
-	      int s = opened_spreadsheets[temp]->cells.size();
- 	      stringstream to_send;
-   
-              to_send <<"connected " << s << "\n";
-              string test(to_send.str());
-	      send(connFd, test.c_str(), test.size(), MSG_NOSIGNAL);
-	      connected = true;
+		// Socket has closed; close connection
+		if (toclose == 0)
+		{
+			// Remove user from editing spreadsheet list
+			string spreadsheet = users_editing[connFd];
+			spreadsheet_editors[spreadsheet].remove(connFd);
 
-	      typedef map<string, string> map_it;
-	      for(map_it::iterator it = opened_spreadsheets[temp]->cells.begin(); it != opened_spreadsheets[temp]->cells.end(); it++)
-	      {
-	        stringstream cell;
-		cell << "\ncell "<<it->first << " " << it->second << "\n";
-	        string test(cell.str());
-	        send(connFd, test.c_str(), test.size(), MSG_NOSIGNAL);
-	      }
-	    }
+			//remove user key since they are no longer editing form editing map
+			users_editing.erase(connFd);
 
-            else
-	    {
+			//close the socket
+			close(connFd);
+			break;
+		}
 
-	      stringstream to_send;
-	      int s = opened_spreadsheets[temp]->cells.size();
-	      to_send <<"connected "<<s<<"\n";
-	      string test(to_send.str());
-	      send(connFd, test.c_str(), test.size(), MSG_NOSIGNAL);
-	      
-	      spreadsheet_editors[temp].push_back(connFd);
-	      users_editing.insert(make_pair(connFd, temp));
-	      
-  	      // send cell contents
-	      typedef map<string, string> map_it;
-	      for(map_it::iterator it = opened_spreadsheets[temp]->cells.begin(); it != opened_spreadsheets[temp]->cells.end(); it++)
-	      {
-	        stringstream cell;
-		cell << "\ncell " << it->first << " " << it->second << "\n";               
-	        string test(cell.str());
-	        send(connFd, test.c_str(), test.size(), MSG_NOSIGNAL);
-	        connected = true;                
-	      }	      
-	    }	    
-	  }
-        }
-	
-	//Client requests that a new user be granted access to the server
-	if(!strcmp(parsed, "register"))
-	{
-	  // Looks at the user who is trying to register another user
-	  parsed = strtok (NULL, " \n\r");
-	  string test(parsed);
-	  string error_send = "\nerror 4 blue";
-	  error_send  += parsed;
-	  error_send += "\n";
-	  
-	  if(!connected)
-          {
-            send(connFd, error_send.c_str(), error_send.size(), MSG_NOSIGNAL);
-	  }
-	  // Registers non-existing registered user if client is registered
-	  if(connected)
-	  if(registered_users.count(parsed) == 0)
-	  {
-	    registered_users.insert(make_pair(test, ""));
-            add_user(test);	    
-	  }
-	  // Otherwise send the error message	  
-	  else
- 	  {
- 	    send(connFd, error_send.c_str(), error_send.size(),  MSG_NOSIGNAL);
-	  }
+		//Parse command for checking
+		parsed = strtok(buffer, " \n\r");
+
+		if (parsed != NULL)
+		{
+
+			//Client requests to connect to server with their username
+			if (!strcmp(parsed, "connect"))
+			{
+				//iterate to user name
+				parsed = strtok(NULL, " \n\r");
+				string temp(parsed);
+
+				if (registered_users.count(temp) == 0 && temp != "sysadmin")
+				{
+					send(connFd, "error 4 blah\n", 10, MSG_NOSIGNAL);
+				}
+				//Open/Create Spreadsheet file
+				else
+				{
+
+					//iterate to spreadsheet file
+					parsed = strtok(NULL, " \n\r");
+					string temp(parsed);
+
+					//if the spreadsheet is not being edited
+					if (opened_spreadsheets.count(temp) == 0)
+					{
+						spreadsheet *item = new spreadsheet(temp);
+						list<long> editors;
+						editors.push_back(connFd);
+						spreadsheet_editors.insert(make_pair(temp, editors));
+						opened_spreadsheets.insert(make_pair(temp, item));
+						users_editing.insert(make_pair(connFd, temp));
+
+						//return conncted command of size of spreadhseet
+						int s = opened_spreadsheets[temp]->cells.size();
+						stringstream to_send;
+
+						to_send << "connected " << s << "\n";
+						string test(to_send.str());
+						send(connFd, test.c_str(), test.size(), MSG_NOSIGNAL);
+						connected = true;
+
+						typedef map<string, string> map_it;
+						for (map_it::iterator it = opened_spreadsheets[temp]->cells.begin(); it != opened_spreadsheets[temp]->cells.end(); it++)
+						{
+							stringstream cell;
+							cell << "\ncell " << it->first << " " << it->second << "\n";
+							string test(cell.str());
+							send(connFd, test.c_str(), test.size(), MSG_NOSIGNAL);
+						}
+					}
+
+					else
+					{
+
+						stringstream to_send;
+						int s = opened_spreadsheets[temp]->cells.size();
+						to_send << "connected " << s << "\n";
+						string test(to_send.str());
+						send(connFd, test.c_str(), test.size(), MSG_NOSIGNAL);
+
+						spreadsheet_editors[temp].push_back(connFd);
+						users_editing.insert(make_pair(connFd, temp));
+
+						// send cell contents
+						typedef map<string, string> map_it;
+						for (map_it::iterator it = opened_spreadsheets[temp]->cells.begin(); it != opened_spreadsheets[temp]->cells.end(); it++)
+						{
+							stringstream cell;
+							cell << "\ncell " << it->first << " " << it->second << "\n";
+							string test(cell.str());
+							send(connFd, test.c_str(), test.size(), MSG_NOSIGNAL);
+							connected = true;
+						}
+					}
+				}
+			}
+
+			//Client requests that a new user be granted access to the server
+			if (!strcmp(parsed, "register"))
+			{
+				// Looks at the user who is trying to register another user
+				parsed = strtok(NULL, " \n\r");
+				string test(parsed);
+				string error_send = "\nerror 4 blue";
+				error_send += parsed;
+				error_send += "\n";
+
+				if (!connected)
+				{
+					send(connFd, error_send.c_str(), error_send.size(), MSG_NOSIGNAL);
+				}
+				// Registers non-existing registered user if client is registered
+				if (connected)
+					if (registered_users.count(parsed) == 0)
+					{
+					registered_users.insert(make_pair(test, ""));
+					add_user(test);
+					}
+				// Otherwise send the error message	  
+					else
+					{
+						send(connFd, error_send.c_str(), error_send.size(), MSG_NOSIGNAL);
+					}
+			}
+
+			// Handle undo command
+			if (!strcmp(parsed, "undo")) // Completed by Dharani
+			{
+				string spreadsheet = users_editing[connFd];
+				cout << opened_spreadsheets[spreadsheet]->stackOfChanges.size() << endl;
+				cout << opened_spreadsheets[spreadsheet]->stackOfChanges.size() << endl;
+				if (opened_spreadsheets[spreadsheet]->stackOfChanges.size() != 0)
+				{
+					cout << 2 << endl;
+					pair<string, string> undoneCell = opened_spreadsheets[spreadsheet]->undo();
+					opened_spreadsheets[spreadsheet]->save_spreadsheet(spreadsheet);
+					string cell_update = "cell " + undoneCell.first + " " + undoneCell.second + "\n";
+
+					for (list<long>::iterator it = spreadsheet_editors[spreadsheet].begin(); it != spreadsheet_editors[spreadsheet].end(); it++)
+					{
+						long user = *it;
+						send(user, cell_update.c_str(), cell_update.size(), MSG_NOSIGNAL);
+					}
+				}
+			}
+
+			//Client requests to change a cell within the spreadsheet
+			if (!strcmp(parsed, "cell"))
+			{
+				//sets the cell name as a string
+				parsed = strtok(NULL, " \n\r");
+				string cell_name(parsed);
+				cout << cell_name << endl;
+
+				//sets the cell contents as a string
+				parsed = strtok(NULL, "\n\r");
+				string cell_contents;
+				cout << cell_contents << endl;
+
+				// Check if cell is empty
+				if (parsed == NULL)
+				{
+					cell_contents = "";
+					cout << "empty" << endl;
+				}
+
+				else
+				{
+					string temp(parsed);
+					cell_contents = temp;
+				}
+
+				int dep = 0;
+
+				string spreadsheet = users_editing[connFd];
+
+				if (cell_contents[0] == '=')
+				{
+					set<char*> temp_deps;
+
+					cout << "got right before deps check" << endl;
+
+					temp_deps = opened_spreadsheets[spreadsheet]->Dependency_Check(temp_deps, const_cast<char*> (cell_name.c_str()), const_cast<char*> (cell_contents.c_str()), &dep);
+
+					cout << "past dep check" << endl;
+					if (!dep)
+					{
+
+						if (isalpha(parsed[1]) && (strlen(parsed) == 3 || strlen(parsed) == 2)){
+							cout << "match var name" << endl;
+							opened_spreadsheets[spreadsheet]->depgraph.AddDependency(cell_name, parsed);
+						}
+						cout << "made it right before iffy line" << endl;
+						parsed = strtok(NULL, " =+/*-");//this line may require saving the previous contents as a separate char*
+
+						//cout << "made it past iffy line: " << parsed << endl;  
+						//cout << parsed << endl;
+						while (parsed != NULL)
+						{
+							if (isalpha(parsed[0]) && (strlen(parsed) == 3 || strlen(parsed) == 2)){
+								cout << "match var name" << endl;
+								opened_spreadsheets[spreadsheet]->depgraph.AddDependency(cell_name, parsed);
+							}
+							cout << "made it past adding deps" << endl;
+
+
+
+							parsed = strtok(NULL, " =+/*-");
+						}
+
+						// Store old value on undo stack
+
+						//If the current cell already has a value, change contents
+						if (opened_spreadsheets[spreadsheet]->cells.count(cell_name) != 0)
+						{
+							pair<string, string> oldValue(cell_name, opened_spreadsheets[spreadsheet]->cells.at(cell_name));
+							opened_spreadsheets[spreadsheet]->stackOfChanges.push(oldValue);
+
+							if (cell_contents == "")
+							{
+								opened_spreadsheets[spreadsheet]->cells.erase(cell_name);
+							}
+							else
+							{
+								cout << "not empty silly" << endl;
+								opened_spreadsheets[spreadsheet]->cells[cell_name] = cell_contents;
+							}
+							opened_spreadsheets[spreadsheet]->save_spreadsheet(spreadsheet);
+						}
+
+						//Otherwise just add it to the spreadsheet object
+						else
+						{
+							pair<string, string> oldValue(cell_name, "");
+							opened_spreadsheets[spreadsheet]->stackOfChanges.push(oldValue);
+							if (cell_contents == "")
+							{
+								opened_spreadsheets[spreadsheet]->cells.erase(cell_name);
+							}
+							else
+							{
+								opened_spreadsheets[spreadsheet]->cells[cell_name] = cell_contents;
+							}
+							opened_spreadsheets[spreadsheet]->save_spreadsheet(spreadsheet);
+
+						}
+
+						string cell_update = "cell " + cell_name + " " + cell_contents + "\n";
+
+						for (list<long>::iterator it = spreadsheet_editors[spreadsheet].begin(); it != spreadsheet_editors[spreadsheet].end(); it++)
+						{
+							long user = *it;
+							send(user, cell_update.c_str(), cell_update.size(), MSG_NOSIGNAL);
+
+						}
+					}
+					else
+					{
+						cout << "Circ dep found" << endl;
+					}
+				}
+				else
+				{
+					//If the current cell already has a value, change contents
+					if (opened_spreadsheets[spreadsheet]->cells.count(cell_name) != 0)
+					{
+						pair<string, string> oldValue(cell_name, opened_spreadsheets[spreadsheet]->cells.at(cell_name));
+						if (cell_contents == "")
+						{
+							opened_spreadsheets[spreadsheet]->cells.erase(cell_name);
+						}
+						else
+						{
+							opened_spreadsheets[spreadsheet]->cells[cell_name] = cell_contents;
+						}
+
+
+						opened_spreadsheets[spreadsheet]->stackOfChanges.push(oldValue);
+
+						opened_spreadsheets[spreadsheet]->save_spreadsheet(spreadsheet);
+
+
+					}
+
+					//Otherwise just add it to the spreadsheet object
+					else
+					{
+						if (cell_contents != "")
+						{
+							pair<string, string> oldValue(cell_name, "");
+							opened_spreadsheets[spreadsheet]->stackOfChanges.push(oldValue);
+							if (cell_contents == "")
+							{
+								opened_spreadsheets[spreadsheet]->cells.erase(cell_name);
+							}
+							else
+							{
+								opened_spreadsheets[spreadsheet]->cells[cell_name] = cell_contents;
+							}
+							opened_spreadsheets[spreadsheet]->save_spreadsheet(spreadsheet);
+
+						}
+					}
+
+					string cell_update = "cell " + cell_name + " " + cell_contents + "\n";
+
+					for (list<long>::iterator it = spreadsheet_editors[spreadsheet].begin(); it != spreadsheet_editors[spreadsheet].end(); it++)
+					{
+						long user = *it;
+						send(user, cell_update.c_str(), cell_update.size(), MSG_NOSIGNAL);
+					}
+				}
+
+
+
+				// Check if the cell change requested would create a circular dependency
+				// bool delete_me = false;
+				//if(delete_me)
+				//{
+				// send error message
+				// } 
+				/*else
+				{
+				//Returns the value of the spreadsheet the client is editing
+				string spreadsheet = users_editing[connFd];
+
+				//If the current cell already has a value, change contents
+				if(opened_spreadsheets[spreadsheet]->cells.count(cell_name) != 0)
+				opened_spreadsheets[spreadsheet]->cells[cell_name] = cell_contents;
+
+				//Otherwise just add it to the spreadsheet object
+				else
+				opened_spreadsheets[spreadsheet]->cells.insert(make_pair(cell_name, cell_contents));
+
+				string cell_update = "cell " + cell_name + " " + cell_contents + "\n";
+
+				for(list<long>::iterator it = spreadsheet_editors[spreadsheet].begin(); it != spreadsheet_editors[spreadsheet].end(); it++)
+				{
+				long user = *it;
+				send(user , cell_update.c_str(), cell_update.size(), MSG_NOSIGNAL);
+				}
+				}*/
+
+				cout << "hi" << endl;
+			}
+		}
+
+		string tester(buffer);
+
+
+
+		if (tester == "exit")
+			break;
 	}
-
-	// Handle undo command
-        if(!strcmp(parsed, "undo")) // Completed by Dharani
-	{
-      	  string spreadsheet = users_editing[connFd];
-	  cout << opened_spreadsheets[spreadsheet]->stackOfChanges.size() << endl;
-cout << opened_spreadsheets[spreadsheet]->stackOfChanges.size() << endl;
-	  if(opened_spreadsheets[spreadsheet]->stackOfChanges.size() != 0)
-	  {
-	    cout << 2 << endl;
-	    pair<string, string> undoneCell = opened_spreadsheets[spreadsheet]->undo();
-	    opened_spreadsheets[spreadsheet]->save_spreadsheet(spreadsheet);
-	    string cell_update = "cell " + undoneCell.first + " " +  undoneCell.second + "\n";
-            
-            for(list<long>::iterator it = spreadsheet_editors[spreadsheet].begin(); it != spreadsheet_editors[spreadsheet].end(); it++)
-            {
-	        long user = *it;
-   	        send(user , cell_update.c_str(), cell_update.size(), MSG_NOSIGNAL);
-	    }
-	  }  
-	}
-
-	//Client requests to change a cell within the spreadsheet
-	if(!strcmp(parsed,"cell"))
-	{
-          //sets the cell name as a string
-	  parsed = strtok (NULL, " \n\r");
-	  string cell_name(parsed);
-          cout << cell_name << endl;
-                    
-	  //sets the cell contents as a string
-	  parsed = strtok (NULL, "\n\r");
-          string cell_contents;
-          cout << cell_contents << endl;  
-
-	  // Check if cell is empty
-	  if(parsed == NULL)
-	  {
-	    cell_contents = "";
-	    cout << "empty" << endl;
-	  }
-
-	  else
-	  {
-	    string temp(parsed);
-	    cell_contents = temp;
-	  }
-
-          int dep = 0; 
-
-          string spreadsheet = users_editing[connFd];
-          
-          if(cell_contents[0] == '=')
-          {
-            set<char*> temp_deps;                
-
-            cout<< "got right before deps check" << endl; 
-
-            temp_deps = opened_spreadsheets[spreadsheet]->Dependency_Check(temp_deps, const_cast<char*> (cell_name.c_str()),const_cast<char*> (cell_contents.c_str()), &dep);            
-
-            cout << "past dep check" << endl; 
-	    if(!dep)
-	    { 
-                   
-                   if(isalpha(parsed[1]) && (strlen(parsed) == 3 || strlen(parsed) == 2)){
-                   cout<< "match var name" <<endl; 
-                opened_spreadsheets[spreadsheet]->depgraph.AddDependency(cell_name,parsed); 
-                }
-                  cout << "made it right before iffy line" << endl; 
-		  parsed = strtok(NULL, " =+/*-");//this line may require saving the previous contents as a separate char*
-
-                   //cout << "made it past iffy line: " << parsed << endl;  
-		   //cout << parsed << endl;
-              while(parsed !=NULL)
-              { 
-              	if(isalpha(parsed[0]) && (strlen(parsed) == 3 || strlen(parsed) == 2)){
-                cout << "match var name" << endl; 
-                opened_spreadsheets[spreadsheet]->depgraph.AddDependency(cell_name,parsed); 
-                }
-                cout << "made it past adding deps" << endl; 
- 		
-		 
-          
-                parsed = strtok(NULL, " =+/*-");     
-              } 
-  
-	    // Store old value on undo stack
-
-             //If the current cell already has a value, change contents
-            if(opened_spreadsheets[spreadsheet]->cells.count(cell_name) != 0)
-	    {
-	      pair<string, string> oldValue (cell_name, opened_spreadsheets[spreadsheet]->cells.at(cell_name));	    
-	      opened_spreadsheets[spreadsheet]->stackOfChanges.push(oldValue);
-	
-	      if(cell_contents == "")
- 	      {
-		opened_spreadsheets[spreadsheet]->cells.erase(cell_name);
-	      }
-	      else
-	      {
-		cout << "not empty silly" << endl;
-		opened_spreadsheets[spreadsheet]->cells[cell_name] = cell_contents;
-	      }
-	      opened_spreadsheets[spreadsheet]->save_spreadsheet(spreadsheet);
-	    }
-
-	    //Otherwise just add it to the spreadsheet object
-            else
-	    {
-	      pair<string, string> oldValue (cell_name, "");
-              opened_spreadsheets[spreadsheet]->stackOfChanges.push(oldValue);
-   	      if(cell_contents == "")
- 	      {
-		opened_spreadsheets[spreadsheet]->cells.erase(cell_name);
-	      }
-	      else
-	      {
-		opened_spreadsheets[spreadsheet]->cells[cell_name] = cell_contents;
-	      }
-	      opened_spreadsheets[spreadsheet]->save_spreadsheet(spreadsheet);
-	      
-	    }
-
-            string cell_update = "cell " + cell_name + " " + cell_contents + "\n";
-            
-            for(list<long>::iterator it = spreadsheet_editors[spreadsheet].begin(); it != spreadsheet_editors[spreadsheet].end(); it++)
-            {
-	      long user = *it;
-   	      send(user , cell_update.c_str(), cell_update.size(), MSG_NOSIGNAL);            
-
-            }  
-            }
-          else
-          {
-            	   cout << "Circ dep found" << endl; 		  
-          }		  
-      } 
-          else
-          {         
-            //If the current cell already has a value, change contents
-            if(opened_spreadsheets[spreadsheet]->cells.count(cell_name) != 0)
-	    {
-	      pair<string, string> oldValue (cell_name, opened_spreadsheets[spreadsheet]->cells.at(cell_name));
-	      if(cell_contents == "")
- 	      {
-		opened_spreadsheets[spreadsheet]->cells.erase(cell_name);
-	      }
-	      else
-	      {
-		opened_spreadsheets[spreadsheet]->cells[cell_name] = cell_contents;
-	      }
-
- 	      
-	      opened_spreadsheets[spreadsheet]->stackOfChanges.push(oldValue);
-	      
-              opened_spreadsheets[spreadsheet]->save_spreadsheet(spreadsheet);
-              
-
-            }
-
-	    //Otherwise just add it to the spreadsheet object
-            else
-	    {   	      
-	      if(cell_contents != "")
-              {
-	        pair<string, string> oldValue (cell_name, "");
-	   	opened_spreadsheets[spreadsheet]->stackOfChanges.push(oldValue);
-                if(cell_contents == "")
- 	      {
-		opened_spreadsheets[spreadsheet]->cells.erase(cell_name);
-	      }
-	      else
-	      {
-		opened_spreadsheets[spreadsheet]->cells[cell_name] = cell_contents;
-	      }
-	        opened_spreadsheets[spreadsheet]->save_spreadsheet(spreadsheet);
-
-	      }
-	    }
-
-            string cell_update = "cell " + cell_name + " " + cell_contents + "\n";
-            
-            for(list<long>::iterator it = spreadsheet_editors[spreadsheet].begin(); it != spreadsheet_editors[spreadsheet].end(); it++)
-            {
-	      long user = *it;
-   	      send(user , cell_update.c_str(), cell_update.size(), MSG_NOSIGNAL);
-            }   		  
-          }
-      
-
-          
-	  // Check if the cell change requested would create a circular dependency
-	 // bool delete_me = false;
-          //if(delete_me)
-	  //{
-	    // send error message
-         // } 
-	  /*else
-	  {
-	    //Returns the value of the spreadsheet the client is editing
-	    string spreadsheet = users_editing[connFd];
-	   
-            //If the current cell already has a value, change contents
-            if(opened_spreadsheets[spreadsheet]->cells.count(cell_name) != 0)
-	      opened_spreadsheets[spreadsheet]->cells[cell_name] = cell_contents;
-
-	    //Otherwise just add it to the spreadsheet object
-            else
-   	      opened_spreadsheets[spreadsheet]->cells.insert(make_pair(cell_name, cell_contents));
-
-            string cell_update = "cell " + cell_name + " " + cell_contents + "\n";
-            
-            for(list<long>::iterator it = spreadsheet_editors[spreadsheet].begin(); it != spreadsheet_editors[spreadsheet].end(); it++)
-            {
-	      long user = *it;
-   	      send(user , cell_update.c_str(), cell_update.size(), MSG_NOSIGNAL);
-            }   
-	  }*/
-
-	  cout << "hi" << endl;
-	}
-}
-      
-        string tester (buffer);
-        
-             
- 
-        if(tester == "exit")
-            break;
-    }
-    cout << "\nClosing thread and conn" << endl;
-    close(connFd);
+	cout << "\nClosing thread and conn" << endl;
+	close(connFd);
 }
 
 void open_user_list()
 {
-  ifstream in("users.txt");
+	ifstream in("users.txt");
 
-  if(!in.good())
-  {
-    ofstream out ("users.txt");
-    out <<  "sysadmin" << endl;
-  }
+	if (!in.good())
+	{
+		ofstream out("users.txt");
+		out << "sysadmin" << endl;
+	}
 
-  while(true)
-  {
-    string user;
+	while (true)
+	{
+		string user;
 
-    in >> user;
+		in >> user;
 
-    if(in.fail())
-      break;
+		if (in.fail())
+			break;
 
-    
-    registered_users.insert(make_pair(user, ""));
-    cout << user << endl;
-  }
-	
+
+		registered_users.insert(make_pair(user, ""));
+		cout << user << endl;
+	}
+
 }
 
 void add_user(string user)
 {
-  // Open and appends (app) to the end of the users.txt file
-  ofstream outfile;
-  outfile.open ("users.txt", ofstream::out | ofstream::app);
-  outfile << user << "\n";
+	// Open and appends (app) to the end of the users.txt file
+	ofstream outfile;
+	outfile.open("users.txt", ofstream::out | ofstream::app);
+	outfile << user << "\n";
 }

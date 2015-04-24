@@ -7,49 +7,49 @@
 #include <vector>
 
 
-class Dependency_Graph 
+class Dependency_Graph
 {
 
- private:
- 
-  std::map<std::string, std::set<std::string> > omni_set;
+private:
 
-  int pair_count; 
+	std::map<std::string, std::set<std::string> > omni_set;
 
-  std::string dependees;
-  
-  std::string dependents;
-  
-  std::string temp_name; 
-  
-  //std::set<std::string> temp_set; 
+	int pair_count;
 
- public:
+	std::string dependees;
 
-  Dependency_Graph(); 
-  ~Dependency_Graph(); 
-  
-  int Size(); 
+	std::string dependents;
 
-  int HasDependents(std::string); 
+	std::string temp_name;
 
-  int HasDependees(std::string); 
-  
-  std::set<std::string> GetDependents(std::string);//, std::set<std::string>*); 
+	//std::set<std::string> temp_set; 
 
-  std::set<std::string> GetDependees(std::string);//, std::set<std::string>*); 
+public:
 
-  void AddDependency(std::string,std::string); 
+	Dependency_Graph();
+	~Dependency_Graph();
 
-  void RemoveDependency(std::string, std::string); 
+	int Size();
 
-  void ReplaceDependents(std::string, std::set<std::string>); 
+	int HasDependents(std::string);
 
-  void ReplaceDependees(std::string, std::set<std::string>); 
+	int HasDependees(std::string);
 
-  int  size_dependees(std::string); 
+	std::set<std::string> GetDependents(std::string);//, std::set<std::string>*); 
+
+	std::set<std::string> GetDependees(std::string);//, std::set<std::string>*); 
+
+	void AddDependency(std::string, std::string);
+
+	void RemoveDependency(std::string, std::string);
+
+	void ReplaceDependents(std::string, std::set<std::string>);
+
+	void ReplaceDependees(std::string, std::set<std::string>);
+
+	int  size_dependees(std::string);
 
 
-}; 
+};
 
 #endif
