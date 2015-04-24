@@ -168,6 +168,7 @@ void *connect(void *client_sock)
 	  parsed = strtok (NULL, " \n\r");	 	  
 	  string temp(parsed);
           
+	  //if connecting client user is not registered
 	  if(registered_users.count(temp) == 0 && temp != "sysadmin")
 	  {
 	    send(connFd, "error 4 blah\n", 10, MSG_NOSIGNAL);
@@ -241,7 +242,7 @@ void *connect(void *client_sock)
 	  // Looks at the user who is trying to register another user
 	  parsed = strtok (NULL, " \n\r");
 	  string test(parsed);
-	  string error_send = "\nerror 4 blue";
+	  string error_send = "error 4 ";
 	  error_send  += parsed;
 	  error_send += "\n";
 	  
@@ -250,10 +251,8 @@ void *connect(void *client_sock)
             send(connFd, error_send.c_str(), error_send.size(), MSG_NOSIGNAL);
 	  }
 	  // Registers non-existing registered user if client is registered
-	  if(connected)
-	  if(registered_users.count(parsed) == 0)
+	  if(registered_users.count(parsed) == 0 || connected)
 	  {
-	    registered_users.insert(make_pair(test, ""));
             add_user(test);	    
 	  }
 	  // Otherwise send the error message	  
@@ -273,7 +272,6 @@ cout << opened_spreadsheets[spreadsheet]->stackOfChanges.size() << endl;
 	  {
 	    cout << 2 << endl;
 	    pair<string, string> undoneCell = opened_spreadsheets[spreadsheet]->undo();
-	    opened_spreadsheets[spreadsheet]->save_spreadsheet(spreadsheet);
 	    string cell_update = "cell " + undoneCell.first + " " +  undoneCell.second + "\n";
             
             for(list<long>::iterator it = spreadsheet_editors[spreadsheet].begin(); it != spreadsheet_editors[spreadsheet].end(); it++)
@@ -324,21 +322,14 @@ cout << opened_spreadsheets[spreadsheet]->stackOfChanges.size() << endl;
 
             cout << "past dep check" << endl; 
 	    if(!dep)
-	    { 
-                   
-                   if(isalpha(parsed[1]) && (strlen(parsed) == 3 || strlen(parsed) == 2)){
-                   cout<< "match var name" <<endl; 
-                opened_spreadsheets[spreadsheet]->depgraph.AddDependency(cell_name,parsed); 
-                }
+	    {
                   cout << "made it right before iffy line" << endl; 
 		  parsed = strtok(NULL, " =+/*-");//this line may require saving the previous contents as a separate char*
-
-                   //cout << "made it past iffy line: " << parsed << endl;  
-		   //cout << parsed << endl;
+                   cout << "made it past iffy line: " << parsed << endl;  
+		   cout << parsed << endl;
               while(parsed !=NULL)
               { 
               	if(isalpha(parsed[0]) && (strlen(parsed) == 3 || strlen(parsed) == 2)){
-                cout << "match var name" << endl; 
                 opened_spreadsheets[spreadsheet]->depgraph.AddDependency(cell_name,parsed); 
                 }
                 cout << "made it past adding deps" << endl; 
@@ -356,16 +347,7 @@ cout << opened_spreadsheets[spreadsheet]->stackOfChanges.size() << endl;
 	      pair<string, string> oldValue (cell_name, opened_spreadsheets[spreadsheet]->cells.at(cell_name));	    
 	      opened_spreadsheets[spreadsheet]->stackOfChanges.push(oldValue);
 	
-	      if(cell_contents == "")
- 	      {
-		opened_spreadsheets[spreadsheet]->cells.erase(cell_name);
-	      }
-	      else
-	      {
-		cout << "not empty silly" << endl;
-		opened_spreadsheets[spreadsheet]->cells[cell_name] = cell_contents;
-	      }
-	      opened_spreadsheets[spreadsheet]->save_spreadsheet(spreadsheet);
+	      opened_spreadsheets[spreadsheet]->cells[cell_name] = cell_contents;
 	    }
 
 	    //Otherwise just add it to the spreadsheet object
@@ -373,15 +355,7 @@ cout << opened_spreadsheets[spreadsheet]->stackOfChanges.size() << endl;
 	    {
 	      pair<string, string> oldValue (cell_name, "");
               opened_spreadsheets[spreadsheet]->stackOfChanges.push(oldValue);
-   	      if(cell_contents == "")
- 	      {
-		opened_spreadsheets[spreadsheet]->cells.erase(cell_name);
-	      }
-	      else
-	      {
-		opened_spreadsheets[spreadsheet]->cells[cell_name] = cell_contents;
-	      }
-	      opened_spreadsheets[spreadsheet]->save_spreadsheet(spreadsheet);
+   	      opened_spreadsheets[spreadsheet]->cells.insert(make_pair(cell_name, cell_contents));
 	      
 	    }
 
@@ -396,7 +370,7 @@ cout << opened_spreadsheets[spreadsheet]->stackOfChanges.size() << endl;
             }
           else
           {
-            	   cout << "Circ dep found" << endl; 		  
+            	    //error handle 		  
           }		  
       } 
           else
@@ -404,22 +378,14 @@ cout << opened_spreadsheets[spreadsheet]->stackOfChanges.size() << endl;
             //If the current cell already has a value, change contents
             if(opened_spreadsheets[spreadsheet]->cells.count(cell_name) != 0)
 	    {
-	      pair<string, string> oldValue (cell_name, opened_spreadsheets[spreadsheet]->cells.at(cell_name));
+ 	      pair<string, string> oldValue (cell_name, opened_spreadsheets[spreadsheet]->cells.at(cell_name));
+	      opened_spreadsheets[spreadsheet]->stackOfChanges.push(oldValue);
+	      opened_spreadsheets[spreadsheet]->cells[cell_name] = cell_contents;
+              
 	      if(cell_contents == "")
  	      {
-		opened_spreadsheets[spreadsheet]->cells.erase(cell_name);
+		opened_spreadsheets.erase(cell_name);
 	      }
-	      else
-	      {
-		opened_spreadsheets[spreadsheet]->cells[cell_name] = cell_contents;
-	      }
-
- 	      
-	      opened_spreadsheets[spreadsheet]->stackOfChanges.push(oldValue);
-	      
-              opened_spreadsheets[spreadsheet]->save_spreadsheet(spreadsheet);
-              
-
             }
 
 	    //Otherwise just add it to the spreadsheet object
@@ -429,15 +395,7 @@ cout << opened_spreadsheets[spreadsheet]->stackOfChanges.size() << endl;
               {
 	        pair<string, string> oldValue (cell_name, "");
 	   	opened_spreadsheets[spreadsheet]->stackOfChanges.push(oldValue);
-                if(cell_contents == "")
- 	      {
-		opened_spreadsheets[spreadsheet]->cells.erase(cell_name);
-	      }
-	      else
-	      {
-		opened_spreadsheets[spreadsheet]->cells[cell_name] = cell_contents;
-	      }
-	        opened_spreadsheets[spreadsheet]->save_spreadsheet(spreadsheet);
+                opened_spreadsheets[spreadsheet]->cells.insert(make_pair(cell_name, cell_contents));
 
 	      }
 	    }

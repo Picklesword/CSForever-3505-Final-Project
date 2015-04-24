@@ -17,7 +17,6 @@ spreadsheet::spreadsheet()
 }
 spreadsheet::spreadsheet(std::string filename)
 {
-  string name = filename;
   load_spreadsheet(filename);
 }
 
@@ -42,16 +41,16 @@ std::string name_holder(name); //convert name to a string
 
  
 
-std::cout<< "Got to the token parser"<< "formula: " << formula << std::endl; 
+//std::cout<< "Got to the token parser"<< "formula: " << formula << std::endl; 
 
 
 temp = strtok(test, " =+-/*");//parses tokens from equation 
-std::cout << "Got past the first parse:" << temp << std::endl;
+//std::cout << "Got past the first parse:" << temp << std::endl;
 
 //parses the entire equation  
  while(temp != NULL){
-std::cout << "in while loop" << std::endl;
-std::cout << isalpha(temp[0]) << std::endl;  
+//std::cout << "in while loop" << std::endl;
+//std::cout << isalpha(temp[0]) << std::endl;  
 
 //checks that the first character of var is an letter 
 //and that the string is either two or three characters long 
@@ -61,7 +60,7 @@ std::string holder(temp);
 
 if(holder == name_holder){ // if var name is same as the cell name circular dependency 
 
-std::cout << "arrived at dependency" << std::endl; 
+//std::cout << "arrived at dependency" << std::endl; 
 
 *truth = 1; //dep found 
 
@@ -69,7 +68,7 @@ return current_deps;
 
 }
 
-std::cout<< holder<< std::endl; 
+//std::cout<< holder<< std::endl; 
 
 if(depgraph.HasDependents(holder)){ //get the cells the var is dependent on 
 
@@ -91,7 +90,7 @@ temp_name = "=" + *it;
 
 char* c_name  = const_cast<char*> (temp_name.c_str());//converts temp name to c string  
 
-std::cout<< "got to recursive call" << std::endl;
+//std::cout<< "got to recursive call" << std::endl;
 current_deps = Dependency_Check(current_deps, name,c_name, truth); 
 
 if(*truth == 1){ // if a circular dependency has been found return true
@@ -134,8 +133,6 @@ void spreadsheet::load_spreadsheet(std::string filename)
    char* cell_name; 
 
    char* cell_contents; 
-
-   char* parsed; 
   
    //temps 
 
@@ -180,25 +177,6 @@ void spreadsheet::load_spreadsheet(std::string filename)
 	     string name(cell_name);
 	     string info(cell_info);
              cells.insert ( make_pair(name, info));
-             if(cell_contents[0] == '='){
-                     
-               
-              parsed = strtok(cell_contents, " =+/*-");
-
-              while(parsed != NULL){
-	      cout << "here Iam" << endl;
-              if(isalpha(parsed[0]) && (strlen(parsed) == 3 || strlen(parsed) == 2)){
-		 cout << cell_name << " " << parsed << endl;
-                 depgraph.AddDependency(cell_name,parsed); 
-                }
-
-
-                 parsed = strtok(NULL, " =+/*-");
-
-              }
-
-             }
-             
 //             cells.insert ( make_pair(cell_name, cell_contents));
 cout <<"me too"<<endl;
 
@@ -238,7 +216,7 @@ void spreadsheet::save_spreadsheet(std::string filename)
    //end temps 
  
 //  heavily modified code from Ingo Leonhardt but seems really basic once you understand it http://stackoverflow.com/questions/18100097/portable-way-to-check-if-directory-exists-windows-linux-c  
-  /* struct stat info;
+   struct stat info;
 
    if( stat( File.c_str(), &info ) != 0 )//changed pathname to file 
        printf( "cannot access %s\n", File.c_str());
@@ -247,11 +225,11 @@ void spreadsheet::save_spreadsheet(std::string filename)
    else{
        printf( "%s is no directory creating one \n", File.c_str()); // modified 
        mkdir(File.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); // my line of code 
-       }*/
+       }
       
 //end of cited code 
   
-   string full_name = filename;    
+   string full_name = File + filename;    
    /*
    cells.insert ( pair<string,string>("a1","hello"));
    cells.insert ( pair<string,string>("b1","32"));

@@ -26,8 +26,6 @@ public:
   spreadsheet(string filename);
   spreadsheet(const spreadsheet &other);
 
-  void save_spreadsheet(std::string filename); 
-
   ~spreadsheet();
 
    Dependency_Graph depgraph; 
@@ -43,7 +41,8 @@ public:
 
 private:
   void load_spreadsheet(std::string filename);
- 
-  void update_spreadsheet(void);  
+  void save_spreadsheet(std::string filename);  
+  void update_spreadsheet(void);
+  
 };
 #endif
