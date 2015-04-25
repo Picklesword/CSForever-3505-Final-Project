@@ -35,6 +35,8 @@
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.howToUseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,8 +63,6 @@
             this.LoginNameTextBox = new System.Windows.Forms.TextBox();
             this.ConnectButton = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -71,9 +71,9 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
+            this.editToolStripMenuItem,
             this.findToolStripMenuItem,
-            this.helpToolStripMenuItem,
-            this.editToolStripMenuItem});
+            this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(986, 24);
@@ -136,6 +136,21 @@
             this.exitToolStripMenuItem.ToolTipText = "Close the program";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.undoToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.editToolStripMenuItem.Text = "Edit";
+            // 
+            // undoToolStripMenuItem
+            // 
+            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.undoToolStripMenuItem.Text = "Undo";
+            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
+            // 
             // findToolStripMenuItem
             // 
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
@@ -176,6 +191,7 @@
             this.CellNameTB.ReadOnly = true;
             this.CellNameTB.Size = new System.Drawing.Size(52, 20);
             this.CellNameTB.TabIndex = 4;
+            this.CellNameTB.TabStop = false;
             this.CellNameTB.TextChanged += new System.EventHandler(this.CellNameTB_TextChanged);
             // 
             // CellContentTB
@@ -192,6 +208,7 @@
             this.CellValueTB.ReadOnly = true;
             this.CellValueTB.Size = new System.Drawing.Size(349, 20);
             this.CellValueTB.TabIndex = 6;
+            this.CellValueTB.TabStop = false;
             this.CellValueTB.TextChanged += new System.EventHandler(this.CellValueTB_TextChanged);
             // 
             // CellNameLabel
@@ -227,7 +244,7 @@
             this.UpdateButton.Location = new System.Drawing.Point(324, 95);
             this.UpdateButton.Name = "UpdateButton";
             this.UpdateButton.Size = new System.Drawing.Size(75, 23);
-            this.UpdateButton.TabIndex = 10;
+            this.UpdateButton.TabIndex = 6;
             this.UpdateButton.Text = "Update Cell";
             this.UpdateButton.UseVisualStyleBackColor = true;
             this.UpdateButton.Click += new System.EventHandler(this.UpdateButton_Click);
@@ -239,6 +256,7 @@
             this.spreadsheetPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.spreadsheetPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.spreadsheetPanel1.Location = new System.Drawing.Point(0, 142);
+            this.spreadsheetPanel1.MinimumSize = new System.Drawing.Size(10, 10);
             this.spreadsheetPanel1.Name = "spreadsheetPanel1";
             this.spreadsheetPanel1.Size = new System.Drawing.Size(986, 279);
             this.spreadsheetPanel1.TabIndex = 11;
@@ -265,6 +283,7 @@
             this.groupBox1.Controls.Add(this.CellNameTB);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Location = new System.Drawing.Point(0, 24);
+            this.groupBox1.MinimumSize = new System.Drawing.Size(1, 1);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(986, 118);
             this.groupBox1.TabIndex = 12;
@@ -286,6 +305,7 @@
             this.ServertextBox.Name = "ServertextBox";
             this.ServertextBox.Size = new System.Drawing.Size(197, 77);
             this.ServertextBox.TabIndex = 30;
+            this.ServertextBox.TabStop = false;
             // 
             // portLabel
             // 
@@ -301,7 +321,7 @@
             this.portTextBox.Location = new System.Drawing.Point(743, 69);
             this.portTextBox.Name = "portTextBox";
             this.portTextBox.Size = new System.Drawing.Size(100, 20);
-            this.portTextBox.TabIndex = 28;
+            this.portTextBox.TabIndex = 3;
             this.portTextBox.Text = "2112";
             this.portTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -319,7 +339,7 @@
             this.fileNameTextBox.Location = new System.Drawing.Point(743, 29);
             this.fileNameTextBox.Name = "fileNameTextBox";
             this.fileNameTextBox.Size = new System.Drawing.Size(100, 20);
-            this.fileNameTextBox.TabIndex = 25;
+            this.fileNameTextBox.TabIndex = 1;
             this.fileNameTextBox.Text = "test";
             this.fileNameTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -346,7 +366,7 @@
             this.ServerIPTextBox.Location = new System.Drawing.Point(743, 49);
             this.ServerIPTextBox.Name = "ServerIPTextBox";
             this.ServerIPTextBox.Size = new System.Drawing.Size(100, 20);
-            this.ServerIPTextBox.TabIndex = 23;
+            this.ServerIPTextBox.TabIndex = 2;
             this.ServerIPTextBox.Text = "155.98.111.67";
             this.ServerIPTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -355,7 +375,7 @@
             this.LoginNameTextBox.Location = new System.Drawing.Point(743, 8);
             this.LoginNameTextBox.Name = "LoginNameTextBox";
             this.LoginNameTextBox.Size = new System.Drawing.Size(100, 20);
-            this.LoginNameTextBox.TabIndex = 22;
+            this.LoginNameTextBox.TabIndex = 0;
             this.LoginNameTextBox.Text = "sysadmin";
             this.LoginNameTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -365,7 +385,7 @@
             this.ConnectButton.Margin = new System.Windows.Forms.Padding(2);
             this.ConnectButton.Name = "ConnectButton";
             this.ConnectButton.Size = new System.Drawing.Size(100, 81);
-            this.ConnectButton.TabIndex = 21;
+            this.ConnectButton.TabIndex = 4;
             this.ConnectButton.Text = "Connect";
             this.ConnectButton.UseVisualStyleBackColor = true;
             this.ConnectButton.Click += new System.EventHandler(this.ConnectButton_Click);
@@ -376,32 +396,19 @@
             this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
             this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
             // 
-            // editToolStripMenuItem
-            // 
-            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.undoToolStripMenuItem});
-            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
-            this.editToolStripMenuItem.Text = "Edit";
-            // 
-            // undoToolStripMenuItem
-            // 
-            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.undoToolStripMenuItem.Text = "Undo";
-            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
-            // 
             // GUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(986, 421);
             this.Controls.Add(this.spreadsheetPanel1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
+            this.MinimumSize = new System.Drawing.Size(100, 100);
             this.Name = "GUI";
-            this.Text = "Form1";
+            this.Text = "Spreadsheet GUI";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();

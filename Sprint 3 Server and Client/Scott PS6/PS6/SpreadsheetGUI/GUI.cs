@@ -40,6 +40,7 @@ namespace SpreadsheetGUI
             //this.KeyPreview = true;
             sheet = new Spreadsheet(isValid, Normalize, "ps6"); //need to implement a constructor that will normalize the values and get the version ps6
             sendToServer = false;
+            ServertextBox.ReadOnly = true;
             // following components handle communication with server
             communicator = new Communicator();
             communicator.IncomingErrorEvent += ErrorReceived;
@@ -406,8 +407,12 @@ namespace SpreadsheetGUI
             List<String> cellsToUpdate = new List<string>();
             cellName = Normalize(cellName); //normalizing cell names
             int row, col;
+            string rowNumber = "";
             col = getColValue(cellName[0]);
-            row = cellName[1] - 49;
+            for (int i = 1; i < cellName.Length; i++)
+                rowNumber = rowNumber + cellName[i];
+            
+            row = Int32.Parse(rowNumber) + 1;
             //String value;
             //spreadsheetPanel1.GetSelection(out col, out row);
             //spreadsheetPanel1.GetValue(col, row, out value);
@@ -802,10 +807,10 @@ namespace SpreadsheetGUI
             //string value;
             spreadsheetPanel1.GetSelection(out col, out row);
 
-            spreadsheetPanel1.SetValue(col, row, exception.Message);
+            //spreadsheetPanel1.SetValue(col, row, exception.Message);
 
             string cellName = calculateCellName(col) + (row + 1);
-            ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = "Circular Dependancy has occurred."; }));
+            ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = "Circular Dependancy has occurred. " + exception.Message + " in cell " + cellName; }));
            // sheet.SetContentsOfCell(cellName, (exception.Message + " \"" + formula + "\""));
 
             //UpdateCellValueTB((exception.Message) + sheet.GetCellValue(cellName).ToString());
@@ -1117,11 +1122,13 @@ namespace SpreadsheetGUI
 
             spreadsheetPanel1.GetSelection(out col, out row);
 
-            spreadsheetPanel1.SetValue(col, row, formulaEx.Message);
+            //spreadsheetPanel1.SetValue(col, row, formulaEx.Message); //sets cell on spreadsheet to error message
 
             string cellName = calculateCellName(col) + (row + 1);
 
-            sheet.SetContentsOfCell(cellName, (formulaEx.Message + " \"" + ContentsOfCell + "\""));
+            if (InvokeRequired)
+                ServertextBox.Invoke(new MethodInvoker(delegate { ServertextBox.Text = formulaEx.Message + " \"" + ContentsOfCell + "\""; }));
+            //sheet.SetContentsOfCell(cellName, (formulaEx.Message + " \"" + ContentsOfCell + "\""));
 
             if(InvokeRequired)
             {

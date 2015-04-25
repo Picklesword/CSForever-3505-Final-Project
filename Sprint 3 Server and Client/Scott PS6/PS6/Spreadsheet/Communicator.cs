@@ -160,7 +160,7 @@ namespace SS
             // handles reception of start game message, the letters of the board, populates client timer, 
             // and the oponent name.  It also updates the MainButton State
 
-            if(temp.StartsWith("ERROR"))
+            if(temp.StartsWith("ERROR")) //Listen for ERROR
             {
 
                 // Dharani: 
@@ -196,12 +196,12 @@ namespace SS
                 }
 
             }
-            else if (temp.StartsWith("CONNECTED"))
+            else if (temp.StartsWith("CONNECTED")) //Listen for CONNECTED
             {
                 IncomingConnectedEvent(words);
                 socket.BeginReceive(LineReceived, null);
             }
-            else if (temp.StartsWith("CELL"))
+            else if (temp.StartsWith("CELL")) //listen for CELL
             {
                 if(IncomingCellEvent != null)
                 { 
