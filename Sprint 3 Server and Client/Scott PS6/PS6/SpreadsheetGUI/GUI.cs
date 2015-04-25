@@ -38,7 +38,7 @@ namespace SpreadsheetGUI
             filePath = "";
             Cell = new Dictionary<string, List<string>>();
             //this.KeyPreview = true;
-            sheet = new Spreadsheet(isValid, Normalize, "ps6"); //need to implement an constructor that will normalize the values and get the version ps6
+            sheet = new Spreadsheet(isValid, Normalize, "ps6"); //need to implement a constructor that will normalize the values and get the version ps6
             sendToServer = false;
             // following components handle communication with server
             communicator = new Communicator();
@@ -180,7 +180,7 @@ namespace SpreadsheetGUI
 
             }
             UpdateCellContents(msg[1], cellContents);//updated the cell contents
-            //UpdateCell(msg[1], cellContents); //need to change to current setup
+            
             
             //msg[0] contains the word cell, the following array locations should contain cell name and
             //contents
@@ -404,6 +404,7 @@ namespace SpreadsheetGUI
         private void UpdateCellContents(string cellName, string cellValue)
         {
             List<String> cellsToUpdate = new List<string>();
+            cellName = Normalize(cellName); //normalizing cell names
             int row, col;
             col = getColValue(cellName[0]);
             row = cellName[1] - 49;
@@ -479,6 +480,7 @@ namespace SpreadsheetGUI
             spreadsheetPanel1.GetValue(col, row, out value);
 
             String cellName = calculateCellName(col) + (row + 1);
+            cellName = Normalize(cellName);
             string cellValue = "";
             CellNameTB.Text = cellName;
             string contentsOfCell = "";
@@ -522,12 +524,14 @@ namespace SpreadsheetGUI
             catch (CircularException exception)
             {
                 handleCircularException(exception, contentsOfCell);
+                sendToServer = false;
                 cellValue = sheet.GetCellValue(cellName).ToString();
                 FindListModifier(tmpValue, cellValue, cellName, cellsToUpdate);
             }
             catch (FormulaFormatException formulaEx)
             {
                 handleInvalidNameException(formulaEx, contentsOfCell);
+                sendToServer = false;
                 cellValue = sheet.GetCellValue(cellName).ToString();
                 FindListModifier(tmpValue, cellValue, cellName, cellsToUpdate);
             }

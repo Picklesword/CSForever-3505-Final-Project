@@ -172,27 +172,27 @@ namespace SS
                 if(words[1].CompareTo("0") == 0)
                 {
                     IncomingErrorEvent(words);
-                    Disconnect(); //disconnect socket
+                    //Disconnect(); //disconnect socket
                 }
                 else if(words[1].CompareTo("1") == 0)
                 {
                     IncomingErrorEvent(words);
-                    Disconnect(); //disconnect socket
+                    //Disconnect(); //disconnect socket
                 }
                 else if (words[1].CompareTo("2") == 0)
                 {
                     IncomingErrorEvent(words);
-                    Disconnect(); //disconnect socket
+                    //Disconnect(); //disconnect socket
                 }
                 else if (words[1].CompareTo("3") == 0)
                 {
                     IncomingErrorEvent(words);
-                    Disconnect(); //disconnect socket
+                    //Disconnect(); //disconnect socket
                 }
                 else //error 4 is an unregistered username. we disconnect the socket and send a message to user to use a registered name
                 {
                     IncomingErrorEvent(words);
-                    Disconnect(); //disconnect socket
+                    //Disconnect(); //disconnect socket
                 }
 
             }
