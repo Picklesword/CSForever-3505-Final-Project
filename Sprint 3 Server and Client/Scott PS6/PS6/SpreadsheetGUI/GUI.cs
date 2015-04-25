@@ -583,13 +583,22 @@ namespace SpreadsheetGUI
                 if (tmpValue != "")
                 {
                     Cell.TryGetValue(tmpValue, out listName); //gets a list from the dictionary of all of the cells that contain the tmpValue
-                    
-                    foreach (string n in listName)
+                    if (listName != null) 
+                    {
+                        foreach (string n in listName)
+                        {
+                            if (!tmpList.Contains(n))
+                                tmpList.Add(n); //adds the values into tmpList for manipulation
+
+                        }
+                    }
+                    //keep getting a null error
+                    /*foreach (string n in listName)
                     {
                         if (!tmpList.Contains(n))
                            tmpList.Add(n); //adds the values into tmpList for manipulation
                         
-                    }
+                    }*/
                     listName = new List<string>();
                     foreach (string n in tmpList)
                     {
