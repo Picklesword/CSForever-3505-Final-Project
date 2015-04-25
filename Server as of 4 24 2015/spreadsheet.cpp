@@ -115,7 +115,7 @@ set<char*> spreadsheet::Dependency_Check(set<char*> current_deps, char* name, ch
 			}
 
                         
-			if (depgraph.HasDependees(holder)){ //get the cells the var is dependent on 
+			/*if (depgraph.HasDependees(holder)){ //get the cells the var is dependent on 
 
 
 				set<std::string> temp_deps = depgraph.GetDependees(holder);
@@ -150,7 +150,7 @@ set<char*> spreadsheet::Dependency_Check(set<char*> current_deps, char* name, ch
 				}
 
 
-			}
+			}*/
 
 
 

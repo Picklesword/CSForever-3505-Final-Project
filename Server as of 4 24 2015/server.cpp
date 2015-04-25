@@ -364,20 +364,31 @@ void *connect(void *client_sock)
 					if (!dep)
 					{
 
-						if (isalpha(parsed[1]) && (strlen(parsed) == 3 || strlen(parsed) == 2)){
+                                                cout<<parsed<<endl;
+						parsed = strtok(strdup(cell_contents.c_str()), " =+/*-");
+                                                //cout<<parsed<<endl;
+						/*if (isalpha(parsed[0]) && (strlen(parsed) == 3 || strlen(parsed) == 2)){
 							cout << "match var name" << endl;
 							
+                                                        for(int i = 0; i < strlen(parsed); i++)
+						            parsed[i] = toupper(parsed[i]);
+
+                                                        cout << "what we are adding: " << cell_name << "  " << parsed << endl;
 							opened_spreadsheets[spreadsheet]->depgraph.AddDependency(cell_name, parsed);
 						}
 						cout << "made it right before iffy line" << endl;
-						parsed = strtok(NULL, " =+/*-");//this line may require saving the previous contents as a separate char*
+						parsed = strtok(NULL, " =+/*-");//this line may require saving the previous contents as a separate char**/
 
 						//cout << "made it past iffy line: " << parsed << endl;  
 						//cout << parsed << endl;
 						while (parsed != NULL)
 						{
 							if (isalpha(parsed[0]) && (strlen(parsed) == 3 || strlen(parsed) == 2)){
-								cout << "match var name" << endl;
+								cout << "match var name : " << parsed[0] << endl;
+                                                                for(int i = 0; i < strlen(parsed); i++)
+						                    parsed[i] = toupper(parsed[i]);
+
+                                                                cout << "what we are adding: " << cell_name << "  " << parsed << endl;
 								opened_spreadsheets[spreadsheet]->depgraph.AddDependency(cell_name, parsed);
 							}
 							cout << "made it past adding deps" << endl;
