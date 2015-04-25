@@ -412,7 +412,7 @@ namespace SpreadsheetGUI
             for (int i = 1; i < cellName.Length; i++)
                 rowNumber = rowNumber + cellName[i];
             
-            row = Int32.Parse(rowNumber) + 1;
+            row = Int32.Parse(rowNumber) - 1;
             //String value;
             //spreadsheetPanel1.GetSelection(out col, out row);
             //spreadsheetPanel1.GetValue(col, row, out value);
