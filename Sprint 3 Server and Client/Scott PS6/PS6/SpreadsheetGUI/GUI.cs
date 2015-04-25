@@ -439,9 +439,9 @@ namespace SpreadsheetGUI
                 if (sheet.Changed)
                     saveToolStripMenuItem.Enabled = true;
 
-                UpdateCellContentTB(sheet.GetCellContents(cellName).ToString());//updates the cell content TB
+                //UpdateCellContentTB(sheet.GetCellContents(cellName).ToString());//updates the cell content TB
                 //CellContentTB.Text = sheet.GetCellContents(cellName).ToString();
-                UpdateCellValueTB(sheet.GetCellValue(cellName).ToString()); //update the cell value tb
+                //UpdateCellValueTB(sheet.GetCellValue(cellName).ToString()); //update the cell value tb
                 //CellValueTB.Text = sheet.GetCellValue(cellName).ToString();
                 cellValue = sheet.GetCellValue(cellName).ToString();
 
