@@ -114,6 +114,44 @@ set<char*> spreadsheet::Dependency_Check(set<char*> current_deps, char* name, ch
 
 			}
 
+                        
+			if (depgraph.HasDependees(holder)){ //get the cells the var is dependent on 
+
+
+				set<std::string> temp_deps = depgraph.GetDependees(holder);
+
+				//go through each element of dependents and if it has not already been looked at 
+				// make a recursive call to Dependency_Check 
+				for (set<std::string>::iterator it = temp_deps.begin(); it != temp_deps.end(); it++){
+
+					if (!current_deps.count(const_cast<char*> (it->c_str())));
+					{
+
+						current_deps.insert(const_cast<char*> (it->c_str()));
+
+						std::string temp_name;
+
+						temp_name = "=" + *it;
+
+						char* c_name = const_cast<char*> (temp_name.c_str());//converts temp name to c string  
+
+						std::cout << "got to recursive call" << std::endl;
+						current_deps = Dependency_Check(current_deps, name, c_name, truth);
+
+						if (*truth == 1){ // if a circular dependency has been found return true
+
+							return current_deps;
+
+						}
+
+					}
+
+
+				}
+
+
+			}
+
 
 
 

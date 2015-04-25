@@ -145,15 +145,15 @@ void *connect(void *client_sock)
 		string readin(buffer);
 
 		int t = 0;
-		while(readin.find("\n") < 0 || readin.size() < 300)
+		/*while(readin.find("\n") < 0 || readin.size() < 300)
 		{
 			toclose = read(connFd, buffer, 300);
 			string temp(buffer);
 			readin += temp;
 			t++;
-		}
+		}*/
 
-		cout << "read  " << t << endl;
+		//cout << "read  " << t << endl;
 
 		// Socket has closed; close connection
 		if (toclose == 0)
@@ -356,7 +356,7 @@ void *connect(void *client_sock)
 
 					set<char*> temp_deps;
 
-					cout << "got right before deps check" << endl;
+					cout << "got right before deps check : " << cell_contents << endl;
 
 					temp_deps = opened_spreadsheets[spreadsheet]->Dependency_Check(temp_deps, const_cast<char*> (cell_name.c_str()), const_cast<char*> (cell_contents.c_str()), &dep);
 
