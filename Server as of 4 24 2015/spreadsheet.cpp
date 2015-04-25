@@ -61,8 +61,8 @@ set<char*> spreadsheet::Dependency_Check(set<char*> current_deps, char* name, ch
 
 			std::string holder(temp);
 			
-			for(int i = 0; i < holder.size(); i++)
-				holder[i] = toupper(holder[i]);
+//			for(int i = 0; i < holder.size(); i++)
+//				holder[i] = toupper(holder[i]);
 //			std::cout << holder << "   " << name_holder << std::endl;
 
 			if (holder == name_holder){ // if var name is same as the cell name circular dependency 

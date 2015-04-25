@@ -44,8 +44,9 @@ map<long, string> users_editing;
 
 ifstream users("users.txt");
 
-int main()
+int main(int argc, char* argv[])
 {
+
 	int pId, portNo, listenFd;
 	int size = 10;
 	int connFd;
@@ -57,7 +58,12 @@ int main()
 
 	pthread_t threadA[size];
 
-	portNo = 2112;
+	portNo = 2000;
+
+	if(argc == 2)
+	{
+		portNo = atoi( argv[1] );
+	}
 
 
 	//create socket
@@ -185,7 +191,7 @@ void *connect(void *client_sock)
 
 				if (registered_users.count(temp) == 0 && temp != "sysadmin")
 				{
-					send(connFd, "error 4 blah\n", 10, MSG_NOSIGNAL);
+					send(connFd, "\nerror 4 blah\n", 10, MSG_NOSIGNAL);
 				}
 				//Open/Create Spreadsheet file
 				else
@@ -262,7 +268,7 @@ void *connect(void *client_sock)
 				// Looks at the user who is trying to register another user
 				parsed = strtok(NULL, " \n\r");
 				string test(parsed);
-				string error_send = "\nerror 4 blue";
+				string error_send = "\nerror 4 already registered ";
 				error_send += parsed;
 				error_send += "\n";
 
@@ -446,7 +452,8 @@ void *connect(void *client_sock)
 					}
 					else
 					{
-						cout << "Circ dep found" << endl;
+						string error_send = "\nerror 1 circular dependency detected.\n";
+						send(connFd, error_send.c_str(), error_send.size(), MSG_NOSIGNAL);
 					}
 				}
 				else
