@@ -1110,8 +1110,20 @@ namespace SpreadsheetGUI
 
             sheet.SetContentsOfCell(cellName, (formulaEx.Message + " \"" + ContentsOfCell + "\""));
 
-            CellValueTB.Text = sheet.GetCellValue(cellName).ToString();
-            CellContentTB.Text = sheet.GetCellContents(cellName).ToString();
+            if(InvokeRequired)
+            {
+                CellValueTB.Invoke(new MethodInvoker(delegate { CellValueTB.Text = sheet.GetCellValue(cellName).ToString(); }));
+            }
+            else
+                CellValueTB.Text = sheet.GetCellValue(cellName).ToString();
+
+
+            if(InvokeRequired)
+            {
+                CellContentTB.Invoke(new MethodInvoker(delegate { CellContentTB.Text = sheet.GetCellContents(cellName).ToString(); }));
+            }
+            else
+                CellContentTB.Text = sheet.GetCellContents(cellName).ToString();
         }
 
         /// <summary>
