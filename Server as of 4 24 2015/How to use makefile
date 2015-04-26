@@ -1,0 +1,10 @@
+How to use make file:
+
+Here are the commands available for makefile
+
+make: This command compiles the spreadsheet server project
+make clean: deletes all .o files, executable files, and backup files
+
+make run port=2112 (or any desires port number):
+	This command runs the program using the given port number.
+
